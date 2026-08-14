@@ -324,6 +324,7 @@ export function createWorld() {
           const size = gridSize(def.grid);
           const b = makeBillboard(billTexCache[p.type], size.w, size.h);
           setBillboardPos(b, cx, p.row + def.fh - 0.15, size.h, 0, trailingEmptyRows(def.grid) / 16);
+          if (p.flip) b.scale.x = -1; // flèche des panneaux vers la gauche
           meshes.push(b);
           if (p.type !== "lost_item") {
             const sh = makeShadow(size.w * 1.1);

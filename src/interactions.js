@@ -24,6 +24,7 @@ export const ACTIONS = {
   david: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_david", speaker: "david" },
   her_desk: { duration: 1.2, effects: { fun: 10 }, dlg: "use_her_desk", speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
+  signpost: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   coffee: { duration: 1.5, effects: { energie: 15 }, dlg: "use_coffee", speaker: "player" },
   // le Louvre
   joconde: { duration: 0, effects: { fun: 10 }, dlg: "use_joconde", speaker: "player" },
@@ -60,6 +61,7 @@ export class Interactions {
       const def = FURNITURE[p.type];
       this.spots.push({
         type: p.type,
+        label: p.label, // texte de prompt spécifique (ex : panneaux directionnels)
         rect: { x0: p.col, y0: p.row, x1: p.col + def.fw, y1: p.row + def.fh },
         cx: p.col + def.fw / 2,
         cy: p.row + def.fh / 2,

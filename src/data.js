@@ -367,6 +367,7 @@ export default {
     mahrez: "Mahrez",
     david: "David",
     sign: "Le panneau de l'hôpital",
+    signpost: "Panneau indicateur",
     her_desk: "Ton nouveau bureau",
     coffee: "LA machine à café",
     joconde: "La Joconde (elle vous suit du regard)",

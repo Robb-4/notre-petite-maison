@@ -121,6 +121,9 @@ export const MAPS = {
       { type: "bookshelf", col: 15, row: 6 },
       { type: "plant", col: 15, row: 12 },
       { type: "lost_item", col: 23, row: 12 },
+      // panneaux directionnels aux départs de chemin
+      { type: "signpost", col: 24, row: 9, label: "→ L'hôpital (à l'est)" },
+      { type: "signpost", col: 22, row: 14, flip: true, label: "→ Le Louvre (au sud)" },
     ],
     exits: [
       { x0: 24.7, y0: 9.5, x1: 26, y1: 11.5, to: "hospital", at: { x: 1.5, y: 10.5 } },
@@ -159,6 +162,7 @@ export const MAPS = {
       { type: "plant", col: 24, row: 25 },
       // panneau devant l'entrée
       { type: "sign", col: 0, row: 9 },
+      { type: "signpost", col: 1, row: 12, flip: true, label: "→ La maison (à l'ouest)" },
     ],
     exits: [{ x0: 0, y0: 9.6, x1: 0.6, y1: 11.6, to: "home", at: { x: 24, y: 10.5 } }],
   },
@@ -175,6 +179,8 @@ export const MAPS = {
       { type: "plant", col: 26, row: 7 },
       { type: "plant", col: 4, row: 11 },
       { type: "plant", col: 26, row: 11 },
+      { type: "signpost", col: 27, row: 1, label: "→ La maison (au nord)" },
+      { type: "signpost", col: 16, row: 12, flip: true, label: "→ Paris : arcade & KONG" },
     ],
     exits: [
       { x0: 27.4, y0: 0, x1: 29.6, y1: 0.6, to: "home", at: { x: 21.5, y: 14.5 } },
@@ -203,6 +209,7 @@ export const MAPS = {
       { type: "counter", col: 30, row: 6 },
       { type: "counter", col: 30, row: 7 },
       { type: "plant", col: 20, row: 9 },
+      { type: "signpost", col: 16, row: 1, label: "→ Le Louvre (au nord)" },
     ],
     exits: [{ x0: 14.4, y0: 0, x1: 16.6, y1: 0.6, to: "louvre", at: { x: 15.5, y: 12.5 } }],
   },

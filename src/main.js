@@ -424,7 +424,7 @@ function loop(now) {
   const spot = !dialogue.isOpen && !action && state === "playing" ? interactions.current : null;
   if (spot) {
     const p = world.project(spot.cx, spot.cy, 1.7);
-    hud.showPrompt(DATA.flavor[spot.type] ?? spot.type, p.sx, p.sy);
+    hud.showPrompt(spot.label ?? DATA.flavor[spot.type] ?? spot.type, p.sx, p.sy);
   } else {
     hud.hidePrompt();
   }

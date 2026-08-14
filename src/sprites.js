@@ -561,6 +561,23 @@ const CANDLE = [
   "......",
 ];
 
+// Panneau directionnel en bois (flèche vers la droite ; flip pour la gauche)
+const SIGNPOST = [
+  "WWWWWWWWWW..",
+  "WwwwwwwwWW..",
+  "WwwwwwwwwWW.",
+  "WwwwwwwwWW..",
+  "WWWWWWWWWW..",
+  "...WW.......",
+  "...WW.......",
+  "...WW.......",
+  "...WW.......",
+  "...WW.......",
+  "...WW.......",
+  "..WWWW......",
+  "............",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -602,6 +619,7 @@ export const FURNITURE = {
   her_desk: { grid: MONITOR, fw: 1, fh: 1, solid: true },
   counter: { grid: MONITOR, fw: 1, fh: 1, solid: true },
   sign: { grid: SIGN, fw: 1, fh: 1, solid: true },
+  signpost: { grid: SIGNPOST, fw: 1, fh: 1, solid: true },
   coffee: { grid: COFFEE, fw: 1, fh: 1, solid: true },
   // le Louvre
   joconde: { grid: JOCONDE, fw: 1, fh: 1, solid: false }, // accrochée au mur
