@@ -40,15 +40,36 @@ function hospRow(r) {
   return (r === 10 || r === 11 ? "," : "#") + ",".repeat(22) + "#";
 }
 
-// --- bande intermédiaire (colonnes 26..31) : pelouse + chemin ligne 10 ---
+// --- bande intermédiaire (colonnes 26..31) : pelouse + chemins ---
+// ligne 10 : chemin vers l'hôpital ; colonne 28 : chemin vers le Louvre (sud)
 function midRow(r) {
-  return r === 10 ? "pppppp" : "gggggg";
+  if (r === 10) return "pppppp";
+  return "ggpggg"; // col 28 = chemin du Louvre
 }
+
+// --- le Louvre (colonnes 0..31, lignes 16..29) ---
+// galerie de la Joconde (cols 4-14) + esplanade avec la pyramide de verre
+const SOUTH = [
+  "g".repeat(28) + "p" + "ggg",                          // 16
+  "gggg" + "###########" + "g".repeat(13) + "p" + "ggg", // 17 mur nord galerie
+  "gggg" + "#.........#" + "g".repeat(13) + "p" + "ggg", // 18
+  "gggg" + "#.........#" + "g".repeat(13) + "p" + "ggg", // 19
+  "gggg" + "#.........#" + "g".repeat(13) + "p" + "ggg", // 20
+  "gggg" + "#####.#####" + "g".repeat(13) + "p" + "ggg", // 21 porte de la galerie
+  "ggg" + "p".repeat(26) + "ggg",                        // 22 esplanade
+  "ggg" + "p".repeat(26) + "ggg",                        // 23
+  "ggg" + "p".repeat(26) + "ggg",                        // 24
+  "ggg" + "p".repeat(26) + "ggg",                        // 25
+  "ggg" + "p".repeat(26) + "ggg",                        // 26
+  "ggg" + "p".repeat(26) + "ggg",                        // 27
+  "ggg" + "p".repeat(26) + "ggg",                        // 28
+  "g".repeat(32),                                        // 29
+];
 
 export const MAP = [];
 for (let r = 0; r < 30; r++) {
-  const west = r < HOUSE.length ? HOUSE[r] : "g".repeat(26);
-  MAP.push(west + midRow(r) + hospRow(r));
+  const west = r < HOUSE.length ? HOUSE[r] + midRow(r) : SOUTH[r - 16];
+  MAP.push(west + hospRow(r));
 }
 
 export const MAP_H = MAP.length;
@@ -113,6 +134,17 @@ export const PLACEMENTS = [
   { type: "plant", col: 54, row: 25 },
   // panneau devant l'entrée
   { type: "sign", col: 30, row: 9 },
+
+  // le Louvre — galerie
+  { type: "painting", col: 6, row: 18 },
+  { type: "joconde", col: 9, row: 18 },
+  { type: "painting", col: 12, row: 18 },
+  // esplanade : la pyramide de verre + verdure
+  { type: "pyramid", col: 17, row: 24 },
+  { type: "plant", col: 4, row: 23 },
+  { type: "plant", col: 26, row: 23 },
+  { type: "plant", col: 4, row: 27 },
+  { type: "plant", col: 26, row: 27 },
 ];
 
 export const SPAWNS = {
@@ -129,6 +161,8 @@ export const SPAWNS = {
   // les devs
   mahrez: { x: 41.5, y: 22.5 },
   david: { x: 45.5, y: 22.5 },
+  // Robin qui attend sur l'esplanade du Louvre, le jour J
+  partnerLouvre: { x: 21.5, y: 24.5 },
 };
 
 // Grille de collision : murs + meubles solides. Hors carte = solide.

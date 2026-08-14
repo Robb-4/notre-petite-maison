@@ -47,7 +47,7 @@ for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david"]) {
 
 // Pendant les quêtes d'histoire, Robin est au bureau des devs et ne connaît
 // pas encore la joueuse.
-const STORY_IDS = new Set(["grand_jour", "entretien", "equipe", "devs", "nuit_appel"]);
+const STORY_IDS = new Set(["grand_jour", "entretien", "equipe", "devs", "nuit_appel", "premier_date"]);
 function inStory() {
   return STORY_IDS.has(quests?.current?.id);
 }
@@ -63,15 +63,21 @@ const quests = new Quests(DATA.quests, {
     if (step?.clockTo !== undefined) {
       clock.minutes = step.clockTo * 60;
       clock.prevMinutes = clock.minutes;
-      hud.toast("🌙 Le soir tombe…");
+      hud.toast("🕐 Les heures filent…");
     }
+    if (step?.hearts) world.spawnHearts(player.x, player.y - 0.6, 14); // le baiser ❤
     if (step?.sequenceAfter) playSequence(DATA.sequences[step.sequenceAfter] ?? []);
   },
   onQuestDone: (q, allDone) => {
     world.spawnHearts(player.x, player.y - 0.8, 7);
     hud.toast(`Objectif terminé : ${q.titre} ❤`);
     if (q.rewardDialogue) dialogue.showKey(q.rewardDialogue, "player", clock.bucket());
-    if (q.id === "nuit_appel") pendingInterlude = true; // l'ellipse ❤ après l'appel
+    if (q.id === "nuit_appel") {
+      // pendant qu'elle dort, Robin file au Louvre pour le lendemain
+      npcs.partner.x = SPAWNS.partnerLouvre.x;
+      npcs.partner.y = SPAWNS.partnerLouvre.y;
+    }
+    if (q.id === "premier_date") pendingInterlude = true; // l'ellipse ❤ après le baiser
     if (allDone) dialogue.showKey("quests_all_done", "partner", clock.bucket());
   },
 });
@@ -159,8 +165,11 @@ function completeInteraction(spot, def) {
   if (step?.sequence && step.target === spot.type) {
     playSequence(DATA.sequences[step.sequence] ?? []);
   } else if (def.dlg) {
-    // pendant l'histoire, Robin ne la connaît pas encore
-    const key = spot.type === "partner" && inStory() ? "talk_robin_avant" : def.dlg;
+    // pendant l'histoire, Robin ne la connaît pas encore (ou pas trop)
+    let key = def.dlg;
+    if (spot.type === "partner" && inStory()) {
+      key = quests.current?.id === "premier_date" ? "talk_robin_date" : "talk_robin_avant";
+    }
     dialogue.showKey(key, def.speaker, clock.bucket());
   }
   interactions.emit(spot.type);
@@ -262,7 +271,9 @@ function loop(now) {
     const evening = clock.hourFloat >= 20 || clock.hourFloat < 6;
     const anchors = {
       partner: inStory()
-        ? SPAWNS.partnerDev
+        ? quests.current?.id === "premier_date"
+          ? SPAWNS.partnerLouvre
+          : SPAWNS.partnerDev
         : evening
           ? SPAWNS.partnerEvening
           : SPAWNS.partnerDay,

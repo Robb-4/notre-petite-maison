@@ -25,6 +25,9 @@ export const ACTIONS = {
   her_desk: { duration: 1.2, effects: { fun: 10 }, dlg: "use_her_desk", speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
   coffee: { duration: 1.5, effects: { energie: 15 }, dlg: "use_coffee", speaker: "player" },
+  // le Louvre
+  joconde: { duration: 0, effects: { fun: 10 }, dlg: "use_joconde", speaker: "player" },
+  pyramid: { duration: 0, effects: { fun: 8 }, dlg: "use_pyramide", speaker: "player" },
 };
 
 // Distance d'un point au rectangle (0 si dedans).

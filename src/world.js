@@ -46,6 +46,11 @@ export function createWorld() {
   renderer.setClearColor("#69ab45"); // vert herbe : l'horizon se fond dans la pelouse
 
   const scene = new THREE.Scene();
+  // lumières : seuls les matériaux Lambert (la pyramide de verre) y réagissent
+  scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+  sun.position.set(6, 10, 3);
+  scene.add(sun);
   const halfW = CONFIG.internalWidth / CONFIG.pxPerTile / 2;
   const halfH = CONFIG.internalHeight / CONFIG.pxPerTile / 2;
   const camera = new THREE.OrthographicCamera(-halfW, halfW, halfH, -halfH, 0.1, 200);
@@ -241,6 +246,36 @@ export function createWorld() {
         const v = makeBillboard(vaseTex, vaseSize.w, vaseSize.h);
         setBillboardPos(v, cx, cz, vaseSize.h, 0.55, trailingEmptyRows(VASE) / 16);
         meshes.push(m, v);
+        break;
+      }
+      case "pyramid": {
+        // la pyramide du Louvre : verre bleuté + arêtes claires
+        const geo = new THREE.ConeGeometry(1.9, 2.2, 4);
+        const glass = new THREE.MeshLambertMaterial({
+          color: "#a8d9ec",
+          transparent: true,
+          opacity: 0.62,
+        });
+        const m = new THREE.Mesh(geo, glass);
+        m.rotation.y = Math.PI / 4;
+        m.position.set(cx, 1.1, cz);
+        const edges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geo),
+          new THREE.LineBasicMaterial({ color: "#eef8fc" })
+        );
+        edges.rotation.y = Math.PI / 4;
+        edges.position.copy(m.position);
+        meshes.push(m, edges);
+        break;
+      }
+      case "joconde":
+      case "painting": {
+        // œuvres accrochées au mur nord de la galerie
+        if (!billTexCache[p.type]) billTexCache[p.type] = makeTexture(def.grid, FURN_PAL, OUTLINE);
+        const size = gridSize(def.grid);
+        const b = makeBillboard(billTexCache[p.type], size.w, size.h);
+        setBillboardPos(b, cx, p.row + 0.4, size.h, 0.55, trailingEmptyRows(def.grid) / 16);
+        meshes.push(b);
         break;
       }
       case "desk":

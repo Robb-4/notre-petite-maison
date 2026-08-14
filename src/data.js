@@ -81,11 +81,10 @@ export default {
   ],
 
   // --------------------------------------------------------------------------
-  // INTERLUDE — joué après la nuit de l'appel (ellipse temporelle).
+  // INTERLUDE — joué après le premier date au Louvre (ellipse temporelle).
   // --------------------------------------------------------------------------
   interlude: [
-    "Samedi. [VOTRE PREMIER DATE : le lieu, le moment, ce qui s'est passé…]",
-    "Un date… puis deux… puis [VOTRE PREMIÈRE VRAIE SORTIE]…",
+    "Un date… puis deux… puis [VOTRE DEUXIÈME SORTIE MÉMORABLE]…",
     "[CE QUI VOUS A FAIT TOMBER AMOUREUX : une blague ? un projet commun ? la machine à café ?]",
     "Et [DURÉE] plus tard… ils emménageaient ensemble dans leur petite maison ❤",
   ],
@@ -144,8 +143,36 @@ export default {
       { qui: "player", texte: "(Il a appelé. IL A APPELÉ.)" },
       { qui: "partner", texte: "Je me demandais… enfin… ça te dirait [VOTRE PREMIER DATE : un resto ? un café ? un ciné ?], un de ces soirs ?" },
       { qui: "player", texte: "… Oui. Carrément, oui." },
-      { qui: "partner", texte: "C'est vr— super ! Génial ! À samedi alors. Bonne nuit [PRÉNOM] :)" },
+      { qui: "partner", texte: "C'est vr— super ! Génial ! Samedi, au Louvre alors. Bonne nuit [PRÉNOM] :)" },
       { qui: "player", texte: "Bonne nuit Robin ❤" },
+    ],
+    // ---- LE PREMIER DATE, AU LOUVRE ----
+    date_retrouvailles: [
+      { qui: "partner", texte: "Tu es venue ! J'avais peur que tu changes d'avis…" },
+      { qui: "player", texte: "Évidemment que je suis venue. Alors, le Louvre ?" },
+      { qui: "partner", texte: "J'ai révisé toute la nuit. Je connais au moins 3 anecdotes sur [ŒUVRE / PÉRIODE QU'IL A POTASSÉE]." },
+      { qui: "player", texte: "Vendu. Mais d'abord : la Joconde. Évidemment." },
+    ],
+    date_joconde: [
+      { qui: "player", texte: "Elle est… plus petite que je pensais." },
+      { qui: "partner", texte: "Tout le monde dit ça ! Moi, de toute façon, je ne regarde pas le tableau." },
+      { qui: "player", texte: "Ah bon ? Tu regardes quoi ?" },
+      { qui: "partner", texte: "(Il te regarde, l'air de rien.)" },
+      { qui: "player", texte: "(😳)" },
+      { qui: "partner", texte: "Viens, on retourne voir la pyramide. Au coucher du soleil, c'est magique." },
+    ],
+    // LE baiser ❤ — et LA phrase mythique
+    date_baiser: [
+      { qui: "partner", texte: "Regarde… la pyramide, au coucher du soleil." },
+      { qui: "player", texte: "C'est magnifique…" },
+      { qui: "partner", texte: "[CE QU'IL A VRAIMENT DIT JUSTE AVANT ?]" },
+      { qui: "player", texte: "(Le temps s'arrête.)" },
+      { qui: "player", texte: "💋" },
+      { qui: "partner", texte: "…C'est Disneyland !" },
+      { qui: "player", texte: "Disneyland ?! On est au Louvre !" },
+      { qui: "partner", texte: "[L'HISTOIRE DE CETTE PHRASE MYTHIQUE — à vous de la raconter 😄]" },
+      { qui: "player", texte: "Alors… on est ensemble ? Officiellement ?" },
+      { qui: "partner", texte: "Officiellement ❤" },
     ],
   },
 
@@ -246,6 +273,22 @@ export default {
 
     // Objets de l'hôpital
     use_sign: { any: ["« Hôpital [NOM DE L'HÔPITAL] » — c'est ici !"] },
+    use_joconde: {
+      any: [
+        "Elle sourit. Elle sait, pour vous deux.",
+        "Toujours aussi petite. Toujours aussi célèbre.",
+      ],
+    },
+    use_pyramide: {
+      any: [
+        "La pyramide du Louvre. [VOTRE SOUVENIR DE CET ENDROIT ❤]",
+        "C'est ici que tout est devenu officiel.",
+      ],
+    },
+    // Robin pendant le date (hors séquences)
+    talk_robin_date: {
+      any: ["(Vous êtes bien, là, tous les deux.)", "On la refait, cette journée ? N'importe quand."],
+    },
     use_her_desk: {
       any: ["Mon nouveau bureau ✨ Il ne manque plus qu'une plante et [SON OBJET FÉTICHE]."],
     },
@@ -267,6 +310,7 @@ export default {
     quest_done_equipe: { any: ["L'équipe data adoptée ✔ Reste à saluer les devs, en bas."] },
     quest_done_devs: { any: ["(Ce Robin… il a quelque chose, non ?) Allez, la journée est finie : direction la maison."] },
     quest_done_appel: { any: ["(Comment veux-tu dormir après ÇA ?!)"] },
+    quest_done_date: { any: ["Officiellement ensemble ❤ (Et oui : « c'est Disneyland ». Personne ne comprendra jamais, et c'est très bien.)"] },
     quest_done_q1: { any: ["C'était le plat de [OCCASION SPÉCIALE : premier rdv ? anniversaire ?] ❤"] },
     quest_done_q2: { any: ["LA chaussette perdue ! Elle était dans le jardin depuis [DURÉE ABSURDE]."] },
     quests_all_done: { any: ["Tous les objectifs sont finis… mais la vie continue, tranquillement, ensemble ❤"] },
@@ -295,6 +339,8 @@ export default {
     sign: "Le panneau de l'hôpital",
     her_desk: "Ton nouveau bureau",
     coffee: "LA machine à café",
+    joconde: "La Joconde (elle vous suit du regard)",
+    pyramid: "La pyramide du Louvre",
   },
 
   // --------------------------------------------------------------------------
@@ -365,6 +411,32 @@ export default {
         { target: "bed", label: "Aller te coucher (avec le sourire)" },
       ],
       rewardDialogue: "quest_done_appel",
+    },
+    {
+      id: "premier_date",
+      titre: "Le premier date",
+      description: "Samedi. Au Louvre, comme promis.",
+      steps: [
+        {
+          goto: { x0: 22, y0: 22.5, x1: 28, y1: 28 },
+          label: "Rejoindre Robin au Louvre (chemin au sud du jardin)",
+          clockTo: 17,
+        },
+        { target: "partner", sequence: "date_retrouvailles", label: "Retrouver Robin sur l'esplanade" },
+        {
+          target: "joconde",
+          sequence: "date_joconde",
+          label: "Aller voir la Joconde ensemble (dans la galerie)",
+          clockTo: 20.5,
+        },
+        {
+          target: "partner",
+          sequence: "date_baiser",
+          label: "Retrouver Robin sous la pyramide, au coucher du soleil…",
+          hearts: true,
+        },
+      ],
+      rewardDialogue: "quest_done_date",
     },
     {
       id: "q1",

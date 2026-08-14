@@ -481,6 +481,34 @@ const COFFEE = [
   "............",
 ];
 
+// La Joconde (cadre doré, sourire énigmatique en 6 pixels)
+const JOCONDE = [
+  "YYYYYYYYYYYY",
+  "YccccccccccY",
+  "YcccKKKKcccY",
+  "YccKKLLKKccY",
+  "YccKLLLLKccY",
+  "YcccLLLLcccY",
+  "YcccDDDDcccY",
+  "YccDDDDDDccY",
+  "YccDDLLDDccY",
+  "YccccccccccY",
+  "YYYYYYYYYYYY",
+  "............",
+];
+
+// Tableau générique (paysage)
+const PAINTING = [
+  "WWWWWWWWWW",
+  "WCCCCCCCCW",
+  "WCCCYYCCCW",
+  "WCCCCCCCCW",
+  "WGGgGGgGGW",
+  "WGGGGGGGGW",
+  "WWWWWWWWWW",
+  "..........",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -523,6 +551,10 @@ export const FURNITURE = {
   counter: { grid: MONITOR, fw: 1, fh: 1, solid: true },
   sign: { grid: SIGN, fw: 1, fh: 1, solid: true },
   coffee: { grid: COFFEE, fw: 1, fh: 1, solid: true },
+  // le Louvre
+  joconde: { grid: JOCONDE, fw: 1, fh: 1, solid: false }, // accrochée au mur
+  painting: { grid: PAINTING, fw: 1, fh: 1, solid: false },
+  pyramid: { grid: MONITOR, fw: 3, fh: 3, solid: true }, // volume 3D dédié
 };
 
 export { MONITOR, SIGN };
