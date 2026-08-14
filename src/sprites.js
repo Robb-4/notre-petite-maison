@@ -511,6 +511,7 @@ function genTile(fn) {
 }
 
 function grassChar(x, y) {
+  if (x === 0 || y === 0) return "d"; // quadrillage de tuiles façon Habbo
   if ((x * 7 + y * 13) % 11 === 0) return "d";
   if ((x * 3 + y * 7) % 13 === 0) return "l";
   return "g";
@@ -531,14 +532,18 @@ function flowerChar(x, y) {
 }
 
 export const TILES = {
-  wood: genTile((x, y) => (y % 4 === 3 || (x * 5 + y * 11) % 37 === 0 ? "v" : "w")),
-  tileFloor: genTile((x, y) => (x % 8 === 7 || y % 8 === 7 ? "m" : "M")),
+  wood: genTile((x, y) =>
+    x === 0 || y % 4 === 3 || (x * 5 + y * 11) % 37 === 0 ? "v" : "w"
+  ),
+  tileFloor: genTile((x, y) => (x % 8 === 0 || y % 8 === 0 ? "m" : "M")),
   grass: genTile(grassChar),
   flowers: genTile(flowerChar),
   path: genTile((x, y) =>
-    y % 8 === 7 || (x + (Math.floor(y / 8) % 2) * 4) % 8 === 7 ? "n" : "q"
+    y % 8 === 0 || (x + (Math.floor(y / 8) % 2) * 4) % 8 === 0 ? "n" : "q"
   ),
-  rug: genTile((x, y) => (x % 6 === 2 && y % 6 === 3 ? "s" : "r")),
+  rug: genTile((x, y) =>
+    x === 0 || y === 0 ? "s" : x % 6 === 2 && y % 6 === 3 ? "s" : "r"
+  ),
   wall: genTile((x, y) => {
     if (y === 0) return "h";
     if (y % 5 === 4) return "a";
@@ -569,15 +574,17 @@ function brickChar(x, y) {
 }
 
 function wallFace(h, withWindow = false) {
+  const wTop = Math.round(h * 0.2);
+  const wBot = wTop + 11;
   return genGrid(16, h, (x, y) => {
     if (y === 0) return "h";
     if (y >= h - 2) return "z"; // plinthe
-    if (withWindow && x >= 3 && x <= 12 && y >= 4 && y <= 13) {
-      const edge = x === 3 || x === 12 || y === 4 || y === 13;
+    if (withWindow && x >= 3 && x <= 12 && y >= wTop && y <= wBot) {
+      const edge = x === 3 || x === 12 || y === wTop || y === wBot;
       if (edge) return "F";
       return (x + y) % 7 < 2 ? "E" : "e"; // vitre + reflet
     }
-    if (withWindow && y === 14 && x >= 3 && x <= 12) return "F"; // rebord
+    if (withWindow && y === wBot + 1 && x >= 3 && x <= 12) return "F"; // rebord
     return brickChar(x, y);
   });
 }
@@ -588,8 +595,8 @@ export const WALL_TEX_GRIDS = {
       ? "u"
       : "t"
   ),
-  face: wallFace(20),
-  faceWindow: wallFace(20, true),
+  face: wallFace(26),
+  faceWindow: wallFace(26, true),
   faceShort: genGrid(16, 6, (x, y) => (y === 0 ? "h" : y === 5 ? "z" : brickChar(x, y))),
 };
 

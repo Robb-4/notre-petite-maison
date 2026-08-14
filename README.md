@@ -57,10 +57,11 @@ le cache de GitHub Pages est têtu).
 ## 🧱 Technique
 
 - three.js (vendored dans `lib/`, importé via importmap — zéro dépendance réseau)
-- Rendu « HD-2D » : caméra orthographique inclinée (réglable via
-  `config.js → view.pitchDeg`, 90 = vue du dessus à plat), murs en volumes
-  avec cutaway façon Sims, meubles en boîtes texturées, personnages et
-  plantes en billboards avec ombres portées
+- Rendu isométrique façon Habbo : caméra orthographique tournée à 45° et
+  inclinée à 30° (projection 2:1, réglable via `config.js → view.yawDeg` /
+  `view.pitchDeg`), murs en volumes avec cutaway façon Sims, meubles en
+  boîtes texturées, personnages et plantes en billboards détourés avec
+  ombres portées, quadrillage de sol façon Habbo
 - Résolution interne 640×360 mise à l'échelle entière, textures
   `NearestFilter` : pixels nets garantis
 - Aucune image : tous les sprites sont des grilles de texte converties en

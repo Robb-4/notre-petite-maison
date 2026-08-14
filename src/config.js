@@ -6,13 +6,15 @@ export const CONFIG = {
   internalHeight: 360,
   pxPerTile: 32,        // 1 tuile = 32 px internes (sprites 16 px affichés x2)
 
-  // Vue 3D « HD-2D » : caméra orthographique inclinée
+  // Vue isométrique façon Habbo : caméra orthographique tournée à 45° et
+  // inclinée à 30° (projection 2:1 classique des jeux iso)
   view: {
-    pitchDeg: 50,        // inclinaison de la caméra (90 = vue du dessus à plat)
+    yawDeg: 45,          // rotation de la caméra autour de la scène
+    pitchDeg: 30,        // inclinaison (30 = iso 2:1, 90 = vue du dessus à plat)
     camDistance: 30,     // distance de la caméra le long du rayon de vue
-    wallHeight: 1.25,    // hauteur des murs pleins (en tuiles)
+    wallHeight: 1.625,   // hauteur des murs pleins (en tuiles)
     wallShortHeight: 0.32, // murs « cutaway » côté caméra, façon Sims
-    grassSkirt: 7,       // tuiles d'herbe générées autour de la carte
+    grassSkirt: 10,      // tuiles d'herbe générées autour de la carte
   },
 
   // Mouvement

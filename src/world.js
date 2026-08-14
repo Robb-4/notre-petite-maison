@@ -20,6 +20,7 @@ import { makeTexture, makeSpriteMaterial, makeOpaqueMaterial } from "./textures.
 import { MAP, MAP_W, MAP_H, TILE_DEFS, PLACEMENTS } from "./map.js";
 
 const INTERIOR_FLOORS = new Set([".", ",", "r"]);
+const OUTLINE = "#1e1622"; // contour noir façon Habbo sur les billboards
 // tuiles de mur avec fenêtre (façade sud, mur du fond)
 const WINDOW_CELLS = new Set(["3,1", "4,1", "10,1", "11,1"]);
 
@@ -41,7 +42,7 @@ export function createWorld() {
   const container = document.getElementById("game-container");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
   renderer.setSize(CONFIG.internalWidth, CONFIG.internalHeight, false);
-  renderer.setClearColor("#2a3d24");
+  renderer.setClearColor("#69ab45"); // vert herbe : l'horizon se fond dans la pelouse
 
   const scene = new THREE.Scene();
   const halfW = CONFIG.internalWidth / CONFIG.pxPerTile / 2;
@@ -49,11 +50,14 @@ export function createWorld() {
   const camera = new THREE.OrthographicCamera(-halfW, halfW, halfH, -halfH, 0.1, 200);
 
   const pitch = (CONFIG.view.pitchDeg * Math.PI) / 180;
+  const yaw = (CONFIG.view.yawDeg * Math.PI) / 180;
   const camD = CONFIG.view.camDistance;
   camera.rotation.order = "YXZ";
+  camera.rotation.y = yaw;
   camera.rotation.x = -pitch;
-  // vecteur "haut" à l'écran, exprimé en monde (pour poser les billboards)
-  const upVec = new THREE.Vector3(0, Math.cos(pitch), -Math.sin(pitch));
+  // direction de visée et "haut" à l'écran, exprimés en monde
+  const fwdVec = new THREE.Vector3(0, 0, -1).applyEuler(camera.rotation);
+  const upVec = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
 
   // --- matériaux de tuiles ---
   const tileGeo = new THREE.PlaneGeometry(1, 1);
@@ -78,7 +82,11 @@ export function createWorld() {
   }
   function setBillboardPos(mesh, xMap, yMap, h, base = 0, trail = 0) {
     const half = h / 2 - trail;
-    mesh.position.set(xMap, base + 0.02 + half * upVec.y, yMap + half * upVec.z);
+    mesh.position.set(
+      xMap + half * upVec.x,
+      base + 0.02 + half * upVec.y,
+      yMap + half * upVec.z
+    );
   }
 
   // --- ombres portées ---
@@ -97,7 +105,7 @@ export function createWorld() {
   }
 
   // --- sols : carte + jupe d'herbe autour + fleurs en billboards ---
-  const flowerTex = makeTexture(FLOWER_BILL, TILE_PAL);
+  const flowerTex = makeTexture(FLOWER_BILL, TILE_PAL, OUTLINE);
   const flowerSize = gridSize(FLOWER_BILL);
   const flowerTrail = trailingEmptyRows(FLOWER_BILL) / 16;
   function addFlower(col, row) {
@@ -147,9 +155,13 @@ export function createWorld() {
   for (let row = 0; row < MAP_H; row++) {
     for (let col = 0; col < MAP_W; col++) {
       if (TILE_DEFS[MAP[row][col]]?.tile !== "wall") continue;
-      // cutaway : si le mur cache l'intérieur (sol intérieur juste au nord),
-      // on le rend bas pour voir dans la maison, façon Sims
-      const short = isInteriorFloor(col, row - 1);
+      // cutaway : la caméra iso regarde vers le nord-ouest, donc un mur cache
+      // ce qui est à son nord / ouest. S'il y a du sol intérieur là, on le
+      // rend bas pour voir dans la maison, façon Sims / Habbo
+      const short =
+        isInteriorFloor(col, row - 1) ||
+        isInteriorFloor(col - 1, row) ||
+        isInteriorFloor(col - 1, row - 1);
       const h = short ? CONFIG.view.wallShortHeight : CONFIG.view.wallHeight;
       const face = short ? faceShortMat : WINDOW_CELLS.has(col + "," + row) ? faceWinMat : faceMat;
       const side = short ? faceShortMat : faceMat;
@@ -171,7 +183,7 @@ export function createWorld() {
   for (const [name, grid] of Object.entries(BOX_TEX_GRIDS)) {
     boxTex[name] = makeOpaqueMaterial(makeTexture(grid, FURN_PAL));
   }
-  const vaseTex = makeTexture(VASE, FURN_PAL);
+  const vaseTex = makeTexture(VASE, FURN_PAL, OUTLINE);
 
   function makeBox(w, h, d, texTop, texFront, texSide) {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), [
@@ -233,7 +245,7 @@ export function createWorld() {
       case "photo": {
         const m = makeBox(0.84, 0.6, 0.8, boxTex.nightTop, boxTex.nightFront, boxTex.tableSide);
         m.position.set(cx, 0.3, cz);
-        if (!billTexCache.photo) billTexCache.photo = makeTexture(def.grid, FURN_PAL);
+        if (!billTexCache.photo) billTexCache.photo = makeTexture(def.grid, FURN_PAL, OUTLINE);
         const size = gridSize(def.grid);
         const b = makeBillboard(billTexCache.photo, size.w, size.h);
         setBillboardPos(b, cx, cz, size.h, 0.6, trailingEmptyRows(def.grid) / 16);
@@ -242,7 +254,7 @@ export function createWorld() {
       }
       default: {
         // billboard debout (tv, douche, plante, étagère, chaussette…)
-        if (!billTexCache[p.type]) billTexCache[p.type] = makeTexture(def.grid, FURN_PAL);
+        if (!billTexCache[p.type]) billTexCache[p.type] = makeTexture(def.grid, FURN_PAL, OUTLINE);
         const size = gridSize(def.grid);
         const b = makeBillboard(billTexCache[p.type], size.w, size.h);
         setBillboardPos(b, cx, p.row + def.fh - 0.15, size.h, 0, trailingEmptyRows(def.grid) / 16);
@@ -300,9 +312,9 @@ export function createWorld() {
     const k = snap ? 1 : Math.min(1, dt * 6);
     camPos.x += (tx - camPos.x) * k;
     camPos.z += (ty - camPos.z) * k;
-    const cx = Math.min(Math.max(camPos.x, halfW - 2), MAP_W - halfW + 2);
-    const cz = Math.min(Math.max(camPos.z, 3), MAP_H - 2);
-    camera.position.set(cx, camD * Math.sin(pitch), cz + camD * Math.cos(pitch));
+    const cx = Math.min(Math.max(camPos.x, 4), MAP_W - 4);
+    const cz = Math.min(Math.max(camPos.z, 3), MAP_H - 3);
+    camera.position.set(cx - fwdVec.x * camD, -fwdVec.y * camD, cz - fwdVec.z * camD);
   }
 
   // --- projection carte → pixels CSS (HUD flottant). height = hauteur monde ---
