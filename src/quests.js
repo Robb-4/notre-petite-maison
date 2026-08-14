@@ -43,10 +43,12 @@ export class Quests {
     this._advance();
   }
 
-  // Étapes « atteindre une zone » : appelé chaque frame avec les pieds du joueur.
-  handleGoto(px, py) {
+  // Étapes « atteindre une zone » : appelé chaque frame avec les pieds du
+  // joueur et l'identifiant de la carte courante.
+  handleGoto(px, py, mapId) {
     const g = this.currentStep?.goto;
     if (!g) return;
+    if (g.map && g.map !== mapId) return;
     if (px >= g.x0 && px <= g.x1 && py >= g.y0 && py <= g.y1) this._advance();
   }
 }

@@ -393,7 +393,10 @@ export default {
       titre: "Le grand jour",
       description: "L'entretien t'attend à l'hôpital.",
       steps: [
-        { goto: { x0: 30, y0: 9, x1: 34, y1: 12 }, label: "Aller à l'hôpital (suis le chemin vers l'est)" },
+        {
+          goto: { map: "hospital", x0: 0, y0: 9, x1: 5, y1: 12 },
+          label: "Aller à l'hôpital (sors du jardin par l'est)",
+        },
       ],
       rewardDialogue: "quest_done_arrivee",
     },
@@ -422,7 +425,10 @@ export default {
       titre: "L'équipe des devs",
       description: "Il paraît qu'ils sont sympas. Surtout un.",
       steps: [
-        { goto: { x0: 40, y0: 20, x1: 45, y1: 23 }, label: "Descendre au bureau des devs (couloir au sud du hall)" },
+        {
+          goto: { map: "hospital", x0: 10, y0: 20, x1: 15, y1: 23 },
+          label: "Descendre au bureau des devs (couloir au sud du hall)",
+        },
         { target: "mahrez", sequence: "meet_mahrez", label: "Se présenter à Mahrez" },
         { target: "david", sequence: "meet_david", label: "Se présenter à David" },
         { target: "partner", sequence: "rencontre_robin", label: "Se présenter au dernier dev… Robin" },
@@ -435,7 +441,7 @@ export default {
       description: "Rentrer, souffler… et peut-être rêver un peu.",
       steps: [
         {
-          goto: { x0: 2, y0: 6, x1: 16, y1: 12.8 },
+          goto: { map: "home", x0: 2, y0: 6, x1: 16, y1: 12.8 },
           label: "Rentrer chez toi (des étoiles plein la tête)",
           // effets d'étape : l'horloge saute au soir, puis la séquence se joue
           clockTo: 22,
@@ -451,7 +457,7 @@ export default {
       description: "Samedi. Au Louvre, comme promis.",
       steps: [
         {
-          goto: { x0: 22, y0: 22.5, x1: 28, y1: 28 },
+          goto: { map: "louvre", x0: 16, y0: 6, x1: 28, y1: 12 },
           label: "Rejoindre Robin au Louvre (chemin au sud du jardin)",
           clockTo: 17,
         },
@@ -477,7 +483,7 @@ export default {
       description: "Arcade, puis dîner. LA journée parfaite.",
       steps: [
         {
-          goto: { x0: 6, y0: 34, x1: 15, y1: 40.5 },
+          goto: { map: "paris", x0: 6, y0: 4, x1: 15, y1: 10.5 },
           label: "Entrer dans la salle d'arcade (la rue au sud du Louvre)",
         },
         {
@@ -487,7 +493,7 @@ export default {
           partnerTo: "partnerKong", // il file réserver la table
         },
         {
-          goto: { x0: 20, y0: 34, x1: 31, y1: 40.5 },
+          goto: { map: "paris", x0: 20, y0: 4, x1: 31, y1: 10.5 },
           label: "Rejoindre Robin au restaurant, juste à côté",
           clockTo: 20,
         },

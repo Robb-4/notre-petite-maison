@@ -42,11 +42,17 @@ function rectDist(px, py, r) {
 }
 
 export class Interactions {
-  // placements: PLACEMENTS de map.js ; npcs: { id: npcInstance } (positions
-  // dynamiques — les PNJ sont des spots mobiles)
+  // placements: meubles de la carte courante ; npcs: { id: npcInstance }
+  // présents sur cette carte (positions dynamiques — spots mobiles)
   constructor(placements, npcs) {
-    this.npcs = npcs;
     this.listeners = [];
+    this.current = null;
+    this.setMap(placements, npcs);
+  }
+
+  // reconstruit les spots pour une nouvelle carte (les listeners restent)
+  setMap(placements, npcs) {
+    this.npcs = npcs;
     this.current = null;
     this.spots = [];
     for (const p of placements) {

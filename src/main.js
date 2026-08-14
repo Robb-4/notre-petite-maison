@@ -1,9 +1,10 @@
-// Bootstrap + boucle de jeu : câble le monde, la joueuse, les PNJ et tous les
-// systèmes (besoins, interactions, dialogues, horloge, quêtes, cinématique).
+// Bootstrap + boucle de jeu : monde multi-cartes (maison, hôpital, Louvre,
+// Paris), joueuse, PNJ, et tous les systèmes (besoins, interactions,
+// dialogues, horloge, quêtes, cinématiques).
 import DATA from "./data.js";
 import { CONFIG } from "./config.js";
 import { createWorld } from "./world.js";
-import { buildCollision, SPAWNS, PLACEMENTS } from "./map.js";
+import { MAPS, SPAWNS, buildCollision } from "./map.js";
 import { createInput } from "./input.js";
 import { createCharacterView, Player } from "./player.js";
 import { NPC } from "./npc.js";
@@ -21,7 +22,6 @@ document.getElementById("title-sub").textContent = DATA.meta.dedicace;
 
 // --- création du monde et des entités ---
 const world = createWorld();
-const isSolid = buildCollision();
 const input = createInput(world.canvas);
 const hud = new HUD();
 const dialogue = new Dialogue(DATA);
@@ -35,18 +35,17 @@ const playerView = createCharacterView(
 );
 const player = new Player(playerView, SPAWNS.player.x, SPAWNS.player.y);
 
-// PNJ : les collègues à l'hôpital — Robin y travaille aussi, la rencontre
-// n'a pas encore eu lieu !
+// PNJ : chacun vit sur sa carte (positions en coordonnées locales)
 const npcs = {};
 for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david"]) {
   const c = DATA.characters[id];
   if (!c) continue;
   const view = createCharacterView(world, c.spriteSet ?? "him", c.palette);
   npcs[id] = new NPC(view, SPAWNS[id].x, SPAWNS[id].y);
+  npcs[id].view = view;
 }
 
-// Pendant les quêtes d'histoire, Robin est au bureau des devs et ne connaît
-// pas encore la joueuse.
+// Pendant les quêtes d'histoire, Robin ne connaît pas encore la joueuse.
 const STORY_IDS = new Set([
   "grand_jour",
   "entretien",
@@ -60,7 +59,58 @@ function inStory() {
   return STORY_IDS.has(quests?.current?.id);
 }
 
-const interactions = new Interactions(PLACEMENTS, npcs);
+// Sur quelle carte vit chaque PNJ en ce moment ?
+function npcMapOf(id) {
+  if (id !== "partner") return "hospital";
+  if (!inStory()) return "home";
+  const qid = quests.current?.id;
+  if (qid === "premier_date") return "louvre";
+  if (qid === "saint_valentin") return "paris";
+  return "hospital";
+}
+
+// --- gestion des cartes ---
+let mapId = "home";
+let isSolid = buildCollision(MAPS.home);
+let activeNpcs = {};
+
+function refreshMap() {
+  world.loadMap(MAPS[mapId]);
+  isSolid = buildCollision(MAPS[mapId]);
+  activeNpcs = {};
+  for (const [id, npc] of Object.entries(npcs)) {
+    if (npcMapOf(id) === mapId) {
+      activeNpcs[id] = npc;
+      world.addObj(...npc.view.meshes);
+      npc.sync();
+    }
+  }
+  world.addObj(...playerView.meshes);
+  interactions.setMap(MAPS[mapId].placements, activeNpcs);
+  world.updateCamera(player.x, player.y, 0, true);
+}
+
+// téléportation vers une autre carte, avec fondu
+function switchMap(to, at) {
+  const previous = state;
+  state = "travel";
+  fadeEl.style.opacity = "1";
+  setTimeout(() => {
+    mapId = to;
+    player.x = at.x;
+    player.y = at.y;
+    player.sync();
+    refreshMap();
+    hud.toast(MAPS[to].name);
+    fadeEl.style.opacity = "0";
+    setTimeout(() => {
+      state = previous === "travel" ? "playing" : previous;
+      state = "playing";
+    }, 400);
+  }, 400);
+}
+
+const interactions = new Interactions(MAPS.home.placements, {});
 
 let pendingInterlude = false;
 let pendingTransition = false; // vers la Saint-Valentin
@@ -98,7 +148,7 @@ const quests = new Quests(DATA.quests, {
 interactions.onInteract((type) => quests.handleInteract(type));
 
 // --- état global ---
-let state = "title"; // title | cinematic | playing | sleeping
+let state = "title"; // title | cinematic | playing | sleeping | travel
 let action = null; // { spot, def, t } pendant une action minutée
 let pendingSleep = false;
 
@@ -108,7 +158,7 @@ const titleEl = document.getElementById("title-screen");
 const cineEl = document.getElementById("cinematic");
 const cineTextEl = document.getElementById("cine-text");
 
-// --- cinématiques (intro + interlude) ---
+// --- cinématiques (intro, transition, interlude) ---
 let cineIndex = 0;
 let cineSlides = [];
 let cineOnEnd = null;
@@ -123,7 +173,7 @@ function startCinematic(slides, onEnd = null) {
 function showCineSlide() {
   const card = document.getElementById("cine-card");
   card.style.animation = "none";
-  void card.offsetWidth; // relance l'animation d'apparition
+  void card.offsetWidth;
   card.style.animation = "";
   cineTextEl.textContent = cineSlides[cineIndex];
 }
@@ -138,37 +188,31 @@ function endCinematic() {
   cineOnEnd?.();
   cineOnEnd = null;
 }
+cineEl.addEventListener("pointerdown", (e) => {
+  e.stopPropagation();
+  if (state === "cinematic") advanceCinematic();
+});
 
-// Le 14 février : téléporte le couple devant la salle d'arcade.
+// Le 14 février : le couple se retrouve devant la salle d'arcade, à Paris.
 function startValentin() {
-  player.x = 10.5;
-  player.y = 31.5;
   npcs.partner.x = SPAWNS.partnerArcade.x;
   npcs.partner.y = SPAWNS.partnerArcade.y;
   clock.minutes = 14 * 60;
   clock.prevMinutes = clock.minutes;
-  world.updateCamera(player.x, player.y, 0, true);
+  switchMap("paris", { x: 10.5, y: 2.4 });
   hud.toast("❤ 14 février — Saint-Valentin !");
 }
 
 // Après la Saint-Valentin : quelques mois plus tard, la vie à deux commence.
 function moveInTogether() {
-  player.x = SPAWNS.player.x;
-  player.y = SPAWNS.player.y;
-  const partner = npcs.partner;
-  partner.x = SPAWNS.partnerDay.x;
-  partner.y = SPAWNS.partnerDay.y;
-  partner.state = "idle";
-  partner.timer = 2;
+  npcs.partner.x = SPAWNS.partnerDay.x;
+  npcs.partner.y = SPAWNS.partnerDay.y;
+  npcs.partner.state = "idle";
+  npcs.partner.timer = 2;
   clock.sleep(); // nouveau matin, nouvelle vie
-  world.updateCamera(player.x, player.y, 0, true);
-  world.spawnHearts(player.x, player.y - 0.8, 9);
-  hud.toast("❤ Quelques mois plus tard… chez vous.");
+  switchMap("home", { x: SPAWNS.player.x, y: SPAWNS.player.y });
+  world.spawnHearts(SPAWNS.player.x, SPAWNS.player.y - 0.8, 9);
 }
-cineEl.addEventListener("pointerdown", (e) => {
-  e.stopPropagation();
-  if (state === "cinematic") advanceCinematic();
-});
 
 // --- séquences scénarisées (dialogues à plusieurs voix) ---
 function playSequence(lines) {
@@ -180,18 +224,15 @@ function playSequence(lines) {
 
 function completeInteraction(spot, def) {
   let effects = def.effects ?? {};
-  // pendant la soirée série, le canapé rapporte double fun
   if (spot.type === "couch" && clock.serieActive) {
     effects = { ...effects, fun: (effects.fun ?? 0) * 2 };
   }
   needs.apply(effects);
-  npcs[spot.type]?.startTalk(player.x, player.y);
-  // étape d'histoire scénarisée → la séquence remplace le dialogue habituel
+  activeNpcs[spot.type]?.startTalk(player.x, player.y);
   const step = quests.currentStep;
   if (step?.sequence && step.target === spot.type) {
     playSequence(DATA.sequences[step.sequence] ?? []);
   } else if (def.dlg) {
-    // pendant l'histoire, Robin ne la connaît pas encore (ou pas trop)
     let key = def.dlg;
     if (spot.type === "partner" && inStory()) {
       const qid = quests.current?.id;
@@ -207,7 +248,7 @@ function startInteraction(spot) {
   if (!def) return;
   if (def.special === "sleep") {
     if (def.dlg) dialogue.showKey(def.dlg, def.speaker, clock.bucket());
-    pendingSleep = true; // le dodo démarre à la fermeture du dialogue
+    pendingSleep = true;
     interactions.emit(spot.type); // le lit peut valider une étape de quête
     return;
   }
@@ -240,8 +281,23 @@ function spotVisible(type) {
   return true;
 }
 
+// carte de départ
+refreshMap();
+
 // hook de debug (utile en développement, inoffensif en prod)
-window.__game = { player, npcs, clock, needs, quests, dialogue, endCinematic: () => endCinematic() };
+window.__game = {
+  player,
+  npcs,
+  clock,
+  needs,
+  quests,
+  dialogue,
+  get mapId() {
+    return mapId;
+  },
+  goMap: (id, x, y) => switchMap(id, { x, y }),
+  endCinematic: () => endCinematic(),
+};
 
 // --- boucle de jeu ---
 let last = performance.now();
@@ -273,9 +329,8 @@ function loop(now) {
   input.readSkip();
 
   if (dialogue.isOpen) {
-    // monde figé pendant la lecture
     if (input.readInteract()) dialogue.advance();
-  } else if (state === "sleeping") {
+  } else if (state === "sleeping" || state === "travel") {
     input.readInteract();
   } else if (pendingSleep) {
     pendingSleep = false;
@@ -290,8 +345,7 @@ function loop(now) {
     input.readInteract();
     startCinematic(DATA.interlude, moveInTogether);
   } else {
-    // événements horaires (café de 8h, série de 21h…) — seulement une fois
-    // la vie à deux commencée
+    // événements horaires — seulement une fois la vie à deux commencée
     for (const ev of clock.update(dt)) {
       if (inStory()) continue;
       dialogue.showKey(ev.key, ev.speaker, clock.bucket());
@@ -318,7 +372,7 @@ function loop(now) {
       mahrez: SPAWNS.mahrez,
       david: SPAWNS.david,
     };
-    for (const [id, npc] of Object.entries(npcs)) npc.update(dt, isSolid, anchors[id]);
+    for (const [id, npc] of Object.entries(activeNpcs)) npc.update(dt, isSolid, anchors[id]);
 
     if (action) {
       action.t += dt;
@@ -331,13 +385,26 @@ function loop(now) {
       }
     } else {
       player.update(dt, input, isSolid, needs.anyLow());
-      quests.handleGoto(player.x, player.y);
-      const spot = interactions.update(player.x, player.y, spotVisible, quests.currentStep?.target);
-      if (input.readInteract() && spot) startInteraction(spot);
+      quests.handleGoto(player.x, player.y, mapId);
+
+      // sorties de carte (on marche dessus → téléportation)
+      let traveled = false;
+      for (const ex of MAPS[mapId].exits) {
+        if (player.x >= ex.x0 && player.x <= ex.x1 && player.y >= ex.y0 && player.y <= ex.y1) {
+          switchMap(ex.to, ex.at);
+          traveled = true;
+          break;
+        }
+      }
+
+      if (!traveled) {
+        const spot = interactions.update(player.x, player.y, spotVisible, quests.currentStep?.target);
+        if (input.readInteract() && spot) startInteraction(spot);
+      }
     }
 
-    // petits cœurs quand Robin et elle sont proches
-    const partner = npcs.partner;
+    // petits cœurs quand Robin et elle sont proches (sur la même carte)
+    const partner = activeNpcs.partner;
     if (partner && Math.hypot(partner.x - player.x, partner.y - player.y) < 2 && Math.random() < dt * 0.12) {
       world.spawnHearts(partner.x, partner.y - 1.2, 1);
     }

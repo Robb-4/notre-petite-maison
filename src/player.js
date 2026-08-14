@@ -9,7 +9,8 @@ const CHAR_H = 1.0;
 const CHAR_TRAIL = 1 / 16; // ligne vide en bas des grilles
 
 // Crée le billboard + textures d'un personnage. spriteSet: "her" | "him".
-// La vue s'ajoute elle-même à la scène.
+// `meshes` doit être ré-attaché à la scène après chaque changement de carte
+// (main.js s'en charge via world.addObj).
 export function createCharacterView(world, spriteSet, palette) {
   const set = CHAR_SPRITES[spriteSet];
   const texs = {};
@@ -20,8 +21,6 @@ export function createCharacterView(world, spriteSet, palette) {
   }
   const mesh = world.makeBillboard(texs.downidle, CHAR_W, CHAR_H);
   const shadow = world.makeShadow(1);
-  world.scene.add(mesh);
-  world.scene.add(shadow);
 
   function setPose(dir, stepping) {
     const key = dir === "left" || dir === "right" ? "side" : dir;
@@ -33,7 +32,7 @@ export function createCharacterView(world, spriteSet, palette) {
     world.setBillboardPos(mesh, x, y, CHAR_H, bob, CHAR_TRAIL);
     shadow.position.set(x, 0.02, y);
   }
-  return { mesh, setPose, setFeet };
+  return { mesh, meshes: [mesh, shadow], setPose, setFeet };
 }
 
 // Déplacement AABB contre la grille, axe par axe. Renvoie la position finale.
