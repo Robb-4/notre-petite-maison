@@ -47,7 +47,15 @@ for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david"]) {
 
 // Pendant les quêtes d'histoire, Robin est au bureau des devs et ne connaît
 // pas encore la joueuse.
-const STORY_IDS = new Set(["grand_jour", "entretien", "equipe", "devs", "nuit_appel", "premier_date"]);
+const STORY_IDS = new Set([
+  "grand_jour",
+  "entretien",
+  "equipe",
+  "devs",
+  "nuit_appel",
+  "premier_date",
+  "saint_valentin",
+]);
 function inStory() {
   return STORY_IDS.has(quests?.current?.id);
 }
@@ -55,6 +63,7 @@ function inStory() {
 const interactions = new Interactions(PLACEMENTS, npcs);
 
 let pendingInterlude = false;
+let pendingTransition = false; // vers la Saint-Valentin
 
 const quests = new Quests(DATA.quests, {
   onStepDone: () => hud.toast("✔ Étape accomplie !"),
@@ -65,7 +74,11 @@ const quests = new Quests(DATA.quests, {
       clock.prevMinutes = clock.minutes;
       hud.toast("🕐 Les heures filent…");
     }
-    if (step?.hearts) world.spawnHearts(player.x, player.y - 0.6, 14); // le baiser ❤
+    if (step?.hearts) world.spawnHearts(player.x, player.y - 0.6, 14); // les grands moments ❤
+    if (step?.partnerTo && SPAWNS[step.partnerTo]) {
+      npcs.partner.x = SPAWNS[step.partnerTo].x;
+      npcs.partner.y = SPAWNS[step.partnerTo].y;
+    }
     if (step?.sequenceAfter) playSequence(DATA.sequences[step.sequenceAfter] ?? []);
   },
   onQuestDone: (q, allDone) => {
@@ -77,7 +90,8 @@ const quests = new Quests(DATA.quests, {
       npcs.partner.x = SPAWNS.partnerLouvre.x;
       npcs.partner.y = SPAWNS.partnerLouvre.y;
     }
-    if (q.id === "premier_date") pendingInterlude = true; // l'ellipse ❤ après le baiser
+    if (q.id === "premier_date") pendingTransition = true; // direction le 14 février
+    if (q.id === "saint_valentin") pendingInterlude = true; // l'ellipse ❤ finale
     if (allDone) dialogue.showKey("quests_all_done", "partner", clock.bucket());
   },
 });
@@ -125,7 +139,19 @@ function endCinematic() {
   cineOnEnd = null;
 }
 
-// Après la rencontre : quelques mois plus tard, la vie à deux commence.
+// Le 14 février : téléporte le couple devant la salle d'arcade.
+function startValentin() {
+  player.x = 10.5;
+  player.y = 31.5;
+  npcs.partner.x = SPAWNS.partnerArcade.x;
+  npcs.partner.y = SPAWNS.partnerArcade.y;
+  clock.minutes = 14 * 60;
+  clock.prevMinutes = clock.minutes;
+  world.updateCamera(player.x, player.y, 0, true);
+  hud.toast("❤ 14 février — Saint-Valentin !");
+}
+
+// Après la Saint-Valentin : quelques mois plus tard, la vie à deux commence.
 function moveInTogether() {
   player.x = SPAWNS.player.x;
   player.y = SPAWNS.player.y;
@@ -168,7 +194,8 @@ function completeInteraction(spot, def) {
     // pendant l'histoire, Robin ne la connaît pas encore (ou pas trop)
     let key = def.dlg;
     if (spot.type === "partner" && inStory()) {
-      key = quests.current?.id === "premier_date" ? "talk_robin_date" : "talk_robin_avant";
+      const qid = quests.current?.id;
+      key = qid === "premier_date" || qid === "saint_valentin" ? "talk_robin_date" : "talk_robin_avant";
     }
     dialogue.showKey(key, def.speaker, clock.bucket());
   }
@@ -254,6 +281,10 @@ function loop(now) {
     pendingSleep = false;
     input.readInteract();
     doSleep();
+  } else if (pendingTransition) {
+    pendingTransition = false;
+    input.readInteract();
+    startCinematic(DATA.transition_valentin, startValentin);
   } else if (pendingInterlude) {
     pendingInterlude = false;
     input.readInteract();
@@ -269,14 +300,18 @@ function loop(now) {
     needs.update(dt);
 
     const evening = clock.hourFloat >= 20 || clock.hourFloat < 6;
+    let partnerAnchor;
+    if (!inStory()) {
+      partnerAnchor = evening ? SPAWNS.partnerEvening : SPAWNS.partnerDay;
+    } else if (quests.current?.id === "premier_date") {
+      partnerAnchor = SPAWNS.partnerLouvre;
+    } else if (quests.current?.id === "saint_valentin") {
+      partnerAnchor = quests.si <= 1 ? SPAWNS.partnerArcade : SPAWNS.partnerKong;
+    } else {
+      partnerAnchor = SPAWNS.partnerDev;
+    }
     const anchors = {
-      partner: inStory()
-        ? quests.current?.id === "premier_date"
-          ? SPAWNS.partnerLouvre
-          : SPAWNS.partnerDev
-        : evening
-          ? SPAWNS.partnerEvening
-          : SPAWNS.partnerDay,
+      partner: partnerAnchor,
       sophie: SPAWNS.sophie,
       romain: SPAWNS.romain,
       arij: SPAWNS.arij,
@@ -297,7 +332,7 @@ function loop(now) {
     } else {
       player.update(dt, input, isSolid, needs.anyLow());
       quests.handleGoto(player.x, player.y);
-      const spot = interactions.update(player.x, player.y, spotVisible);
+      const spot = interactions.update(player.x, player.y, spotVisible, quests.currentStep?.target);
       if (input.readInteract() && spot) startInteraction(spot);
     }
 

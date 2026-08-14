@@ -63,12 +63,35 @@ const SOUTH = [
   "ggg" + "p".repeat(26) + "ggg",                        // 26
   "ggg" + "p".repeat(26) + "ggg",                        // 27
   "ggg" + "p".repeat(26) + "ggg",                        // 28
-  "g".repeat(32),                                        // 29
+  "g".repeat(15) + "p" + "g".repeat(16),                 // 29 chemin vers Paris
+];
+
+// --- le quartier parisien (colonnes 0..31, lignes 30..43) ---
+// salle d'arcade (cols 5-15, sol sombre) et restaurant KONG (cols 19-31),
+// reliés par une rue ; chemin depuis l'esplanade du Louvre (col 15)
+const PARIS = [
+  "g".repeat(15) + "p" + "g".repeat(16),                       // 30
+  "g".repeat(15) + "p" + "g".repeat(16),                       // 31
+  "gggg" + "p".repeat(27) + "g",                               // 32 la rue
+  "ggggg" + "#####.#####" + "ggg" + "######.######",           // 33 façades + portes
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#",           // 34
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#",           // 35
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#",           // 36
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#",           // 37
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#",           // 38
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#",           // 39
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#",           // 40
+  "ggggg" + "###########" + "ggg" + "#############",           // 41
+  "g".repeat(32),                                              // 42
+  "g".repeat(32),                                              // 43
 ];
 
 export const MAP = [];
-for (let r = 0; r < 30; r++) {
-  const west = r < HOUSE.length ? HOUSE[r] + midRow(r) : SOUTH[r - 16];
+for (let r = 0; r < 44; r++) {
+  let west;
+  if (r < 16) west = HOUSE[r] + midRow(r);
+  else if (r < 30) west = SOUTH[r - 16];
+  else west = PARIS[r - 30];
   MAP.push(west + hospRow(r));
 }
 
@@ -83,6 +106,7 @@ export const TILE_DEFS = {
   g: { tile: "grass" },
   f: { tile: "flowers" },
   p: { tile: "path" },
+  k: { tile: "arcadeFloor" },
 };
 
 // Meubles : col/row = tuile en haut à gauche de l'empreinte au sol
@@ -145,6 +169,25 @@ export const PLACEMENTS = [
   { type: "plant", col: 26, row: 23 },
   { type: "plant", col: 4, row: 27 },
   { type: "plant", col: 26, row: 27 },
+
+  // la salle d'arcade
+  { type: "borne", col: 6, row: 34 },
+  { type: "borne", col: 8, row: 34 },
+  { type: "borne", col: 12, row: 34 },
+  { type: "borne", col: 14, row: 36 },
+  { type: "table", col: 9, row: 37 },
+  { type: "plant", col: 6, row: 39 },
+
+  // le restaurant KONG
+  { type: "kong_statue", col: 28, row: 34 },
+  { type: "resto_table", col: 21, row: 35 },
+  { type: "resto_table", col: 24, row: 36 },
+  { type: "resto_table", col: 27, row: 35 },
+  { type: "resto_table", col: 21, row: 38 },
+  { type: "resto_table", col: 27, row: 38 },
+  { type: "counter", col: 30, row: 36 },
+  { type: "counter", col: 30, row: 37 },
+  { type: "plant", col: 20, row: 39 },
 ];
 
 export const SPAWNS = {
@@ -163,6 +206,9 @@ export const SPAWNS = {
   david: { x: 45.5, y: 22.5 },
   // Robin qui attend sur l'esplanade du Louvre, le jour J
   partnerLouvre: { x: 21.5, y: 24.5 },
+  // la Saint-Valentin : l'arcade puis le KONG
+  partnerArcade: { x: 12.5, y: 37.5 },
+  partnerKong: { x: 24.5, y: 37.6 },
 };
 
 // Grille de collision : murs + meubles solides. Hors carte = solide.

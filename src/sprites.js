@@ -509,6 +509,58 @@ const PAINTING = [
   "..........",
 ];
 
+// Borne d'arcade (marquee lumineux + écran + joystick)
+const BORNE = [
+  ".KKKKKKKKKKK..",
+  ".KRRRRRRRRRK..",
+  ".KRYRRYRRYRK..",
+  ".KKKKKKKKKKK..",
+  ".KcccscccccK..",
+  ".KcccccccccK..",
+  ".KcccccccccK..",
+  ".KKKKKKKKKKK..",
+  ".KDDDDDDDDDK..",
+  ".KDDRDDYDDDK..",
+  ".KDDDDDDDDDK..",
+  ".KKKKKKKKKKK..",
+  ".KKKKKKKKKKK..",
+  ".KKKKKKKKKKK..",
+  ".KKKKKKKKKKK..",
+  "..KK.....KK...",
+  "..............",
+];
+
+// Le gorille du KONG (il en impose)
+const KONG_STATUE = [
+  "....DDDDDD....",
+  "...DDDDDDDD...",
+  "...DmmmmmmD...",
+  "...DmKmmKmD...",
+  "...DmmmmmmD...",
+  "...DmmKKmmD...",
+  "...DDmmmmDD...",
+  "..DDDDDDDDDD..",
+  ".DDDDDDDDDDDD.",
+  ".DDDDDDDDDDDD.",
+  ".DDDDDDDDDDDD.",
+  ".DDDDDDDDDDDD.",
+  "..DDD....DDD..",
+  "..DDD....DDD..",
+  ".DDDD....DDDD.",
+  "..............",
+];
+
+// Bougie de table romantique
+const CANDLE = [
+  "..Y...",
+  "..O...",
+  "..MM..",
+  "..MM..",
+  "..MM..",
+  ".mmm..",
+  "......",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -555,7 +607,13 @@ export const FURNITURE = {
   joconde: { grid: JOCONDE, fw: 1, fh: 1, solid: false }, // accrochée au mur
   painting: { grid: PAINTING, fw: 1, fh: 1, solid: false },
   pyramid: { grid: MONITOR, fw: 3, fh: 3, solid: true }, // volume 3D dédié
+  // la Saint-Valentin
+  borne: { grid: BORNE, fw: 1, fh: 1, solid: true },
+  kong_statue: { grid: KONG_STATUE, fw: 1, fh: 1, solid: true },
+  resto_table: { grid: CANDLE, fw: 1, fh: 1, solid: true }, // boîte + bougie
 };
+
+export { CANDLE };
 
 export { MONITOR, SIGN };
 
@@ -586,6 +644,8 @@ export const TILE_PAL = {
   F: "#efe4cf", // cadre de fenêtre
   e: "#a9d9ea", // vitre
   E: "#d3f0fa", // reflet de vitre
+  x: "#3a3350", // moquette d'arcade
+  y: "#544a75", // motif de moquette
 };
 
 function genTile(fn) {
@@ -631,6 +691,9 @@ export const TILES = {
   ),
   rug: genTile((x, y) =>
     x === 0 || y === 0 ? "s" : x % 6 === 2 && y % 6 === 3 ? "s" : "r"
+  ),
+  arcadeFloor: genTile((x, y) =>
+    x === 0 || y === 0 || (x * 5 + y * 7) % 17 === 0 ? "y" : "x"
   ),
   wall: genTile((x, y) => {
     if (y === 0) return "h";

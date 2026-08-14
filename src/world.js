@@ -16,6 +16,7 @@ import {
   FLOWER_BILL,
   SHADOW,
   MONITOR,
+  CANDLE,
 } from "./sprites.js";
 import { makeTexture, makeSpriteMaterial, makeOpaqueMaterial } from "./textures.js";
 import { MAP, MAP_W, MAP_H, TILE_DEFS, PLACEMENTS } from "./map.js";
@@ -276,6 +277,17 @@ export function createWorld() {
         const b = makeBillboard(billTexCache[p.type], size.w, size.h);
         setBillboardPos(b, cx, p.row + 0.4, size.h, 0.55, trailingEmptyRows(def.grid) / 16);
         meshes.push(b);
+        break;
+      }
+      case "resto_table": {
+        // table romantique : nappe blanche + bougie
+        const m = makeBox(0.84, 0.55, 0.8, boxTex.deskTop, boxTex.deskSide, boxTex.deskSide);
+        m.position.set(cx, 0.275, cz);
+        if (!billTexCache.candle) billTexCache.candle = makeTexture(CANDLE, FURN_PAL, OUTLINE);
+        const size = gridSize(CANDLE);
+        const b = makeBillboard(billTexCache.candle, size.w, size.h);
+        setBillboardPos(b, cx, cz, size.h, 0.55, trailingEmptyRows(CANDLE) / 16);
+        meshes.push(m, b);
         break;
       }
       case "desk":

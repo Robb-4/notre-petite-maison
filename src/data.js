@@ -81,11 +81,19 @@ export default {
   ],
 
   // --------------------------------------------------------------------------
-  // INTERLUDE — joué après le premier date au Louvre (ellipse temporelle).
+  // TRANSITION — jouée entre le Louvre et la Saint-Valentin.
+  // --------------------------------------------------------------------------
+  transition_valentin: [
+    "Officiellement ensemble ❤",
+    "Les semaines passent, entre [VOS HABITUDES DE DÉBUT DE COUPLE]…",
+    "Et arrive le 14 février. La Saint-Valentin. Robin a préparé LA journée parfaite.",
+  ],
+
+  // --------------------------------------------------------------------------
+  // INTERLUDE — joué après la Saint-Valentin (ellipse temporelle).
   // --------------------------------------------------------------------------
   interlude: [
-    "Un date… puis deux… puis [VOTRE DEUXIÈME SORTIE MÉMORABLE]…",
-    "[CE QUI VOUS A FAIT TOMBER AMOUREUX : une blague ? un projet commun ? la machine à café ?]",
+    "[CE QUI VOUS A FAIT TOMBER AMOUREUX POUR DE BON ?]",
     "Et [DURÉE] plus tard… ils emménageaient ensemble dans leur petite maison ❤",
   ],
 
@@ -173,6 +181,24 @@ export default {
       { qui: "partner", texte: "[L'HISTOIRE DE CETTE PHRASE MYTHIQUE — à vous de la raconter 😄]" },
       { qui: "player", texte: "Alors… on est ensemble ? Officiellement ?" },
       { qui: "partner", texte: "Officiellement ❤" },
+    ],
+    // ---- LA SAINT-VALENTIN : arcade puis KONG ----
+    valentin_arcade: [
+      { qui: "partner", texte: "Saint-Valentin, niveau 1 : la salle d'arcade. Prête à perdre ?" },
+      { qui: "player", texte: "Tu vas manger tes mots. On joue à quoi ?" },
+      { qui: "partner", texte: "[VOTRE JEU D'ARCADE CE JOUR-LÀ ?]" },
+      { qui: "player", texte: "(Ça s'enchaîne, ça rigole, ça triche un peu.)" },
+      { qui: "player", texte: "[QUI A GAGNÉ ?] gagne. Évidemment." },
+      { qui: "partner", texte: "Deux sur trois ! …Bon, d'accord. Je file réserver la table — rejoins-moi au [NOM DU RESTO : le KONG !] juste à côté ❤" },
+    ],
+    valentin_kong: [
+      { qui: "partner", texte: "Madame… votre table. La meilleure du [NOM DU RESTO], j'ai insisté." },
+      { qui: "player", texte: "Rien que ça ?!" },
+      { qui: "partner", texte: "Que veux-tu. C'est la Saint-Valentin, et c'est toi." },
+      { qui: "player", texte: "(Vous commandez [VOS PLATS DE CE SOIR-LÀ].)" },
+      { qui: "partner", texte: "[CE QU'IL A DIT DE MIGNON / DRÔLE PENDANT LE DÎNER ?]" },
+      { qui: "player", texte: "(Meilleure Saint-Valentin. Meilleure équipe.)" },
+      { qui: "partner", texte: "À nous ❤" },
     ],
   },
 
@@ -311,6 +337,10 @@ export default {
     quest_done_devs: { any: ["(Ce Robin… il a quelque chose, non ?) Allez, la journée est finie : direction la maison."] },
     quest_done_appel: { any: ["(Comment veux-tu dormir après ÇA ?!)"] },
     quest_done_date: { any: ["Officiellement ensemble ❤ (Et oui : « c'est Disneyland ». Personne ne comprendra jamais, et c'est très bien.)"] },
+    quest_done_valentin: { any: ["Jeux d'arcade + [NOM DU RESTO] + lui. La formule parfaite ❤"] },
+    use_borne: { any: ["Encore une partie de [VOTRE JEU] ?", "INSÉREZ UNE PIÈCE. (Toujours aussi tentant.)"] },
+    use_resto_table: { any: ["Une table aux chandelles… classe.", "(L'odeur de [PLAT DU KONG] flotte encore.)"] },
+    use_kong_statue: { any: ["Le gorille du [NOM DU RESTO]. Il en impose.", "(Il vous juge un peu, mais avec bienveillance.)"] },
     quest_done_q1: { any: ["C'était le plat de [OCCASION SPÉCIALE : premier rdv ? anniversaire ?] ❤"] },
     quest_done_q2: { any: ["LA chaussette perdue ! Elle était dans le jardin depuis [DURÉE ABSURDE]."] },
     quests_all_done: { any: ["Tous les objectifs sont finis… mais la vie continue, tranquillement, ensemble ❤"] },
@@ -341,6 +371,9 @@ export default {
     coffee: "LA machine à café",
     joconde: "La Joconde (elle vous suit du regard)",
     pyramid: "La pyramide du Louvre",
+    borne: "Une borne d'arcade",
+    resto_table: "Une table aux chandelles",
+    kong_statue: "Le gorille du [NOM DU RESTO]",
   },
 
   // --------------------------------------------------------------------------
@@ -437,6 +470,35 @@ export default {
         },
       ],
       rewardDialogue: "quest_done_date",
+    },
+    {
+      id: "saint_valentin",
+      titre: "La Saint-Valentin",
+      description: "Arcade, puis dîner. LA journée parfaite.",
+      steps: [
+        {
+          goto: { x0: 6, y0: 34, x1: 15, y1: 40.5 },
+          label: "Entrer dans la salle d'arcade (la rue au sud du Louvre)",
+        },
+        {
+          target: "borne",
+          sequence: "valentin_arcade",
+          label: "Faire une partie avec Robin",
+          partnerTo: "partnerKong", // il file réserver la table
+        },
+        {
+          goto: { x0: 20, y0: 34, x1: 31, y1: 40.5 },
+          label: "Rejoindre Robin au restaurant, juste à côté",
+          clockTo: 20,
+        },
+        {
+          target: "resto_table",
+          sequence: "valentin_kong",
+          label: "Vous installer à votre table ❤",
+          hearts: true,
+        },
+      ],
+      rewardDialogue: "quest_done_valentin",
     },
     {
       id: "q1",

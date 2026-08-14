@@ -28,6 +28,10 @@ export const ACTIONS = {
   // le Louvre
   joconde: { duration: 0, effects: { fun: 10 }, dlg: "use_joconde", speaker: "player" },
   pyramid: { duration: 0, effects: { fun: 8 }, dlg: "use_pyramide", speaker: "player" },
+  // la Saint-Valentin
+  borne: { duration: 0, effects: { fun: 20 }, dlg: "use_borne", speaker: "player" },
+  resto_table: { duration: 0, effects: { faim: 30, fun: 10 }, dlg: "use_resto_table", speaker: "player" },
+  kong_statue: { duration: 0, effects: { fun: 5 }, dlg: "use_kong_statue", speaker: "player" },
 };
 
 // Distance d'un point au rectangle (0 si dedans).
@@ -66,10 +70,13 @@ export class Interactions {
   }
 
   // px,py = pieds du joueur. visibleFn(type) → false pour masquer un spot
-  // (ex : la chaussette hors quête).
-  update(px, py, visibleFn) {
+  // (ex : la chaussette hors quête). preferred = cible de l'étape de quête en
+  // cours : si elle est à portée, elle gagne toujours.
+  update(px, py, visibleFn, preferred = null) {
     let best = null;
     let bestDist = CONFIG.interactRadius;
+    let pref = null;
+    let prefDist = Infinity;
     for (const s of this.spots) {
       if (visibleFn && !visibleFn(s.type)) continue;
       const d = rectDist(px, py, s.rect);
@@ -77,17 +84,25 @@ export class Interactions {
         bestDist = d;
         best = s;
       }
-    }
-    // les PNJ sont des spots mobiles (rayon un peu plus généreux)
-    let bestNpcDist = 1.3;
-    for (const [id, npc] of Object.entries(this.npcs)) {
-      const d = Math.hypot(npc.x - px, npc.y - py);
-      if (d < bestNpcDist) {
-        bestNpcDist = d;
-        best = { type: id, cx: npc.x, cy: npc.y, rect: null };
+      if (s.type === preferred && d < CONFIG.interactRadius && d < prefDist) {
+        prefDist = d;
+        pref = s;
       }
     }
-    this.current = best;
-    return best;
+    // les PNJ sont des spots mobiles (rayon un peu plus généreux) — le plus
+    // proche gagne, à égalité avec les meubles
+    for (const [id, npc] of Object.entries(this.npcs)) {
+      const d = Math.hypot(npc.x - px, npc.y - py);
+      if (d < 1.3 && d < bestDist) {
+        bestDist = d;
+        best = { type: id, cx: npc.x, cy: npc.y, rect: null };
+      }
+      if (id === preferred && d < 1.3 && d < prefDist) {
+        prefDist = d;
+        pref = { type: id, cx: npc.x, cy: npc.y, rect: null };
+      }
+    }
+    this.current = pref ?? best;
+    return this.current;
   }
 }
