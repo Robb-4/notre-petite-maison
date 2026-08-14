@@ -37,7 +37,7 @@ const player = new Player(playerView, SPAWNS.player.x, SPAWNS.player.y);
 
 // PNJ : chacun vit sur sa carte (positions en coordonnées locales)
 const npcs = {};
-for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david", "mylene"]) {
+for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david", "mylene", "maman"]) {
   const c = DATA.characters[id];
   if (!c) continue;
   const view = createCharacterView(world, c.spriteSet ?? "him", c.palette);
@@ -55,6 +55,7 @@ const STORY_IDS = new Set([
   "premier_date",
   "saint_valentin",
   "egypte",
+  "albanie",
 ]);
 function inStory() {
   return STORY_IDS.has(quests?.current?.id);
@@ -63,6 +64,7 @@ function inStory() {
 // Sur quelle carte vit chaque PNJ en ce moment ?
 function npcMapOf(id) {
   if (id === "mylene") return "egypte";
+  if (id === "maman") return "albanie";
   if (id !== "partner") return "hospital";
   if (!inStory()) return "home";
   const qid = quests.current?.id;
@@ -117,6 +119,7 @@ const interactions = new Interactions(MAPS.home.placements, {});
 let pendingInterlude = false;
 let pendingTransition = false; // vers la Saint-Valentin
 let pendingEgypte = false; // vers le voyage en Égypte
+let pendingAlbanie = false; // vers le voyage en Albanie
 
 const quests = new Quests(DATA.quests, {
   onStepDone: () => hud.toast("✔ Étape accomplie !"),
@@ -145,7 +148,8 @@ const quests = new Quests(DATA.quests, {
     }
     if (q.id === "premier_date") pendingTransition = true; // direction le 14 février
     if (q.id === "saint_valentin") pendingEgypte = true; // direction l'Égypte ✈
-    if (q.id === "egypte") pendingInterlude = true; // le retour, et l'ellipse ❤ finale
+    if (q.id === "egypte") pendingAlbanie = true; // retrouvailles… puis l'Albanie 🇦🇱
+    if (q.id === "albanie") pendingInterlude = true; // le retour, et l'ellipse ❤ finale
     if (allDone) dialogue.showKey("quests_all_done", "partner", clock.bucket());
   },
 });
@@ -215,7 +219,15 @@ function startEgypte() {
   hud.toast("✈ L'Égypte !");
 }
 
-// Après le retour d'Égypte : quelques mois plus tard, la vie à deux commence.
+// Le second voyage : l'Albanie avec Maman, au matin.
+function startAlbanie() {
+  clock.minutes = 11 * 60;
+  clock.prevMinutes = clock.minutes;
+  switchMap("albanie", { x: 3, y: 9.5 });
+  hud.toast("✈ L'Albanie !");
+}
+
+// Après le retour d'Albanie : quelques mois plus tard, la vie à deux commence.
 function moveInTogether() {
   npcs.partner.x = SPAWNS.partnerDay.x;
   npcs.partner.y = SPAWNS.partnerDay.y;
@@ -356,6 +368,10 @@ function loop(now) {
     pendingEgypte = false;
     input.readInteract();
     startCinematic(DATA.transition_egypte, startEgypte);
+  } else if (pendingAlbanie) {
+    pendingAlbanie = false;
+    input.readInteract();
+    startCinematic(DATA.transition_albanie, startAlbanie);
   } else if (pendingInterlude) {
     pendingInterlude = false;
     input.readInteract();
@@ -388,6 +404,7 @@ function loop(now) {
       mahrez: SPAWNS.mahrez,
       david: SPAWNS.david,
       mylene: SPAWNS.mylene,
+      maman: SPAWNS.maman,
     };
     for (const [id, npc] of Object.entries(activeNpcs)) {
       // le PNJ attendu par l'étape de quête en cours s'arrête et attend

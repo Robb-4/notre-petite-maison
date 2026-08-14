@@ -23,6 +23,11 @@ export const ACTIONS = {
   mahrez: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_mahrez", speaker: "mahrez" },
   david: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_david", speaker: "david" },
   mylene: { duration: 0, effects: { social: 25, fun: 10 }, dlg: "talk_mylene", speaker: "mylene" },
+  maman: { duration: 0, effects: { social: 30, fun: 10 }, dlg: "talk_maman", speaker: "maman" },
+  // l'Albanie
+  bunker: { duration: 0, effects: { fun: 8 }, dlg: "use_bunker", speaker: "player" },
+  parasol: { duration: 0, effects: { fun: 10 }, dlg: "use_parasol", speaker: "player" },
+  mountain: { duration: 0, effects: { fun: 5 }, dlg: "use_montagne", speaker: "player" },
   her_desk: { duration: 1.2, effects: { fun: 10 }, dlg: "use_her_desk", speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
   signpost: { duration: 0, effects: {}, dlg: null, speaker: "player" },

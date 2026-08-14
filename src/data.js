@@ -74,6 +74,12 @@ export default {
       spriteSet: "her",
       palette: { H: "#a34a2a", S: "#f2c9a0", T: "#3a8a5f", P: "#f2c9a0", F: "#4a2e1f", K: "#3b2b40" },
     },
+    // Sa maman (spriteSet "hijab" : H = couleur du voile), du voyage en Albanie.
+    maman: {
+      nom: "Maman",
+      spriteSet: "hijab",
+      palette: { H: "#7b5aa6", S: "#e8b78e", T: "#4a5a8a", P: "#4a5a8a", F: "#3a3140", K: "#3b2b40" },
+    },
   },
 
   // --------------------------------------------------------------------------
@@ -106,10 +112,20 @@ export default {
   ],
 
   // --------------------------------------------------------------------------
-  // INTERLUDE — joué après le retour d'Égypte (ellipse temporelle).
+  // TRANSITION — le retour d'Égypte, les retrouvailles… et déjà l'Albanie.
+  // --------------------------------------------------------------------------
+  transition_albanie: [
+    "De retour à Paris : Robin l'attendait à l'aéroport, [DÉTAIL DU RETOUR : une pancarte ? des fleurs ?]",
+    "Et le fameux « truc à te dire » ? [C'ÉTAIT QUOI, EN VRAI ? 😄]",
+    "Mais le passeport n'a pas eu le temps de refroidir…",
+    "Direction l'Albanie 🇦🇱 — avec Maman, cette fois.",
+  ],
+
+  // --------------------------------------------------------------------------
+  // INTERLUDE — joué après le retour d'Albanie (ellipse temporelle finale).
   // --------------------------------------------------------------------------
   interlude: [
-    "De retour à Paris : il l'attendait à l'aéroport, [DÉTAIL DU RETOUR : une pancarte ? des fleurs ? un plat ?]",
+    "De retour pour de bon, cette fois.",
     "[CE QUI VOUS A FAIT TOMBER AMOUREUX POUR DE BON ?]",
     "Et [DURÉE] plus tard… ils emménageaient ensemble dans leur petite maison ❤",
   ],
@@ -250,6 +266,29 @@ export default {
       { qui: "partner", texte: "Salut Mylène ! …Bref. Dépêche-toi de rentrer, j'ai un truc à te dire. En vrai, pas au téléphone." },
       { qui: "player", texte: "(Un truc à me dire ?! COMMENT VEUX-TU DORMIR MAINTENANT ?)" },
     ],
+    // ---- LE VOYAGE EN ALBANIE, AVEC MAMAN ----
+    albanie_maman: [
+      { qui: "maman", texte: "Ma chérie ! Viens là que je te regarde. [CE QUE TA MAMAN DIT TOUJOURS EN TE VOYANT ?]" },
+      { qui: "player", texte: "Maman ! Prête pour l'aventure albanaise ?" },
+      { qui: "maman", texte: "J'ai [CE QU'ELLE A TOUJOURS DANS SON SAC ?] dans mon sac. On ne sait jamais." },
+      { qui: "player", texte: "(Évidemment qu'elle l'a. Elle l'a toujours.)" },
+    ],
+    albanie_bunker: [
+      { qui: "player", texte: "Maman, regarde : un vrai bunker ! Il y en a 170 000 dans le pays." },
+      { qui: "maman", texte: "[SA RÉACTION DEVANT LE BUNKER ?]" },
+      { qui: "player", texte: "(Photo de maman devant le bunker. Iconique.)" },
+    ],
+    albanie_plage: [
+      { qui: "maman", texte: "L'Adriatique… [CE QU'ELLE A DIT DEVANT LA MER ?]" },
+      { qui: "player", texte: "(L'eau est [TURQUOISE ? GLACÉE ? PARFAITE ?]. Le moment aussi.)" },
+    ],
+    // le soir, au coucher du soleil : la conversation mère-fille ❤
+    albanie_soir: [
+      { qui: "maman", texte: "Alors… ce Robin. Parle-moi de lui." },
+      { qui: "player", texte: "Il est… il est génial, maman. [CE QU'ELLE A DIT DE ROBIN À SA MAMAN ?]" },
+      { qui: "maman", texte: "[LA PHRASE DE MAMAN SUR ROBIN — sa bénédiction ❤]" },
+      { qui: "player", texte: "(Le soleil se couche sur l'Adriatique. Et tu sais, là, que c'est lui.)" },
+    ],
   },
 
   // --------------------------------------------------------------------------
@@ -319,6 +358,13 @@ export default {
         "[BLAGUE RÉCURRENTE DE MYLÈNE]",
         "Meilleure amie, meilleur voyage. C'est mathématique.",
         "On refait nos valises quand tu veux, tu sais.",
+      ],
+    },
+    talk_maman: {
+      any: [
+        "Ma chérie ❤",
+        "[PHRASE TYPIQUE DE TA MAMAN]",
+        "Tu as mangé ? Tu es sûre ? Tiens, mange.",
       ],
     },
 
@@ -396,6 +442,10 @@ export default {
     quest_done_date: { any: ["Officiellement ensemble ❤ (Et oui : « c'est Disneyland ». Personne ne comprendra jamais, et c'est très bien.)"] },
     quest_done_valentin: { any: ["Jeux d'arcade + [NOM DU RESTO] + lui. La formule parfaite ❤"] },
     quest_done_egypte: { any: ["L'Égypte dans les yeux… et Paris dans le cœur. Il est temps de rentrer ✈"] },
+    quest_done_albanie: { any: ["Deux voyages, deux personnes en or… et une certitude en rentrant ❤"] },
+    use_bunker: { any: ["Un bunker de poche. Collector.", "(Solide. Rond. Inutile. Parfait.)"] },
+    use_parasol: { any: ["À l'ombre, face à l'Adriatique. Le luxe.", "[VOTRE MOMENT PLAGE EN ALBANIE ?]"] },
+    use_montagne: { any: ["Les montagnes albanaises. [VOUS LES AVEZ GRIMPÉES ? ADMIRÉES DE LOIN ?]"] },
     use_pyr_egypte: { any: ["4500 ans d'avance sur nos plus beaux projets.", "[VOTRE SOUVENIR DES PYRAMIDES ?]"] },
     use_sphinx: { any: ["Il garde le plateau depuis 4500 ans. Sans pause café.", "(Il sait des choses, c'est sûr.)"] },
     use_camel: { any: ["[NOM DU CHAMEAU ?] approuve ta présence.", "(Il mâche. Toujours. Quoi ? Mystère.)"] },
@@ -441,6 +491,10 @@ export default {
     camel: "Un chameau",
     palm: "Un palmier",
     mylene: "Mylène (la meilleure)",
+    maman: "Maman ❤",
+    bunker: "Un bunker albanais",
+    parasol: "Le parasol",
+    mountain: "Les montagnes albanaises",
   },
 
   // --------------------------------------------------------------------------
@@ -602,6 +656,27 @@ export default {
         },
       ],
       rewardDialogue: "quest_done_egypte",
+    },
+    {
+      id: "albanie",
+      titre: "L'Albanie avec Maman",
+      description: "La côte, les montagnes… et une conversation importante.",
+      steps: [
+        {
+          goto: { map: "albanie", x0: 6, y0: 5, x1: 18, y1: 12 },
+          label: "Explorer la côte albanaise",
+        },
+        { target: "maman", sequence: "albanie_maman", label: "Retrouver Maman au village" },
+        { target: "bunker", sequence: "albanie_bunker", label: "Inspecter le fameux bunker" },
+        {
+          target: "parasol",
+          sequence: "albanie_plage",
+          label: "Un moment plage avec Maman",
+          clockTo: 20, // le coucher de soleil sur l'Adriatique…
+          sequenceAfter: "albanie_soir", // …et LA conversation ❤
+        },
+      ],
+      rewardDialogue: "quest_done_albanie",
     },
     {
       id: "q1",

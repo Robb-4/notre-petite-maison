@@ -122,6 +122,26 @@ for (let r = 0; r < 20; r++) {
 // ---------------------------------------------------------------------------
 // LES CARTES — placements en coordonnées locales, sorties (zones de tp)
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// L'ALBANIE (34 × 18) — la côte adriatique : mer à l'est, plage, village de
+// pierre et montagnes. Comme l'Égypte : accessible uniquement par l'histoire.
+// ---------------------------------------------------------------------------
+const ALB_GRID = [];
+for (let r = 0; r < 18; r++) {
+  let row = "";
+  for (let c = 0; c < 34; c++) {
+    if (c >= 28) row += "o"; // la mer
+    else if (c >= 22) row += "s"; // la plage
+    else if (c >= 4 && c <= 10 && r >= 4 && r <= 8) {
+      // la petite maison de pierre du village
+      const border = c === 4 || c === 10 || r === 4 || r === 8;
+      const door = c === 7 && r === 8;
+      row += border && !door ? "#" : ".";
+    } else row += "g";
+  }
+  ALB_GRID.push(row);
+}
+
 export const MAPS = {
   home: {
     name: "🏠 La petite maison",
@@ -254,6 +274,28 @@ export const MAPS = {
     ],
     exits: [],
   },
+
+  albanie: {
+    name: "🇦🇱 L'Albanie",
+    grid: ALB_GRID,
+    horizon: "#69ab45",
+    placements: [
+      // les montagnes, au nord
+      { type: "mountain", col: 0, row: 0 },
+      { type: "mountain", col: 12, row: 0 },
+      { type: "mountain", col: 17, row: 1 },
+      // le fameux bunker
+      { type: "bunker", col: 14, row: 10 },
+      // la plage
+      { type: "parasol", col: 24, row: 8 },
+      { type: "palm", col: 21, row: 4 },
+      { type: "palm", col: 23, row: 13 },
+      { type: "palm", col: 19, row: 11 },
+      // un peu de verdure au village
+      { type: "plant", col: 12, row: 6 },
+    ],
+    exits: [],
+  },
 };
 
 // chaque carte connaît son propre identifiant
@@ -279,6 +321,8 @@ export const SPAWNS = {
   david: { x: 15.5, y: 22.5 },
   // Mylène, en Égypte avec elle
   mylene: { x: 14.5, y: 11.5 },
+  // Maman, en Albanie avec elle
+  maman: { x: 16.5, y: 7.5 },
 };
 
 // Grille de collision d'une carte : murs + meubles solides. Hors carte = solide.

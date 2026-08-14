@@ -159,7 +159,79 @@ const R_SIDE_STEP = [
   "............",
 ];
 
-// spriteSet: "her" (cheveux longs + robe) ou "him" (cheveux courts + pantalon)
+// --- Personnage voilé : hijab (H = couleur du voile) + robe longue ---
+const V_DOWN_IDLE = [
+  "....HHHH....",
+  "...HHHHHH...",
+  "..HHHHHHHH..",
+  "..HHSSSSHH..",
+  "..HSKSSKSH..",
+  "..HHSSSSHH..",
+  "..HHHHHHHH..",
+  "..HTTTTTTH..",
+  "...TTTTTT...",
+  ".STTTTTTTTS.",
+  ".TTTTTTTTTT.",
+  ".TTTTTTTTTT.",
+  ".TTTTTTTTTT.",
+  ".TTTTTTTTTT.",
+  "....F..F....",
+  "............",
+];
+const V_DOWN_STEP = [
+  ...V_DOWN_IDLE.slice(0, 14),
+  "...F....F...",
+  "............",
+];
+const V_UP_IDLE = [
+  "....HHHH....",
+  "...HHHHHH...",
+  "..HHHHHHHH..",
+  "..HHHHHHHH..",
+  "..HHHHHHHH..",
+  "..HHHHHHHH..",
+  "..HHHHHHHH..",
+  "..HTTTTTTH..",
+  "...TTTTTT...",
+  ".STTTTTTTTS.",
+  ".TTTTTTTTTT.",
+  ".TTTTTTTTTT.",
+  ".TTTTTTTTTT.",
+  ".TTTTTTTTTT.",
+  "....F..F....",
+  "............",
+];
+const V_UP_STEP = [
+  ...V_UP_IDLE.slice(0, 14),
+  "...F....F...",
+  "............",
+];
+const V_SIDE_IDLE = [
+  "....HHHH....",
+  "...HHHHHH...",
+  "..HHHHHHHH..",
+  "..HHHSSSS...",
+  "..HHHSSKS...",
+  "..HHHSSSS...",
+  "..HHHHSSH...",
+  "..HHTTTTT...",
+  "..HTTTTTT...",
+  "..TTTTTTTT..",
+  "..TTTTTTTT..",
+  "..TTTTTTTT..",
+  "..TTTTTTTT..",
+  "..TTTTTTTT..",
+  ".....FF.....",
+  "............",
+];
+const V_SIDE_STEP = [
+  ...V_SIDE_IDLE.slice(0, 14),
+  "....F..F....",
+  "............",
+];
+
+// spriteSet: "her" (cheveux longs + robe), "him" (cheveux courts + pantalon)
+// ou "hijab" (voile + robe longue)
 export const CHAR_SPRITES = {
   her: {
     down: { idle: P_DOWN_IDLE, step: P_DOWN_STEP },
@@ -170,6 +242,11 @@ export const CHAR_SPRITES = {
     down: { idle: R_DOWN_IDLE, step: R_DOWN_STEP },
     up: { idle: R_UP_IDLE, step: R_UP_STEP },
     side: { idle: R_SIDE_IDLE, step: R_SIDE_STEP },
+  },
+  hijab: {
+    down: { idle: V_DOWN_IDLE, step: V_DOWN_STEP },
+    up: { idle: V_UP_IDLE, step: V_UP_STEP },
+    side: { idle: V_SIDE_IDLE, step: V_SIDE_STEP },
   },
 };
 
@@ -636,6 +713,24 @@ const PALM = [
   "",
 ];
 
+// Parasol de plage (rayures rouges et blanches)
+const PARASOL = [
+  "......RR........",
+  "....RRMMRR......",
+  "..RRMMRRMMRR....",
+  ".RMMRRMMRRMMR...",
+  "......WW........",
+  "......WW........",
+  "......WW........",
+  "......WW........",
+  "......WW........",
+  "......WW........",
+  "......WW........",
+  "......WW........",
+  "......WW........",
+  "................",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -692,6 +787,10 @@ export const FURNITURE = {
   camel: { grid: CAMEL, fw: 2, fh: 1, solid: true, scale: 1.35 },
   palm: { grid: PALM, fw: 1, fh: 1, solid: true, scale: 1.5 },
   pyramide_egypte: { grid: MONITOR, fw: 5, fh: 5, solid: true }, // volume 3D dédié
+  // l'Albanie
+  parasol: { grid: PARASOL, fw: 1, fh: 1, solid: true, scale: 1.4 },
+  bunker: { grid: MONITOR, fw: 2, fh: 2, solid: true }, // dôme 3D dédié
+  mountain: { grid: MONITOR, fw: 4, fh: 4, solid: true }, // cône 3D dédié
 };
 
 export { CANDLE };

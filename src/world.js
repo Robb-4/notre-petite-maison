@@ -29,6 +29,7 @@ const OUTLINE = "#1e1622"; // contour noir façon Habbo sur les billboards
 const WINDOW_CELLS = {
   home: new Set(["3,1", "4,1", "10,1", "11,1"]),
   hospital: new Set(["5,2", "6,2", "19,2", "20,2"]),
+  albanie: new Set(["6,4", "8,4"]),
 };
 
 function trailingEmptyRows(grid) {
@@ -298,6 +299,30 @@ export function createWorld() {
           edges.rotation.y = Math.PI / 4;
           edges.position.copy(m.position);
           meshes.push(m, edges);
+          break;
+        }
+        case "bunker": {
+          // le bunker albanais : dôme de béton (il y en a 170 000 des vrais)
+          const geo = new THREE.SphereGeometry(1.0, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2);
+          const beton = new THREE.MeshLambertMaterial({ color: "#98a08e" });
+          const m = new THREE.Mesh(geo, beton);
+          m.position.set(cx, 0, cz);
+          meshes.push(m);
+          break;
+        }
+        case "mountain": {
+          // montagne : cône gris + calotte enneigée
+          const body = new THREE.Mesh(
+            new THREE.ConeGeometry(2.6, 3.8, 5),
+            new THREE.MeshLambertMaterial({ color: "#8a8f8a" })
+          );
+          body.position.set(cx, 1.9, cz);
+          const snow = new THREE.Mesh(
+            new THREE.ConeGeometry(0.85, 1.2, 5),
+            new THREE.MeshLambertMaterial({ color: "#f2f5f2" })
+          );
+          snow.position.set(cx, 3.15, cz);
+          meshes.push(body, snow);
           break;
         }
         case "joconde":
