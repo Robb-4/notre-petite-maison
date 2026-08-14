@@ -15,6 +15,7 @@ import {
   VASE,
   FLOWER_BILL,
   SHADOW,
+  MONITOR,
 } from "./sprites.js";
 import { makeTexture, makeSpriteMaterial, makeOpaqueMaterial } from "./textures.js";
 import { MAP, MAP_W, MAP_H, TILE_DEFS, PLACEMENTS } from "./map.js";
@@ -128,8 +129,8 @@ export function createWorld() {
       } else {
         addFloor(col, row, def.tile);
       }
-      // quelques fleurs sauvages déterministes hors carte
-      if (!inMap && ((col * 7 + row * 13) % 29 + 29) % 29 === 0) addFlower(col, row);
+      // quelques fleurs sauvages déterministes sur l'herbe
+      if (ch === "g" && (((col * 7 + row * 13) % 29) + 29) % 29 === 0) addFlower(col, row);
     }
   }
 
@@ -240,6 +241,25 @@ export function createWorld() {
         const v = makeBillboard(vaseTex, vaseSize.w, vaseSize.h);
         setBillboardPos(v, cx, cz, vaseSize.h, 0.55, trailingEmptyRows(VASE) / 16);
         meshes.push(m, v);
+        break;
+      }
+      case "desk":
+      case "her_desk": {
+        // bureau blanc + écran posé dessus
+        const m = makeBox(0.9, 0.55, 0.8, boxTex.deskTop, boxTex.deskSide, boxTex.deskSide);
+        m.position.set(cx, 0.275, cz);
+        if (!billTexCache.monitor) billTexCache.monitor = makeTexture(MONITOR, FURN_PAL, OUTLINE);
+        const size = gridSize(MONITOR);
+        const b = makeBillboard(billTexCache.monitor, size.w, size.h);
+        setBillboardPos(b, cx, cz, size.h, 0.55, trailingEmptyRows(MONITOR) / 16);
+        meshes.push(m, b);
+        break;
+      }
+      case "counter": {
+        // comptoir d'accueil en bois
+        const m = makeBox(0.96, 0.85, 0.8, boxTex.tableTop, boxTex.tableSide, boxTex.tableSide);
+        m.position.set(cx, 0.425, cz);
+        meshes.push(m);
         break;
       }
       case "photo": {

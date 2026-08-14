@@ -22,9 +22,7 @@ export class Quests {
     return this.currentStep?.target === type;
   }
 
-  handleInteract(type) {
-    const step = this.currentStep;
-    if (!step || step.target !== type) return;
+  _advance() {
     this.si += 1;
     if (this.si >= this.current.steps.length) {
       const done = this.current;
@@ -35,5 +33,18 @@ export class Quests {
     } else {
       this.cb.onStepDone?.(this.currentStep);
     }
+  }
+
+  handleInteract(type) {
+    const step = this.currentStep;
+    if (!step || step.target !== type) return;
+    this._advance();
+  }
+
+  // Étapes « atteindre une zone » : appelé chaque frame avec les pieds du joueur.
+  handleGoto(px, py) {
+    const g = this.currentStep?.goto;
+    if (!g) return;
+    if (px >= g.x0 && px <= g.x1 && py >= g.y0 && py <= g.y1) this._advance();
   }
 }

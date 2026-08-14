@@ -3,18 +3,29 @@
 Un petit jeu cozy façon Sims, en pixel art vue du dessus, fait avec three.js.
 Le personnage jouable, c'est elle ; le PNJ qui traîne dans le salon, c'est Robin.
 
+## 📖 L'histoire
+
+Une cinématique d'intro raconte votre rencontre, puis c'est le grand jour :
+elle quitte la maison, suit le chemin vers l'est jusqu'à l'hôpital, passe
+l'entretien de data scientist avec Sophie (la cheffe), est embauchée, puis
+fait connaissance avec Romain et Arij avant de rentrer tout raconter à Robin.
+Ensuite, la vie continue : quêtes cozy, besoins, jour/nuit.
+
 ## ✏️ Personnaliser le jeu
 
 **Tout** le contenu personnel vit dans un seul fichier : [`src/data.js`](src/data.js).
 
 - **Prénoms** : `characters.player.nom` et `characters.partner.nom`
 - **Apparence** : les palettes de couleurs (`H` cheveux, `S` peau, `T` haut/robe,
-  `P` jambes/pantalon, `F` chaussures)
+  `P` jambes/pantalon, `F` chaussures) et `spriteSet` (`"her"` ou `"him"`)
+- **La cinématique d'intro** : la liste `intro` (une carte de texte par entrée)
+- **Les scènes d'histoire** (départ, entretien, rencontres, retour) : la
+  section `sequences`
 - **Dialogues** : remplace les textes entre `[CROCHETS]` par vos private jokes.
   Chaque contexte accepte des listes par moment de la journée (`matin`, `jour`,
   `soir`, `nuit`) et une liste `any` ; une réplique est tirée au hasard.
 - **Textes des objets** : la section `flavor`
-- **Quêtes** : la section `quests`
+- **Quêtes** : la section `quests` (étapes `target`, `sequence`, ou zones `goto`)
 
 Modifie le fichier, sauvegarde, recharge la page — c'est tout.
 

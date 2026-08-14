@@ -1,5 +1,5 @@
-// Bootstrap + boucle de jeu : câble le monde, le joueur, le PNJ et tous les
-// systèmes (besoins, interactions, dialogues, horloge, quêtes, HUD).
+// Bootstrap + boucle de jeu : câble le monde, la joueuse, les PNJ et tous les
+// systèmes (besoins, interactions, dialogues, horloge, quêtes, cinématique).
 import DATA from "./data.js";
 import { CONFIG } from "./config.js";
 import { createWorld } from "./world.js";
@@ -28,33 +28,82 @@ const dialogue = new Dialogue(DATA);
 const clock = new Clock();
 const needs = new Needs();
 
-const playerView = createCharacterView(world, "her", DATA.characters.player.palette);
+const playerView = createCharacterView(
+  world,
+  DATA.characters.player.spriteSet ?? "her",
+  DATA.characters.player.palette
+);
 const player = new Player(playerView, SPAWNS.player.x, SPAWNS.player.y);
 
-const npcView = createCharacterView(world, "him", DATA.characters.partner.palette);
-const npc = new NPC(npcView, SPAWNS.partner.x, SPAWNS.partner.y);
+// PNJ : Robin à la maison, les collègues à l'hôpital
+const npcs = {};
+for (const id of ["partner", "sophie", "romain", "arij"]) {
+  const c = DATA.characters[id];
+  if (!c) continue;
+  const view = createCharacterView(world, c.spriteSet ?? "him", c.palette);
+  npcs[id] = new NPC(view, SPAWNS[id].x, SPAWNS[id].y);
+}
 
-const interactions = new Interactions(PLACEMENTS, npc);
+const interactions = new Interactions(PLACEMENTS, npcs);
 
 const quests = new Quests(DATA.quests, {
   onStepDone: () => hud.toast("✔ Étape accomplie !"),
   onQuestDone: (q, allDone) => {
     world.spawnHearts(player.x, player.y - 0.8, 7);
     hud.toast(`Objectif terminé : ${q.titre} ❤`);
-    if (q.rewardDialogue) dialogue.showKey(q.rewardDialogue, "partner", clock.bucket());
+    if (q.rewardDialogue) dialogue.showKey(q.rewardDialogue, "player", clock.bucket());
     if (allDone) dialogue.showKey("quests_all_done", "partner", clock.bucket());
   },
 });
 interactions.onInteract((type) => quests.handleInteract(type));
 
 // --- état global ---
-let state = "title"; // title | playing | sleeping
+let state = "title"; // title | cinematic | playing | sleeping
 let action = null; // { spot, def, t } pendant une action minutée
 let pendingSleep = false;
 
 const tintEl = document.getElementById("tint");
 const fadeEl = document.getElementById("sleep-fade");
 const titleEl = document.getElementById("title-screen");
+const cineEl = document.getElementById("cinematic");
+const cineTextEl = document.getElementById("cine-text");
+
+// --- cinématique d'intro ---
+let cineIndex = 0;
+function startCinematic() {
+  state = "cinematic";
+  cineIndex = 0;
+  cineEl.classList.remove("hidden");
+  showCineSlide();
+}
+function showCineSlide() {
+  const card = document.getElementById("cine-card");
+  card.style.animation = "none";
+  void card.offsetWidth; // relance l'animation d'apparition
+  card.style.animation = "";
+  cineTextEl.textContent = DATA.intro[cineIndex];
+}
+function advanceCinematic() {
+  cineIndex += 1;
+  if (cineIndex >= DATA.intro.length) endCinematic();
+  else showCineSlide();
+}
+function endCinematic() {
+  cineEl.classList.add("hidden");
+  state = "playing";
+}
+cineEl.addEventListener("pointerdown", (e) => {
+  e.stopPropagation();
+  if (state === "cinematic") advanceCinematic();
+});
+
+// --- séquences scénarisées (dialogues à plusieurs voix) ---
+function playSequence(lines) {
+  for (const line of lines) {
+    const name = DATA.characters[line.qui]?.nom ?? line.qui;
+    dialogue.show(name, line.texte);
+  }
+}
 
 function completeInteraction(spot, def) {
   let effects = def.effects ?? {};
@@ -63,8 +112,14 @@ function completeInteraction(spot, def) {
     effects = { ...effects, fun: (effects.fun ?? 0) * 2 };
   }
   needs.apply(effects);
-  if (spot.type === "partner") npc.startTalk(player.x, player.y);
-  if (def.dlg) dialogue.showKey(def.dlg, def.speaker, clock.bucket());
+  npcs[spot.type]?.startTalk(player.x, player.y);
+  // étape d'histoire scénarisée → la séquence remplace le dialogue habituel
+  const step = quests.currentStep;
+  if (step?.sequence && step.target === spot.type) {
+    playSequence(DATA.sequences[step.sequence] ?? []);
+  } else if (def.dlg) {
+    dialogue.showKey(def.dlg, def.speaker, clock.bucket());
+  }
   interactions.emit(spot.type);
 }
 
@@ -106,7 +161,7 @@ function spotVisible(type) {
 }
 
 // hook de debug (utile en développement, inoffensif en prod)
-window.__game = { player, npc, clock, needs, quests };
+window.__game = { player, npcs, clock, needs, quests, dialogue, endCinematic: () => endCinematic() };
 
 // --- boucle de jeu ---
 let last = performance.now();
@@ -118,15 +173,24 @@ function loop(now) {
   if (state === "title") {
     if (input.readStart()) {
       titleEl.classList.add("hidden-fade");
-      input.readInteract(); // évite une interaction immédiate au lancement
-      state = "playing";
+      input.readInteract();
+      startCinematic();
     }
     world.updateCamera(player.x, player.y, dt, true);
     world.render();
     return;
   }
 
+  if (state === "cinematic") {
+    if (input.readSkip()) endCinematic();
+    else if (input.readStart() || input.readInteract()) advanceCinematic();
+    world.updateCamera(player.x, player.y, dt, true);
+    world.render();
+    return;
+  }
+
   dialogue.update(dt);
+  input.readSkip();
 
   if (dialogue.isOpen) {
     // monde figé pendant la lecture
@@ -146,7 +210,13 @@ function loop(now) {
     needs.update(dt);
 
     const evening = clock.hourFloat >= 20 || clock.hourFloat < 6;
-    npc.update(dt, isSolid, evening ? SPAWNS.partnerEvening : SPAWNS.partnerDay);
+    const anchors = {
+      partner: evening ? SPAWNS.partnerEvening : SPAWNS.partnerDay,
+      sophie: SPAWNS.sophie,
+      romain: SPAWNS.romain,
+      arij: SPAWNS.arij,
+    };
+    for (const [id, npc] of Object.entries(npcs)) npc.update(dt, isSolid, anchors[id]);
 
     if (action) {
       action.t += dt;
@@ -159,13 +229,15 @@ function loop(now) {
       }
     } else {
       player.update(dt, input, isSolid, needs.anyLow());
+      quests.handleGoto(player.x, player.y);
       const spot = interactions.update(player.x, player.y, spotVisible);
       if (input.readInteract() && spot) startInteraction(spot);
     }
 
-    // petits cœurs quand ils sont l'un près de l'autre
-    if (Math.hypot(npc.x - player.x, npc.y - player.y) < 2 && Math.random() < dt * 0.12) {
-      world.spawnHearts(npc.x, npc.y - 1.2, 1);
+    // petits cœurs quand Robin et elle sont proches
+    const partner = npcs.partner;
+    if (partner && Math.hypot(partner.x - player.x, partner.y - player.y) < 2 && Math.random() < dt * 0.12) {
+      world.spawnHearts(partner.x, partner.y - 1.2, 1);
     }
   }
 

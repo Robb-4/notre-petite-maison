@@ -3,6 +3,7 @@ export function createInput(canvas) {
   const held = new Set();
   let interactEdge = false;
   let startEdge = false;
+  let skipEdge = false;
 
   const PREVENT = new Set([
     "Space",
@@ -18,6 +19,7 @@ export function createInput(canvas) {
     held.add(e.code);
     if (e.code === "KeyE" || e.code === "Space") interactEdge = true;
     if (e.code === "Enter" || e.code === "KeyE" || e.code === "Space") startEdge = true;
+    if (e.code === "Escape") skipEdge = true;
   });
   window.addEventListener("keyup", (e) => held.delete(e.code));
   window.addEventListener("blur", () => held.clear());
@@ -43,6 +45,11 @@ export function createInput(canvas) {
     readStart() {
       const v = startEdge;
       startEdge = false;
+      return v;
+    },
+    readSkip() {
+      const v = skipEdge;
+      skipEdge = false;
       return v;
     },
   };

@@ -16,6 +16,12 @@ export const ACTIONS = {
   bed: { special: "sleep", dlg: "use_bed", speaker: "player" },
   partner: { duration: 0, effects: { social: 35, fun: 10 }, dlg: "partner_talk", speaker: "partner" },
   lost_item: { duration: 1.2, effects: {}, dlg: null, speaker: "player" },
+  // hôpital
+  sophie: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_sophie", speaker: "sophie" },
+  romain: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_romain", speaker: "romain" },
+  arij: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_arij", speaker: "arij" },
+  her_desk: { duration: 1.2, effects: { fun: 10 }, dlg: "use_her_desk", speaker: "player" },
+  sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
 };
 
 // Distance d'un point au rectangle (0 si dedans).
@@ -26,9 +32,10 @@ function rectDist(px, py, r) {
 }
 
 export class Interactions {
-  // placements: PLACEMENTS de map.js ; npc: le PNJ (position dynamique)
-  constructor(placements, npc) {
-    this.npc = npc;
+  // placements: PLACEMENTS de map.js ; npcs: { id: npcInstance } (positions
+  // dynamiques — les PNJ sont des spots mobiles)
+  constructor(placements, npcs) {
+    this.npcs = npcs;
     this.listeners = [];
     this.current = null;
     this.spots = [];
@@ -65,15 +72,14 @@ export class Interactions {
         best = s;
       }
     }
-    // le PNJ est un spot mobile
-    const dNpc = Math.hypot(this.npc.x - px, this.npc.y - py);
-    if (dNpc < Math.max(bestDist, 1.3) && dNpc < 1.3) {
-      best = {
-        type: "partner",
-        cx: this.npc.x,
-        cy: this.npc.y,
-        rect: null,
-      };
+    // les PNJ sont des spots mobiles (rayon un peu plus généreux)
+    let bestNpcDist = 1.3;
+    for (const [id, npc] of Object.entries(this.npcs)) {
+      const d = Math.hypot(npc.x - px, npc.y - py);
+      if (d < bestNpcDist) {
+        bestNpcDist = d;
+        best = { type: id, cx: npc.x, cy: npc.y, rect: null };
+      }
     }
     this.current = best;
     return best;

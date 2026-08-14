@@ -433,6 +433,38 @@ const PHOTO = [
   "..........",
 ];
 
+// Écran d'ordinateur (posé sur les bureaux de l'hôpital)
+const MONITOR = [
+  "KKKKKKKKKK",
+  "KccccccccK",
+  "KccscccccK",
+  "KccccccccK",
+  "KKKKKKKKKK",
+  "....KK....",
+  "...KKKK...",
+  "..........",
+];
+
+// Panneau de l'hôpital (croix rouge sur pied)
+const SIGN = [
+  "DDDDDDDDDDDDDD",
+  "DMMMMMMMMMMMMD",
+  "DMMMMMRRMMMMMD",
+  "DMMMMMRRMMMMMD",
+  "DMMMRRRRRRMMMD",
+  "DMMMRRRRRRMMMD",
+  "DMMMMMRRMMMMMD",
+  "DMMMMMRRMMMMMD",
+  "DMMMMMMMMMMMMD",
+  "DDDDDDDDDDDDDD",
+  "......DD......",
+  "......DD......",
+  "......DD......",
+  "......DD......",
+  "......DD......",
+  "..............",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -469,7 +501,14 @@ export const FURNITURE = {
   table: { grid: TABLE, fw: 1, fh: 1, solid: true },
   photo: { grid: PHOTO, fw: 1, fh: 1, solid: true },
   lost_item: { grid: SOCK, fw: 1, fh: 1, solid: false },
+  // hôpital
+  desk: { grid: MONITOR, fw: 1, fh: 1, solid: true },
+  her_desk: { grid: MONITOR, fw: 1, fh: 1, solid: true },
+  counter: { grid: MONITOR, fw: 1, fh: 1, solid: true },
+  sign: { grid: SIGN, fw: 1, fh: 1, solid: true },
 };
+
+export { MONITOR, SIGN };
 
 // ---------------------------------------------------------------------------
 // TUILES DE SOL / MUR — 16x16, générées procéduralement (déterministe)
@@ -639,6 +678,10 @@ export const BOX_TEX_GRIDS = {
   nightTop: genGrid(16, 16, (x, y) =>
     x === 0 || y === 0 || x === 15 || y === 15 ? "W" : "w"
   ),
+  deskTop: genGrid(16, 16, (x, y) =>
+    x === 0 || y === 0 || x === 15 || y === 15 ? "m" : "M"
+  ),
+  deskSide: genGrid(16, 9, (x, y) => (y === 0 || y === 8 || x === 0 ? "m" : "M")),
   nightFront: genGrid(16, 10, (x, y) => {
     if (x === 0 || y === 0 || x === 15 || y === 9) return "W";
     if (x >= 3 && x <= 12 && y >= 2 && y <= 7 && (x === 3 || x === 12 || y === 2 || y === 7)) return "W";
