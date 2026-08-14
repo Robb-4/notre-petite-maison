@@ -57,8 +57,12 @@ le cache de GitHub Pages est têtu).
 ## 🧱 Technique
 
 - three.js (vendored dans `lib/`, importé via importmap — zéro dépendance réseau)
-- Caméra orthographique vue du dessus, résolution interne 640×360 mise à
-  l'échelle entière, textures `NearestFilter` : pixels nets garantis
+- Rendu « HD-2D » : caméra orthographique inclinée (réglable via
+  `config.js → view.pitchDeg`, 90 = vue du dessus à plat), murs en volumes
+  avec cutaway façon Sims, meubles en boîtes texturées, personnages et
+  plantes en billboards avec ombres portées
+- Résolution interne 640×360 mise à l'échelle entière, textures
+  `NearestFilter` : pixels nets garantis
 - Aucune image : tous les sprites sont des grilles de texte converties en
   `CanvasTexture` au chargement
 - HUD et dialogues en DOM, teinte jour/nuit en overlay `mix-blend-mode`

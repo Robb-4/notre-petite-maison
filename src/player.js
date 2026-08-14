@@ -1,30 +1,37 @@
-// Vue des personnages (sprite animé) + déplacement du joueur avec collision.
-import * as THREE from "three";
+// Vue des personnages (billboard animé + ombre) + déplacement du joueur.
 import { CONFIG } from "./config.js";
 import { CHAR_SPRITES } from "./sprites.js";
-import { makeTexture, makeSpriteMaterial } from "./textures.js";
-import { zForBase } from "./world.js";
+import { makeTexture } from "./textures.js";
 
-// Crée le mesh + textures d'un personnage. spriteSet: "her" | "him".
-export function createCharacterView(spriteSet, palette) {
+const OUTLINE = "#241726"; // contour des personnages, pour la lisibilité en 3D
+const CHAR_W = 0.75;
+const CHAR_H = 1.0;
+const CHAR_TRAIL = 1 / 16; // ligne vide en bas des grilles
+
+// Crée le billboard + textures d'un personnage. spriteSet: "her" | "him".
+// La vue s'ajoute elle-même à la scène.
+export function createCharacterView(world, spriteSet, palette) {
   const set = CHAR_SPRITES[spriteSet];
   const texs = {};
   for (const dir of ["down", "up", "side"]) {
     for (const frame of ["idle", "step"]) {
-      texs[dir + frame] = makeTexture(set[dir][frame], palette);
+      texs[dir + frame] = makeTexture(set[dir][frame], palette, OUTLINE);
     }
   }
-  const mat = makeSpriteMaterial(texs.downidle);
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 1), mat);
+  const mesh = world.makeBillboard(texs.downidle, CHAR_W, CHAR_H);
+  const shadow = world.makeShadow(1);
+  world.scene.add(mesh);
+  world.scene.add(shadow);
 
   function setPose(dir, stepping) {
     const key = dir === "left" || dir === "right" ? "side" : dir;
-    mat.map = texs[key + (stepping ? "step" : "idle")];
+    mesh.material.map = texs[key + (stepping ? "step" : "idle")];
     mesh.scale.x = dir === "left" ? -1 : 1;
   }
   // x,y = position des pieds en coordonnées carte
   function setFeet(x, y, bob = 0) {
-    mesh.position.set(x, -y + 0.5 + bob, zForBase(y));
+    world.setBillboardPos(mesh, x, y, CHAR_H, bob, CHAR_TRAIL);
+    shadow.position.set(x, 0.02, y);
   }
   return { mesh, setPose, setFeet };
 }

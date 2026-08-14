@@ -6,6 +6,15 @@ export const CONFIG = {
   internalHeight: 360,
   pxPerTile: 32,        // 1 tuile = 32 px internes (sprites 16 px affichés x2)
 
+  // Vue 3D « HD-2D » : caméra orthographique inclinée
+  view: {
+    pitchDeg: 50,        // inclinaison de la caméra (90 = vue du dessus à plat)
+    camDistance: 30,     // distance de la caméra le long du rayon de vue
+    wallHeight: 1.25,    // hauteur des murs pleins (en tuiles)
+    wallShortHeight: 0.32, // murs « cutaway » côté caméra, façon Sims
+    grassSkirt: 7,       // tuiles d'herbe générées autour de la carte
+  },
+
   // Mouvement
   playerSpeed: 3.5,     // tuiles / seconde
   playerSpeedTired: 2.2, // si un besoin < seuil bas

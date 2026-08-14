@@ -28,13 +28,11 @@ const dialogue = new Dialogue(DATA);
 const clock = new Clock();
 const needs = new Needs();
 
-const playerView = createCharacterView("her", DATA.characters.player.palette);
+const playerView = createCharacterView(world, "her", DATA.characters.player.palette);
 const player = new Player(playerView, SPAWNS.player.x, SPAWNS.player.y);
-world.scene.add(playerView.mesh);
 
-const npcView = createCharacterView("him", DATA.characters.partner.palette);
+const npcView = createCharacterView(world, "him", DATA.characters.partner.palette);
 const npc = new NPC(npcView, SPAWNS.partner.x, SPAWNS.partner.y);
-world.scene.add(npcView.mesh);
 
 const interactions = new Interactions(PLACEMENTS, npc);
 
@@ -184,20 +182,20 @@ function loop(now) {
 
   const spot = !dialogue.isOpen && !action && state === "playing" ? interactions.current : null;
   if (spot) {
-    const p = world.project(spot.cx, spot.topY - 0.2);
+    const p = world.project(spot.cx, spot.cy, 1.7);
     hud.showPrompt(DATA.flavor[spot.type] ?? spot.type, p.sx, p.sy);
   } else {
     hud.hidePrompt();
   }
 
   if (action) {
-    const p = world.project(player.x, player.y + 0.4);
+    const p = world.project(player.x, player.y + 0.5, 0);
     hud.showActionBar(action.t / action.def.duration, p.sx, p.sy);
   }
 
   const low = needs.lowestLow();
   if (low && !dialogue.isOpen && state === "playing") {
-    const p = world.project(player.x, player.y - 1.5);
+    const p = world.project(player.x, player.y, 1.55);
     hud.showBubble(CONFIG.needs[low].icon, p.sx, p.sy);
   } else {
     hud.hideBubble();

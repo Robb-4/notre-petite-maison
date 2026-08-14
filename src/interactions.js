@@ -12,6 +12,7 @@ export const ACTIONS = {
   bookshelf: { duration: 1.5, effects: { fun: 15 }, dlg: "use_bookshelf", speaker: "player" },
   plant: { duration: 1, effects: { fun: 5 }, dlg: "use_plant", speaker: "player" },
   table: { duration: 1, effects: { fun: 5 }, dlg: "use_table", speaker: "player" },
+  photo: { duration: 1, effects: { fun: 8, social: 5 }, dlg: "use_photo", speaker: "player" },
   bed: { special: "sleep", dlg: "use_bed", speaker: "player" },
   partner: { duration: 0, effects: { social: 35, fun: 10 }, dlg: "partner_talk", speaker: "partner" },
   lost_item: { duration: 1.2, effects: {}, dlg: null, speaker: "player" },
@@ -38,7 +39,7 @@ export class Interactions {
         type: p.type,
         rect: { x0: p.col, y0: p.row, x1: p.col + def.fw, y1: p.row + def.fh },
         cx: p.col + def.fw / 2,
-        topY: p.row,
+        cy: p.row + def.fh / 2,
       });
     }
   }
@@ -70,7 +71,7 @@ export class Interactions {
       best = {
         type: "partner",
         cx: this.npc.x,
-        topY: this.npc.y - 1.1,
+        cy: this.npc.y,
         rect: null,
       };
     }

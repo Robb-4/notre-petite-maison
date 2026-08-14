@@ -417,6 +417,22 @@ const TABLE = [
   "................",
 ];
 
+// Photo souvenir encadrée (posée sur la table de nuit)
+const PHOTO = [
+  "WWWWWWWWWW",
+  "WwwwwwwwwW",
+  "WwCCCCCCwW",
+  "WwCCCCCCwW",
+  "WwCBCCGCwW",
+  "WwCBCCGCwW",
+  "WwCggggCwW",
+  "WwwwwwwwwW",
+  "WWWWWWWWWW",
+  "....WW....",
+  "....WW....",
+  "..........",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -451,6 +467,7 @@ export const FURNITURE = {
   plant: { grid: PLANT, fw: 1, fh: 1, solid: true },
   bookshelf: { grid: BOOKSHELF, fw: 1, fh: 1, solid: true },
   table: { grid: TABLE, fw: 1, fh: 1, solid: true },
+  photo: { grid: PHOTO, fw: 1, fh: 1, solid: true },
   lost_item: { grid: SOCK, fw: 1, fh: 1, solid: false },
 };
 
@@ -475,6 +492,12 @@ export const TILE_PAL = {
   h: "#a5714a", // mur haut
   r: "#e0a8ba", // tapis
   s: "#c98da2", // tapis motif
+  t: "#b39066", // dessus de mur (chapeau)
+  u: "#8a6b48", // bord du chapeau
+  z: "#4a3120", // plinthe
+  F: "#efe4cf", // cadre de fenêtre
+  e: "#a9d9ea", // vitre
+  E: "#d3f0fa", // reflet de vitre
 };
 
 function genTile(fn) {
@@ -523,3 +546,130 @@ export const TILES = {
     return "A";
   }),
 };
+
+// ---------------------------------------------------------------------------
+// VUE 3D « HD-2D » : façades de murs, faces des meubles-boîtes, billboards
+// ---------------------------------------------------------------------------
+
+function genGrid(w, h, fn) {
+  const rows = [];
+  for (let y = 0; y < h; y++) {
+    let r = "";
+    for (let x = 0; x < w; x++) r += fn(x, y);
+    rows.push(r);
+  }
+  return rows;
+}
+
+// briques du mur (partagé entre les hauteurs de façade)
+function brickChar(x, y) {
+  if (y % 5 === 4) return "a";
+  if ((x + (Math.floor(y / 5) % 2) * 4) % 8 === 0) return "a";
+  return "A";
+}
+
+function wallFace(h, withWindow = false) {
+  return genGrid(16, h, (x, y) => {
+    if (y === 0) return "h";
+    if (y >= h - 2) return "z"; // plinthe
+    if (withWindow && x >= 3 && x <= 12 && y >= 4 && y <= 13) {
+      const edge = x === 3 || x === 12 || y === 4 || y === 13;
+      if (edge) return "F";
+      return (x + y) % 7 < 2 ? "E" : "e"; // vitre + reflet
+    }
+    if (withWindow && y === 14 && x >= 3 && x <= 12) return "F"; // rebord
+    return brickChar(x, y);
+  });
+}
+
+export const WALL_TEX_GRIDS = {
+  cap: genGrid(16, 16, (x, y) =>
+    x === 0 || y === 0 || x === 15 || y === 15 || ((x * 7 + y * 13) % 23 === 0 && x > 2 && x < 13)
+      ? "u"
+      : "t"
+  ),
+  face: wallFace(20),
+  faceWindow: wallFace(20, true),
+  faceShort: genGrid(16, 6, (x, y) => (y === 0 ? "h" : y === 5 ? "z" : brickChar(x, y))),
+};
+
+// faces des meubles rendus en volumes (boîtes)
+export const BOX_TEX_GRIDS = {
+  bedTop: BED,
+  bedSide: genGrid(16, 8, (x, y) => (y >= 6 ? "W" : y === 2 ? "b" : "B")),
+  couchSeatTop: genGrid(32, 12, (x, y) => (x === 15 || x === 16 || y === 11 ? "e" : "E")),
+  couchSeatFront: genGrid(32, 6, (x, y) => (y >= 5 ? "u" : "U")),
+  couchBackTop: genGrid(32, 4, () => "U"),
+  couchBackFront: genGrid(32, 8, (x, y) =>
+    y === 0 ? "U" : x === 15 || x === 16 ? "e" : "E"
+  ),
+  couchSide: genGrid(12, 10, (x, y) => (y >= 8 ? "u" : "U")),
+  stoveTop: genGrid(16, 16, (x, y) => {
+    if (x === 0 || y === 0 || x === 15 || y === 15) return "m";
+    for (const [cx, cy] of [[4, 4], [11, 4], [4, 11], [11, 11]]) {
+      const d2 = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+      if (d2 <= 6) return "K";
+    }
+    return "M";
+  }),
+  stoveFront: genGrid(16, 14, (x, y) => {
+    if (y === 0 || y >= 13) return "m";
+    if (y <= 2 && (x === 2 || x === 5 || x === 8 || x === 11)) return "D";
+    if (x >= 2 && x <= 13 && y >= 4 && y <= 11) {
+      const edge = x === 2 || x === 13 || y === 4 || y === 11;
+      return edge ? "K" : "D";
+    }
+    return "M";
+  }),
+  stoveSide: genGrid(16, 14, (x, y) => (x === 0 || y === 0 || y >= 13 ? "m" : "M")),
+  fridgeFront: FRIDGE,
+  fridgeSide: genGrid(16, 24, (x, y) => (x <= 1 || y <= 1 || y >= 22 ? "m" : "M")),
+  fridgeTop: genGrid(16, 16, (x, y) => (x === 0 || y === 0 || x === 15 || y === 15 ? "m" : "M")),
+  tableTop: genGrid(16, 16, (x, y) =>
+    x === 0 || y === 0 || x === 15 || y === 15 || y === 8 ? "W" : "w"
+  ),
+  tableSide: genGrid(16, 9, (x, y) => (y === 0 || y === 8 ? "W" : "w")),
+  nightTop: genGrid(16, 16, (x, y) =>
+    x === 0 || y === 0 || x === 15 || y === 15 ? "W" : "w"
+  ),
+  nightFront: genGrid(16, 10, (x, y) => {
+    if (x === 0 || y === 0 || x === 15 || y === 9) return "W";
+    if (x >= 3 && x <= 12 && y >= 2 && y <= 7 && (x === 3 || x === 12 || y === 2 || y === 7)) return "W";
+    if ((x === 7 || x === 8) && (y === 4 || y === 5)) return "W";
+    return "w";
+  }),
+};
+
+// petits billboards décoratifs
+export const VASE = [
+  ".R.Y.V..",
+  ".YRVYR..",
+  "..GGG...",
+  "..MMM...",
+  "..MMM...",
+  "...MM...",
+  "........",
+];
+
+export const FLOWER_BILL = [
+  "..RR....",
+  ".RYYR...",
+  "..RR..V.",
+  "...G.VYV",
+  "...G..V.",
+  "...G..G.",
+  "..G.G.G.",
+  "...GG.G.",
+  "....G...",
+  "....G...",
+  "........",
+];
+
+export const SHADOW = [
+  "...KKKKKK...",
+  ".KKKKKKKKKK.",
+  "KKKKKKKKKKKK",
+  "KKKKKKKKKKKK",
+  ".KKKKKKKKKK.",
+  "...KKKKKK...",
+];

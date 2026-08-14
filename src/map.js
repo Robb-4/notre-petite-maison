@@ -38,6 +38,7 @@ export const TILE_DEFS = {
 export const PLACEMENTS = [
   // chambre
   { type: "bed", col: 2, row: 2 },
+  { type: "photo", col: 3, row: 2 }, // table de nuit + photo souvenir
   { type: "bookshelf", col: 5, row: 2 },
   { type: "plant", col: 7, row: 2 },
   // salle de bain

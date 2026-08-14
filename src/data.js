@@ -113,6 +113,12 @@ export default {
     use_table: {
       any: ["Les fleurs de [OCCASION OÙ IL T'A OFFERT DES FLEURS]."],
     },
+    use_photo: {
+      any: [
+        "Notre photo de [VOTRE VOYAGE / MOMENT PRÉFÉRÉ]…",
+        "On avait l'air si jeunes sur cette photo. C'était il y a [DURÉE] !",
+      ],
+    },
 
     // Événements horaires
     event_cafe_matin: {
@@ -146,6 +152,7 @@ export default {
     bookshelf: "L'étagère à [LIVRES / MANGAS / JEUX]",
     plant: "La plante (survivante)",
     table: "La petite table aux fleurs",
+    photo: "Notre photo encadrée",
     lost_item: "Une chaussette ?!",
     partner: "Robin",
   },
