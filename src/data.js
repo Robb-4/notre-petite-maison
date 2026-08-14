@@ -68,6 +68,12 @@ export default {
       spriteSet: "him",
       palette: { H: "#8a6a3c", S: "#ecc39c", T: "#b5484d", P: "#46516b", F: "#2e3138", K: "#2b2330" },
     },
+    // La meilleure amie, compagne de voyage en Égypte.
+    mylene: {
+      nom: "Mylène",
+      spriteSet: "her",
+      palette: { H: "#a34a2a", S: "#f2c9a0", T: "#3a8a5f", P: "#f2c9a0", F: "#4a2e1f", K: "#3b2b40" },
+    },
   },
 
   // --------------------------------------------------------------------------
@@ -94,8 +100,9 @@ export default {
   // --------------------------------------------------------------------------
   transition_egypte: [
     "Quelques semaines après la Saint-Valentin…",
-    "[POURQUOI CE VOYAGE EN ÉGYPTE ? famille ? rêve de toujours ? travail ?]",
-    "Elle s'envole pour l'Égypte ✈ — leur premier éloignement depuis la rencontre.",
+    "[POURQUOI CE VOYAGE EN ÉGYPTE ? rêve de toujours ? occasion en or ?]",
+    "Elle s'envole pour l'Égypte avec Mylène, sa meilleure amie ✈",
+    "(Premier éloignement depuis la rencontre avec Robin. Il tiendra. Probablement.)",
   ],
 
   // --------------------------------------------------------------------------
@@ -210,21 +217,28 @@ export default {
       { qui: "player", texte: "(Meilleure Saint-Valentin. Meilleure équipe.)" },
       { qui: "partner", texte: "À nous ❤" },
     ],
-    // ---- LE VOYAGE EN ÉGYPTE ----
+    // ---- LE VOYAGE EN ÉGYPTE, AVEC MYLÈNE ----
+    egypte_mylene: [
+      { qui: "mylene", texte: "ON. Y. EST. L'Égypte, ma belle !!" },
+      { qui: "player", texte: "J'arrive toujours pas à y croire. Regarde ces pyramides !" },
+      { qui: "mylene", texte: "[UNE PHRASE TYPIQUE DE MYLÈNE / VOTRE DÉLIRE DE VOYAGE ?]" },
+      { qui: "player", texte: "Allez viens, on va tout voir. TOUT." },
+    ],
     egypte_pyramides: [
       { qui: "player", texte: "Wow. WOW. Elles sont immenses en vrai." },
+      { qui: "mylene", texte: "Allez, pose devant ! Photo. Photo. PHOTO." },
       { qui: "player", texte: "[SON VRAI MOMENT PRÉFÉRÉ DU VOYAGE EN ÉGYPTE ?]" },
-      { qui: "player", texte: "(Photo. Photo. Photo. Robin ne va pas y croire.)" },
+      { qui: "mylene", texte: "(Elle en prend quarante. Robin ne va pas y croire.)" },
     ],
     egypte_sphinx: [
       { qui: "player", texte: "Le Sphinx… 4500 ans, et pas une ride." },
-      { qui: "player", texte: "[LA BLAGUE OU L'ANECDOTE DU SPHINX ?]" },
-      { qui: "player", texte: "(Tu prends une photo « pour la science ». Et pour Robin.)" },
+      { qui: "mylene", texte: "[LA BLAGUE OU L'ANECDOTE DU SPHINX — VERSION MYLÈNE ?]" },
+      { qui: "player", texte: "(Fou rire. Le Sphinx, lui, reste de marbre. Enfin, de calcaire.)" },
     ],
     egypte_chameau: [
       { qui: "player", texte: "Bonjour toi. Tu t'appelles comment ? [NOM DU CHAMEAU ?]" },
-      { qui: "player", texte: "[L'HISTOIRE DU CHAMEAU / DE LA BALADE À DOS DE CHAMEAU ?]" },
-      { qui: "player", texte: "(Le chameau te juge un peu. Mais avec bienveillance.)" },
+      { qui: "mylene", texte: "[QUI EST MONTÉE DESSUS ? TOI OU MYLÈNE ? RACONTEZ !]" },
+      { qui: "player", texte: "(Le chameau vous juge un peu. Mais avec bienveillance.)" },
     ],
     // le soir, au campement : l'appel à Paris 📱
     egypte_appel: [
@@ -232,7 +246,8 @@ export default {
       { qui: "partner", texte: "Allô ?! Tu me vois ? Raconte ! Les pyramides ? Le sphinx ?!" },
       { qui: "player", texte: "C'était incroyable. Mais tu sais quoi ? [CE QU'ELLE LUI A DIT / CE QUI LUI MANQUAIT]" },
       { qui: "partner", texte: "Toi aussi tu me manques. La maison est trop calme sans toi." },
-      { qui: "partner", texte: "Dépêche-toi de rentrer… j'ai un truc à te dire. En vrai, pas au téléphone." },
+      { qui: "mylene", texte: "(De loin) C'est Robiiiin ?? Dis-lui bonjouuuur !!" },
+      { qui: "partner", texte: "Salut Mylène ! …Bref. Dépêche-toi de rentrer, j'ai un truc à te dire. En vrai, pas au téléphone." },
       { qui: "player", texte: "(Un truc à me dire ?! COMMENT VEUX-TU DORMIR MAINTENANT ?)" },
     ],
   },
@@ -297,6 +312,13 @@ export default {
         "[BLAGUE RÉCURRENTE DE DAVID]",
         "Ticket n°4512 : « ça marche pas ». Merci pour les détails.",
         "On déploie vendredi 17h ? Excellente idée. (non)",
+      ],
+    },
+    talk_mylene: {
+      any: [
+        "[BLAGUE RÉCURRENTE DE MYLÈNE]",
+        "Meilleure amie, meilleur voyage. C'est mathématique.",
+        "On refait nos valises quand tu veux, tu sais.",
       ],
     },
 
@@ -418,6 +440,7 @@ export default {
     sphinx: "Le Sphinx",
     camel: "Un chameau",
     palm: "Un palmier",
+    mylene: "Mylène (la meilleure)",
   },
 
   // --------------------------------------------------------------------------
@@ -558,6 +581,11 @@ export default {
         {
           goto: { map: "egypte", x0: 5, y0: 2, x1: 14, y1: 10 },
           label: "Explorer le désert (vers les pyramides)",
+        },
+        {
+          target: "mylene",
+          sequence: "egypte_mylene",
+          label: "Retrouver Mylène (elle est déjà partie devant !)",
         },
         {
           target: "pyramide_egypte",

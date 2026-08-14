@@ -277,6 +277,8 @@ export const SPAWNS = {
   // les devs (hôpital)
   mahrez: { x: 11.5, y: 22.5 },
   david: { x: 15.5, y: 22.5 },
+  // Mylène, en Égypte avec elle
+  mylene: { x: 14.5, y: 11.5 },
 };
 
 // Grille de collision d'une carte : murs + meubles solides. Hors carte = solide.

@@ -37,7 +37,7 @@ const player = new Player(playerView, SPAWNS.player.x, SPAWNS.player.y);
 
 // PNJ : chacun vit sur sa carte (positions en coordonnées locales)
 const npcs = {};
-for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david"]) {
+for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david", "mylene"]) {
   const c = DATA.characters[id];
   if (!c) continue;
   const view = createCharacterView(world, c.spriteSet ?? "him", c.palette);
@@ -62,6 +62,7 @@ function inStory() {
 
 // Sur quelle carte vit chaque PNJ en ce moment ?
 function npcMapOf(id) {
+  if (id === "mylene") return "egypte";
   if (id !== "partner") return "hospital";
   if (!inStory()) return "home";
   const qid = quests.current?.id;
@@ -386,6 +387,7 @@ function loop(now) {
       arij: SPAWNS.arij,
       mahrez: SPAWNS.mahrez,
       david: SPAWNS.david,
+      mylene: SPAWNS.mylene,
     };
     for (const [id, npc] of Object.entries(activeNpcs)) {
       // le PNJ attendu par l'étape de quête en cours s'arrête et attend

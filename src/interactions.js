@@ -22,6 +22,7 @@ export const ACTIONS = {
   arij: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_arij", speaker: "arij" },
   mahrez: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_mahrez", speaker: "mahrez" },
   david: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_david", speaker: "david" },
+  mylene: { duration: 0, effects: { social: 25, fun: 10 }, dlg: "talk_mylene", speaker: "mylene" },
   her_desk: { duration: 1.2, effects: { fun: 10 }, dlg: "use_her_desk", speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
   signpost: { duration: 0, effects: {}, dlg: null, speaker: "player" },
