@@ -33,6 +33,10 @@ export const ACTIONS = {
   borne: { duration: 0, effects: { fun: 20 }, dlg: "use_borne", speaker: "player" },
   resto_table: { duration: 0, effects: { faim: 30, fun: 10 }, dlg: "use_resto_table", speaker: "player" },
   kong_statue: { duration: 0, effects: { fun: 5 }, dlg: "use_kong_statue", speaker: "player" },
+  // l'Égypte
+  pyramide_egypte: { duration: 0, effects: { fun: 10 }, dlg: "use_pyr_egypte", speaker: "player" },
+  sphinx: { duration: 0, effects: { fun: 8 }, dlg: "use_sphinx", speaker: "player" },
+  camel: { duration: 0, effects: { fun: 10, social: 5 }, dlg: "use_camel", speaker: "player" },
 };
 
 // Distance d'un point au rectangle (0 si dedans).

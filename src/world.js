@@ -150,6 +150,8 @@ export function createWorld() {
     furniture = [];
     hearts = [];
     const windows = WINDOW_CELLS[mapDef.id] ?? new Set();
+    const skirtChar = mapDef.skirt ?? "g";
+    renderer.setClearColor(mapDef.horizon ?? "#69ab45");
 
     function addFloor(col, row, matName) {
       const mesh = new THREE.Mesh(tileGeo, tileMats[matName]);
@@ -172,7 +174,7 @@ export function createWorld() {
     for (let row = -skirt; row < mapH + skirt; row++) {
       for (let col = -skirt; col < mapW + skirt; col++) {
         const inMap = col >= 0 && col < mapW && row >= 0 && row < mapH;
-        const ch = inMap ? grid[row][col] : "g";
+        const ch = inMap ? grid[row][col] : skirtChar;
         const def = TILE_DEFS[ch];
         if (!def) continue;
         if (def.tile === "wall") continue;
@@ -282,6 +284,22 @@ export function createWorld() {
           meshes.push(m, edges);
           break;
         }
+        case "pyramide_egypte": {
+          // la Grande Pyramide : pierre pleine, arêtes marquées
+          const geo = new THREE.ConeGeometry(3.5, 3.8, 4);
+          const stone = new THREE.MeshLambertMaterial({ color: "#dcb878" });
+          const m = new THREE.Mesh(geo, stone);
+          m.rotation.y = Math.PI / 4;
+          m.position.set(cx, 1.9, cz);
+          const edges = new THREE.LineSegments(
+            new THREE.EdgesGeometry(geo),
+            new THREE.LineBasicMaterial({ color: "#a8874f" })
+          );
+          edges.rotation.y = Math.PI / 4;
+          edges.position.copy(m.position);
+          meshes.push(m, edges);
+          break;
+        }
         case "joconde":
         case "painting": {
           if (!billTexCache[p.type]) billTexCache[p.type] = makeTexture(def.grid, FURN_PAL, OUTLINE);
@@ -321,13 +339,16 @@ export function createWorld() {
         default: {
           // billboard debout (tv, douche, plante, étagère, borne, gorille…)
           if (!billTexCache[p.type]) billTexCache[p.type] = makeTexture(def.grid, FURN_PAL, OUTLINE);
+          const scale = def.scale ?? 1;
           const size = gridSize(def.grid);
-          const b = makeBillboard(billTexCache[p.type], size.w, size.h);
-          setBillboardPos(b, cx, p.row + def.fh - 0.15, size.h, 0, trailingEmptyRows(def.grid) / 16);
+          const w = size.w * scale;
+          const h = size.h * scale;
+          const b = makeBillboard(billTexCache[p.type], w, h);
+          setBillboardPos(b, cx, p.row + def.fh - 0.15, h, 0, (trailingEmptyRows(def.grid) / 16) * scale);
           if (p.flip) b.scale.x = -1; // flèche des panneaux vers la gauche
           meshes.push(b);
           if (p.type !== "lost_item") {
-            const sh = makeShadow(size.w * 1.1);
+            const sh = makeShadow(w * 1.1);
             sh.position.set(cx, 0.015, p.row + def.fh - 0.35);
             meshes.push(sh);
           }

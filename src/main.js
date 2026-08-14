@@ -54,6 +54,7 @@ const STORY_IDS = new Set([
   "nuit_appel",
   "premier_date",
   "saint_valentin",
+  "egypte",
 ]);
 function inStory() {
   return STORY_IDS.has(quests?.current?.id);
@@ -114,6 +115,7 @@ const interactions = new Interactions(MAPS.home.placements, {});
 
 let pendingInterlude = false;
 let pendingTransition = false; // vers la Saint-Valentin
+let pendingEgypte = false; // vers le voyage en Égypte
 
 const quests = new Quests(DATA.quests, {
   onStepDone: () => hud.toast("✔ Étape accomplie !"),
@@ -141,7 +143,8 @@ const quests = new Quests(DATA.quests, {
       npcs.partner.y = SPAWNS.partnerLouvre.y;
     }
     if (q.id === "premier_date") pendingTransition = true; // direction le 14 février
-    if (q.id === "saint_valentin") pendingInterlude = true; // l'ellipse ❤ finale
+    if (q.id === "saint_valentin") pendingEgypte = true; // direction l'Égypte ✈
+    if (q.id === "egypte") pendingInterlude = true; // le retour, et l'ellipse ❤ finale
     if (allDone) dialogue.showKey("quests_all_done", "partner", clock.bucket());
   },
 });
@@ -203,7 +206,15 @@ function startValentin() {
   hud.toast("❤ 14 février — Saint-Valentin !");
 }
 
-// Après la Saint-Valentin : quelques mois plus tard, la vie à deux commence.
+// Le voyage : elle atterrit en Égypte, au matin.
+function startEgypte() {
+  clock.minutes = 10 * 60;
+  clock.prevMinutes = clock.minutes;
+  switchMap("egypte", { x: 2.5, y: 10 });
+  hud.toast("✈ L'Égypte !");
+}
+
+// Après le retour d'Égypte : quelques mois plus tard, la vie à deux commence.
 function moveInTogether() {
   npcs.partner.x = SPAWNS.partnerDay.x;
   npcs.partner.y = SPAWNS.partnerDay.y;
@@ -340,6 +351,10 @@ function loop(now) {
     pendingTransition = false;
     input.readInteract();
     startCinematic(DATA.transition_valentin, startValentin);
+  } else if (pendingEgypte) {
+    pendingEgypte = false;
+    input.readInteract();
+    startCinematic(DATA.transition_egypte, startEgypte);
   } else if (pendingInterlude) {
     pendingInterlude = false;
     input.readInteract();
@@ -372,7 +387,17 @@ function loop(now) {
       mahrez: SPAWNS.mahrez,
       david: SPAWNS.david,
     };
-    for (const [id, npc] of Object.entries(activeNpcs)) npc.update(dt, isSolid, anchors[id]);
+    for (const [id, npc] of Object.entries(activeNpcs)) {
+      // le PNJ attendu par l'étape de quête en cours s'arrête et attend
+      if (quests.currentStep?.target === id) {
+        npc.state = "idle";
+        npc.moving = false;
+        npc.timer = Math.max(npc.timer, 1);
+        npc.sync();
+        continue;
+      }
+      npc.update(dt, isSolid, anchors[id]);
+    }
 
     if (action) {
       action.t += dt;

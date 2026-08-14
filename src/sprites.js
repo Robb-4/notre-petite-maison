@@ -204,6 +204,8 @@ export const FURN_PAL = {
   N: "#35507a", // bleu marine
   O: "#e8853d", // orange
   V: "#a86fd6", // violet
+  S: "#d9b36c", // pierre / poil des bêtes du désert
+  Q: "#a5804a", // pierre sombre
 };
 
 const BED = [
@@ -578,6 +580,62 @@ const SIGNPOST = [
   "............",
 ];
 
+// Le Sphinx (tête à gauche, corps de lion allongé vers la droite)
+const SPHINX = [
+  "..QQQQ",
+  ".QQSSSQ",
+  ".QSSSSSQ",
+  ".QSKSSKQ",
+  ".QSSSSSQ",
+  ".QQSSSQQ",
+  "..QSSQ...QQQQQQQQQQQQ",
+  "..QSSQQQSSSSSSSSSSSSSQ",
+  ".QSSSSSSSSSSSSSSSSSSSSQ",
+  ".QSSSSSSSSSSSSSSSSSSSSQ",
+  ".QSSSSSSSSSSSSSSSSSSSSQ",
+  ".QSSQQSSSSSSSSSSSSSQQSQ",
+  ".QSSQ.QSSQ.......QSSQ",
+  ".QSSQ.QSSQ.......QSSQ",
+  "QQSSQQQSSQQ.....QQSSQQ",
+  "",
+];
+
+// Le chameau (avec sa petite selle rouge)
+const CAMEL = [
+  ".SS",
+  ".SSS",
+  ".SKS",
+  "..SS",
+  "..SS....SSSS...SSSS",
+  "..SS...SSSSSSRSSSSSS",
+  "..SSSSSSSSSSSRSSSSSSS",
+  "...SSSSSSSSSSSSSSSSSS",
+  "...SS...SS....SS...SS",
+  "...SS...SS....SS...SS",
+  "...QQ...QQ....QQ...QQ",
+  "",
+];
+
+// Un palmier
+const PALM = [
+  "..GG.....GG",
+  ".GGGG.gGGGG",
+  "GGgGGGGGGgGG",
+  ".GG.GGGG.GG.",
+  "....GOOG",
+  ".....WW",
+  ".....WW",
+  ".....WW",
+  "....WW",
+  "....WW",
+  "....WW",
+  "...WW",
+  "...WW",
+  "...WWW",
+  "..WWWW",
+  "",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -629,6 +687,11 @@ export const FURNITURE = {
   borne: { grid: BORNE, fw: 1, fh: 1, solid: true },
   kong_statue: { grid: KONG_STATUE, fw: 1, fh: 1, solid: true },
   resto_table: { grid: CANDLE, fw: 1, fh: 1, solid: true }, // boîte + bougie
+  // l'Égypte
+  sphinx: { grid: SPHINX, fw: 3, fh: 2, solid: true, scale: 1.7 },
+  camel: { grid: CAMEL, fw: 2, fh: 1, solid: true, scale: 1.35 },
+  palm: { grid: PALM, fw: 1, fh: 1, solid: true, scale: 1.5 },
+  pyramide_egypte: { grid: MONITOR, fw: 5, fh: 5, solid: true }, // volume 3D dédié
 };
 
 export { CANDLE };
@@ -664,6 +727,10 @@ export const TILE_PAL = {
   E: "#d3f0fa", // reflet de vitre
   x: "#3a3350", // moquette d'arcade
   y: "#544a75", // motif de moquette
+  b: "#ecd9a0", // sable
+  c: "#d9c185", // sable ombre
+  o: "#7fc7d9", // eau d'oasis
+  O: "#5aa8bd", // vague
 };
 
 function genTile(fn) {
@@ -713,6 +780,10 @@ export const TILES = {
   arcadeFloor: genTile((x, y) =>
     x === 0 || y === 0 || (x * 5 + y * 7) % 17 === 0 ? "y" : "x"
   ),
+  sand: genTile((x, y) =>
+    x === 0 || y === 0 || (x * 7 + y * 13) % 19 === 0 ? "c" : "b"
+  ),
+  water: genTile((x, y) => ((x + y * 3) % 11 === 0 ? "O" : "o")),
   wall: genTile((x, y) => {
     if (y === 0) return "h";
     if (y % 5 === 4) return "a";

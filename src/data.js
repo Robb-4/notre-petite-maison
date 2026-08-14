@@ -90,9 +90,19 @@ export default {
   ],
 
   // --------------------------------------------------------------------------
-  // INTERLUDE — joué après la Saint-Valentin (ellipse temporelle).
+  // TRANSITION — jouée entre la Saint-Valentin et le voyage en Égypte.
+  // --------------------------------------------------------------------------
+  transition_egypte: [
+    "Quelques semaines après la Saint-Valentin…",
+    "[POURQUOI CE VOYAGE EN ÉGYPTE ? famille ? rêve de toujours ? travail ?]",
+    "Elle s'envole pour l'Égypte ✈ — leur premier éloignement depuis la rencontre.",
+  ],
+
+  // --------------------------------------------------------------------------
+  // INTERLUDE — joué après le retour d'Égypte (ellipse temporelle).
   // --------------------------------------------------------------------------
   interlude: [
+    "De retour à Paris : il l'attendait à l'aéroport, [DÉTAIL DU RETOUR : une pancarte ? des fleurs ? un plat ?]",
     "[CE QUI VOUS A FAIT TOMBER AMOUREUX POUR DE BON ?]",
     "Et [DURÉE] plus tard… ils emménageaient ensemble dans leur petite maison ❤",
   ],
@@ -199,6 +209,31 @@ export default {
       { qui: "partner", texte: "[CE QU'IL A DIT DE MIGNON / DRÔLE PENDANT LE DÎNER ?]" },
       { qui: "player", texte: "(Meilleure Saint-Valentin. Meilleure équipe.)" },
       { qui: "partner", texte: "À nous ❤" },
+    ],
+    // ---- LE VOYAGE EN ÉGYPTE ----
+    egypte_pyramides: [
+      { qui: "player", texte: "Wow. WOW. Elles sont immenses en vrai." },
+      { qui: "player", texte: "[SON VRAI MOMENT PRÉFÉRÉ DU VOYAGE EN ÉGYPTE ?]" },
+      { qui: "player", texte: "(Photo. Photo. Photo. Robin ne va pas y croire.)" },
+    ],
+    egypte_sphinx: [
+      { qui: "player", texte: "Le Sphinx… 4500 ans, et pas une ride." },
+      { qui: "player", texte: "[LA BLAGUE OU L'ANECDOTE DU SPHINX ?]" },
+      { qui: "player", texte: "(Tu prends une photo « pour la science ». Et pour Robin.)" },
+    ],
+    egypte_chameau: [
+      { qui: "player", texte: "Bonjour toi. Tu t'appelles comment ? [NOM DU CHAMEAU ?]" },
+      { qui: "player", texte: "[L'HISTOIRE DU CHAMEAU / DE LA BALADE À DOS DE CHAMEAU ?]" },
+      { qui: "player", texte: "(Le chameau te juge un peu. Mais avec bienveillance.)" },
+    ],
+    // le soir, au campement : l'appel à Paris 📱
+    egypte_appel: [
+      { qui: "player", texte: "(Le soir tombe sur le désert. Ton téléphone capte à peine… mais il capte.)" },
+      { qui: "partner", texte: "Allô ?! Tu me vois ? Raconte ! Les pyramides ? Le sphinx ?!" },
+      { qui: "player", texte: "C'était incroyable. Mais tu sais quoi ? [CE QU'ELLE LUI A DIT / CE QUI LUI MANQUAIT]" },
+      { qui: "partner", texte: "Toi aussi tu me manques. La maison est trop calme sans toi." },
+      { qui: "partner", texte: "Dépêche-toi de rentrer… j'ai un truc à te dire. En vrai, pas au téléphone." },
+      { qui: "player", texte: "(Un truc à me dire ?! COMMENT VEUX-TU DORMIR MAINTENANT ?)" },
     ],
   },
 
@@ -338,6 +373,10 @@ export default {
     quest_done_appel: { any: ["(Comment veux-tu dormir après ÇA ?!)"] },
     quest_done_date: { any: ["Officiellement ensemble ❤ (Et oui : « c'est Disneyland ». Personne ne comprendra jamais, et c'est très bien.)"] },
     quest_done_valentin: { any: ["Jeux d'arcade + [NOM DU RESTO] + lui. La formule parfaite ❤"] },
+    quest_done_egypte: { any: ["L'Égypte dans les yeux… et Paris dans le cœur. Il est temps de rentrer ✈"] },
+    use_pyr_egypte: { any: ["4500 ans d'avance sur nos plus beaux projets.", "[VOTRE SOUVENIR DES PYRAMIDES ?]"] },
+    use_sphinx: { any: ["Il garde le plateau depuis 4500 ans. Sans pause café.", "(Il sait des choses, c'est sûr.)"] },
+    use_camel: { any: ["[NOM DU CHAMEAU ?] approuve ta présence.", "(Il mâche. Toujours. Quoi ? Mystère.)"] },
     use_borne: { any: ["Encore une partie de [VOTRE JEU] ?", "INSÉREZ UNE PIÈCE. (Toujours aussi tentant.)"] },
     use_resto_table: { any: ["Une table aux chandelles… classe.", "(L'odeur de [PLAT DU KONG] flotte encore.)"] },
     use_kong_statue: { any: ["Le gorille du [NOM DU RESTO]. Il en impose.", "(Il vous juge un peu, mais avec bienveillance.)"] },
@@ -375,6 +414,10 @@ export default {
     borne: "Une borne d'arcade",
     resto_table: "Une table aux chandelles",
     kong_statue: "Le gorille du [NOM DU RESTO]",
+    pyramide_egypte: "La Grande Pyramide",
+    sphinx: "Le Sphinx",
+    camel: "Un chameau",
+    palm: "Un palmier",
   },
 
   // --------------------------------------------------------------------------
@@ -506,6 +549,31 @@ export default {
         },
       ],
       rewardDialogue: "quest_done_valentin",
+    },
+    {
+      id: "egypte",
+      titre: "Le voyage en Égypte",
+      description: "Des pyramides, un sphinx… et quelqu'un qui manque.",
+      steps: [
+        {
+          goto: { map: "egypte", x0: 5, y0: 2, x1: 14, y1: 10 },
+          label: "Explorer le désert (vers les pyramides)",
+        },
+        {
+          target: "pyramide_egypte",
+          sequence: "egypte_pyramides",
+          label: "Admirer la Grande Pyramide",
+        },
+        { target: "sphinx", sequence: "egypte_sphinx", label: "Saluer le Sphinx" },
+        {
+          target: "camel",
+          sequence: "egypte_chameau",
+          label: "Faire connaissance avec un chameau",
+          clockTo: 21, // le soir tombe sur le désert…
+          sequenceAfter: "egypte_appel", // …et Robin appelle 📱
+        },
+      ],
+      rewardDialogue: "quest_done_egypte",
     },
     {
       id: "q1",

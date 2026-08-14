@@ -98,7 +98,26 @@ export const TILE_DEFS = {
   f: { tile: "flowers" },
   p: { tile: "path" },
   k: { tile: "arcadeFloor" },
+  s: { tile: "sand" },
+  o: { tile: "water", solid: true },
 };
+
+// ---------------------------------------------------------------------------
+// L'ÉGYPTE (36 × 20) — désert de sable avec une oasis (pas de sortie à pied :
+// on y arrive et on en repart par l'histoire, en avion ✈)
+// ---------------------------------------------------------------------------
+const EGYPT_OASIS = new Set([
+  "28,12", "29,12",
+  "27,13", "28,13", "29,13", "30,13",
+  "26,14", "27,14", "28,14", "29,14", "30,14",
+  "27,15", "28,15", "29,15",
+]);
+const EGYPT_GRID = [];
+for (let r = 0; r < 20; r++) {
+  let row = "";
+  for (let c = 0; c < 36; c++) row += EGYPT_OASIS.has(c + "," + r) ? "o" : "s";
+  EGYPT_GRID.push(row);
+}
 
 // ---------------------------------------------------------------------------
 // LES CARTES — placements en coordonnées locales, sorties (zones de tp)
@@ -212,6 +231,28 @@ export const MAPS = {
       { type: "signpost", col: 16, row: 1, label: "→ Le Louvre (au nord)" },
     ],
     exits: [{ x0: 14.4, y0: 0, x1: 16.6, y1: 0.6, to: "louvre", at: { x: 15.5, y: 12.5 } }],
+  },
+
+  egypte: {
+    name: "🐪 L'Égypte",
+    grid: EGYPT_GRID,
+    skirt: "s", // désert à perte de vue
+    horizon: "#dcc490",
+    placements: [
+      { type: "pyramide_egypte", col: 7, row: 3 },
+      { type: "pyramide_egypte", col: 15, row: 6 },
+      { type: "sphinx", col: 13, row: 13 },
+      { type: "camel", col: 20, row: 10 },
+      // l'oasis et ses palmiers
+      { type: "palm", col: 25, row: 11 },
+      { type: "palm", col: 31, row: 12 },
+      { type: "palm", col: 25, row: 16 },
+      { type: "palm", col: 30, row: 16 },
+      // palmiers isolés
+      { type: "palm", col: 4, row: 14 },
+      { type: "palm", col: 33, row: 4 },
+    ],
+    exits: [],
   },
 };
 
