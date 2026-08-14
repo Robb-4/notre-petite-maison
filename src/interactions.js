@@ -1,0 +1,80 @@
+// Détection de l'objet interactable le plus proche + définition des actions.
+import { CONFIG } from "./config.js";
+import { FURNITURE } from "./sprites.js";
+
+// Ce que fait chaque interaction. duration en secondes (0 = instantané),
+// effects = points de besoins, dlg = clé de dialogue, speaker = qui parle.
+export const ACTIONS = {
+  fridge: { duration: 2, effects: { faim: 45 }, dlg: "use_fridge", speaker: "player" },
+  stove: { duration: 2.5, effects: { faim: 30 }, dlg: "use_stove", speaker: "player" },
+  shower: { duration: 3, effects: { hygiene: 60 }, dlg: "use_shower", speaker: "player" },
+  couch: { duration: 2, effects: { fun: 40 }, dlg: "use_couch", speaker: "player" },
+  bookshelf: { duration: 1.5, effects: { fun: 15 }, dlg: "use_bookshelf", speaker: "player" },
+  plant: { duration: 1, effects: { fun: 5 }, dlg: "use_plant", speaker: "player" },
+  table: { duration: 1, effects: { fun: 5 }, dlg: "use_table", speaker: "player" },
+  bed: { special: "sleep", dlg: "use_bed", speaker: "player" },
+  partner: { duration: 0, effects: { social: 35, fun: 10 }, dlg: "partner_talk", speaker: "partner" },
+  lost_item: { duration: 1.2, effects: {}, dlg: null, speaker: "player" },
+};
+
+// Distance d'un point au rectangle (0 si dedans).
+function rectDist(px, py, r) {
+  const dx = Math.max(r.x0 - px, 0, px - r.x1);
+  const dy = Math.max(r.y0 - py, 0, py - r.y1);
+  return Math.hypot(dx, dy);
+}
+
+export class Interactions {
+  // placements: PLACEMENTS de map.js ; npc: le PNJ (position dynamique)
+  constructor(placements, npc) {
+    this.npc = npc;
+    this.listeners = [];
+    this.current = null;
+    this.spots = [];
+    for (const p of placements) {
+      if (!ACTIONS[p.type]) continue;
+      const def = FURNITURE[p.type];
+      this.spots.push({
+        type: p.type,
+        rect: { x0: p.col, y0: p.row, x1: p.col + def.fw, y1: p.row + def.fh },
+        cx: p.col + def.fw / 2,
+        topY: p.row,
+      });
+    }
+  }
+
+  onInteract(cb) {
+    this.listeners.push(cb);
+  }
+
+  emit(type) {
+    for (const cb of this.listeners) cb(type);
+  }
+
+  // px,py = pieds du joueur. visibleFn(type) → false pour masquer un spot
+  // (ex : la chaussette hors quête).
+  update(px, py, visibleFn) {
+    let best = null;
+    let bestDist = CONFIG.interactRadius;
+    for (const s of this.spots) {
+      if (visibleFn && !visibleFn(s.type)) continue;
+      const d = rectDist(px, py, s.rect);
+      if (d < bestDist) {
+        bestDist = d;
+        best = s;
+      }
+    }
+    // le PNJ est un spot mobile
+    const dNpc = Math.hypot(this.npc.x - px, this.npc.y - py);
+    if (dNpc < Math.max(bestDist, 1.3) && dNpc < 1.3) {
+      best = {
+        type: "partner",
+        cx: this.npc.x,
+        topY: this.npc.y - 1.1,
+        rect: null,
+      };
+    }
+    this.current = best;
+    return best;
+  }
+}
