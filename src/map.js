@@ -24,15 +24,19 @@ const HOUSE = [
 ];
 
 // --- l'hôpital (colonnes 32..55, lignes 2..26) ---
-// ligne 2 : mur nord · lignes 3-7 : open space (carrelage) + bureau de Sophie
-// (parquet) · ligne 8 : mur avec deux portes · lignes 9-25 : hall d'accueil
-// (porte d'entrée à l'ouest, lignes 10-11) · ligne 26 : mur sud
+// ligne 2 : mur nord · lignes 3-7 : open space data (carrelage) + bureau de
+// Sophie (parquet) · ligne 8 : mur avec deux portes · lignes 9-18 : hall
+// d'accueil (porte d'entrée à l'ouest, lignes 10-11) · ligne 19 : mur avec la
+// porte du bureau des devs · lignes 20-25 : couloir de la machine à café (à
+// l'ouest) + bureau des devs (parquet, au sud-est) · ligne 26 : mur sud
 const HOSP_W = 24;
 function hospRow(r) {
   if (r < 2 || r > 26) return "g".repeat(HOSP_W);
   if (r === 2 || r === 26) return "#".repeat(HOSP_W);
   if (r >= 3 && r <= 7) return "#" + ",".repeat(13) + "#" + ".".repeat(8) + "#";
   if (r === 8) return "#" + "###" + "," + "#".repeat(9) + "#" + "###" + "." + "####" + "#";
+  if (r === 19) return "#" + ",".repeat(6) + "#" + "##" + "." + "#".repeat(12) + "#";
+  if (r >= 20 && r <= 25) return "#" + ",".repeat(6) + "#" + ".".repeat(15) + "#";
   return (r === 10 || r === 11 ? "," : "#") + ",".repeat(22) + "#";
 }
 
@@ -96,7 +100,16 @@ export const PLACEMENTS = [
   { type: "counter", col: 37, row: 13 },
   { type: "plant", col: 33, row: 9 },
   { type: "plant", col: 54, row: 9 },
-  { type: "table", col: 48, row: 20 },
+  { type: "plant", col: 54, row: 16 },
+  // couloir sud : LA machine à café
+  { type: "coffee", col: 34, row: 25 },
+  { type: "plant", col: 33, row: 20 },
+  // bureau des devs
+  { type: "desk", col: 41, row: 20 },
+  { type: "desk", col: 45, row: 20 },
+  { type: "desk", col: 49, row: 20 },
+  { type: "bookshelf", col: 53, row: 20 },
+  { type: "table", col: 44, row: 23 },
   { type: "plant", col: 54, row: 25 },
   // panneau devant l'entrée
   { type: "sign", col: 30, row: 9 },
@@ -104,13 +117,18 @@ export const PLACEMENTS = [
 
 export const SPAWNS = {
   player: { x: 8.5, y: 9.5 },
-  partner: { x: 13.5, y: 8.5 },
+  // Robin commence au bureau des devs — la rencontre n'a pas encore eu lieu !
+  partner: { x: 49.5, y: 22.5 },
+  partnerDev: { x: 49.5, y: 22.5 },
   partnerDay: { x: 13.5, y: 8.5 },
   partnerEvening: { x: 12.5, y: 10.5 },
-  // collègues de l'hôpital
+  // l'équipe data
   sophie: { x: 50.5, y: 5.5 },
   romain: { x: 34.5, y: 5.5 },
   arij: { x: 38.5, y: 5.5 },
+  // les devs
+  mahrez: { x: 41.5, y: 22.5 },
+  david: { x: 45.5, y: 22.5 },
 };
 
 // Grille de collision : murs + meubles solides. Hors carte = solide.

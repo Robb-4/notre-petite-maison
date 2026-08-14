@@ -20,8 +20,11 @@ export const ACTIONS = {
   sophie: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_sophie", speaker: "sophie" },
   romain: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_romain", speaker: "romain" },
   arij: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_arij", speaker: "arij" },
+  mahrez: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_mahrez", speaker: "mahrez" },
+  david: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_david", speaker: "david" },
   her_desk: { duration: 1.2, effects: { fun: 10 }, dlg: "use_her_desk", speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
+  coffee: { duration: 1.5, effects: { energie: 15 }, dlg: "use_coffee", speaker: "player" },
 };
 
 // Distance d'un point au rectangle (0 si dedans).

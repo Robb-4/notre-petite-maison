@@ -465,6 +465,22 @@ const SIGN = [
   "..............",
 ];
 
+// La machine à café de l'hôpital (institution sacrée)
+const COFFEE = [
+  ".KKKKKKKKK..",
+  ".KDDDDDDDK..",
+  ".KDRDDDDDK..",
+  ".KDDDDDDDK..",
+  ".KKKKKKKKK..",
+  ".KDKKKKKDK..",
+  ".KD.MM..DK..",
+  ".KD.MM..DK..",
+  ".KDDDDDDDK..",
+  ".KKKKKKKKK..",
+  "..D......D..",
+  "............",
+];
+
 const SOCK = [
   "..NNNNN.....",
   "..NNNNN.....",
@@ -506,6 +522,7 @@ export const FURNITURE = {
   her_desk: { grid: MONITOR, fw: 1, fh: 1, solid: true },
   counter: { grid: MONITOR, fw: 1, fh: 1, solid: true },
   sign: { grid: SIGN, fw: 1, fh: 1, solid: true },
+  coffee: { grid: COFFEE, fw: 1, fh: 1, solid: true },
 };
 
 export { MONITOR, SIGN };

@@ -1,10 +1,16 @@
 // ============================================================================
 //  ★★★  C'EST ICI QUE TU PERSONNALISES LE JEU  ★★★
 // ============================================================================
-//  Tout le contenu personnel (prénoms, couleurs, cinématique, dialogues,
+//  Tout le contenu personnel (prénoms, couleurs, cinématiques, dialogues,
 //  private jokes, quêtes) vit dans CE fichier. Remplace les textes entre
 //  [CROCHETS] par vos vraies références. Dans les listes, une réplique est
 //  tirée au hasard à chaque fois.
+//
+//  L'HISTOIRE : elle vit seule dans sa petite maison. Grand jour : entretien
+//  de data scientist à l'hôpital → embauchée → elle rencontre l'équipe data
+//  (Sophie, Romain, Arij) → puis l'équipe des devs (Mahrez, David… et Robin).
+//  Le coup de foudre, une ellipse « quelques mois plus tard », et la vie à
+//  deux commence dans la petite maison.
 //
 //  Moments de la journée pour les dialogues : "matin" (6h-11h), "jour"
 //  (11h-18h), "soir" (18h-23h), "nuit" (23h-6h), et "any" = fallback.
@@ -29,13 +35,13 @@ export default {
       spriteSet: "her",
       palette: { H: "#6b3f23", S: "#f2c9a0", T: "#d95d7f", P: "#f2c9a0", F: "#7a3b52", K: "#3b2b40" },
     },
-    // Le PNJ partenaire : toi.
+    // Toi : dev à l'hôpital, futur amoureux.
     partner: {
       nom: "Robin",
       spriteSet: "him",
       palette: { H: "#2b2b2b", S: "#e8b78e", T: "#4f7d4f", P: "#444a55", F: "#2e3138", K: "#2b2330" },
     },
-    // Les collègues de l'hôpital.
+    // L'équipe data.
     sophie: {
       nom: "Sophie",
       spriteSet: "her",
@@ -51,19 +57,36 @@ export default {
       spriteSet: "her",
       palette: { H: "#241f26", S: "#d9a878", T: "#c96a35", P: "#d9a878", F: "#4a2e1f", K: "#241f26" },
     },
+    // L'équipe des devs.
+    mahrez: {
+      nom: "Mahrez",
+      spriteSet: "him",
+      palette: { H: "#1e1a20", S: "#c98f5e", T: "#2e8a8a", P: "#3a3f4a", F: "#2e3138", K: "#241f26" },
+    },
+    david: {
+      nom: "David",
+      spriteSet: "him",
+      palette: { H: "#8a6a3c", S: "#ecc39c", T: "#b5484d", P: "#46516b", F: "#2e3138", K: "#2b2330" },
+    },
   },
 
   // --------------------------------------------------------------------------
-  // CINÉMATIQUE D'INTRO — votre histoire, une carte de texte à la fois.
-  // Ajoute/retire autant de cartes que tu veux.
+  // CINÉMATIQUE D'INTRO — avant le grand jour. Une carte de texte par entrée.
   // --------------------------------------------------------------------------
   intro: [
-    "Il était une fois deux personnes qui se sont rencontrées [OÙ VOUS VOUS ÊTES RENCONTRÉS]…",
-    "Le [DATE DE LA RENCONTRE], tout a commencé par [COMMENT ÇA A COMMENCÉ : un message ? un regard ? une blague nulle ?].",
-    "Depuis, il y a eu [SOUVENIR 1], [SOUVENIR 2]… et ce moment inoubliable à [LIEU / VOYAGE].",
-    "Et puis [VOTRE GRAND MOMENT : l'emménagement ? la demande ? le mariage ?] ❤",
-    "Aujourd'hui, c'est un autre grand jour : l'entretien pour LE poste de data scientist à l'hôpital.",
-    "Bonne chance mon amour. Cette petite maison croit en toi ❤",
+    "Voici l'histoire d'une brillante data scientist… et d'un grand jour.",
+    "Aujourd'hui : entretien d'embauche à l'hôpital [NOM DE L'HÔPITAL], pour LE poste de ses rêves.",
+    "Elle ne le sait pas encore… mais cette journée va changer sa vie. Deux fois.",
+    "Bonne chance [PRÉNOM DE TA FEMME] ❤",
+  ],
+
+  // --------------------------------------------------------------------------
+  // INTERLUDE — joué juste après la rencontre avec Robin (ellipse temporelle).
+  // --------------------------------------------------------------------------
+  interlude: [
+    "Un café… puis deux… puis [VOTRE PREMIÈRE VRAIE SORTIE]…",
+    "[CE QUI VOUS A FAIT TOMBER AMOUREUX : une blague ? un projet commun ? la machine à café ?]",
+    "Et [DURÉE] plus tard… ils emménageaient ensemble dans leur petite maison ❤",
   ],
 
   // --------------------------------------------------------------------------
@@ -71,12 +94,6 @@ export default {
   // étapes d'histoire. `qui` = clé d'un personnage ci-dessus.
   // --------------------------------------------------------------------------
   sequences: {
-    depart: [
-      { qui: "partner", texte: "C'est le grand jour ! Tu vas les impressionner." },
-      { qui: "player", texte: "J'ai le trac…" },
-      { qui: "partner", texte: "Tu es la meilleure, fonce. Ce soir je prépare [SON PLAT PRÉFÉRÉ] pour fêter ça ❤" },
-      { qui: "partner", texte: "L'hôpital est au bout du chemin, à l'est du jardin. File !" },
-    ],
     entretien: [
       { qui: "sophie", texte: "Bonjour [PRÉNOM] ! Je suis Sophie, la cheffe d'équipe. Asseyez-vous." },
       { qui: "sophie", texte: "Alors… data scientist, hein ? Parlez-moi de vous." },
@@ -86,21 +103,36 @@ export default {
       { qui: "sophie", texte: "… Impressionnant. Dernière question : vous savez faire marcher la machine à café ?" },
       { qui: "player", texte: "C'est ma plus grande compétence." },
       { qui: "sophie", texte: "Parfait. Vous êtes EMBAUCHÉE ! Bienvenue à l'hôpital ❤" },
+      { qui: "sophie", texte: "Allez vous présenter à l'équipe dans l'open space, juste à côté. Et la machine à café est au bout du couloir sud !" },
     ],
     meet_romain: [
       { qui: "romain", texte: "Salut, moi c'est Romain ! [PRIVATE JOKE / TRAIT DE ROMAIN À METTRE ICI]" },
       { qui: "player", texte: "Enchantée !" },
-      { qui: "romain", texte: "Si tu as besoin d'aide avec [SUJET], c'est moi. Et info capitale : la machine à café est au bout du couloir." },
+      { qui: "romain", texte: "Si tu as besoin d'aide avec [SUJET], c'est moi. Et va te présenter aux devs, en bas — ils sont sympas. Enfin, surtout un." },
     ],
     meet_arij: [
       { qui: "arij", texte: "Bienvenue dans l'équipe ! Moi c'est Arij. [PRIVATE JOKE / TRAIT D'ARIJ À METTRE ICI]" },
       { qui: "player", texte: "Merci, je suis ravie d'être là !" },
       { qui: "arij", texte: "Entre nous : méfie-toi des réunions du lundi matin. [DÉTAIL DRÔLE]" },
     ],
-    retour: [
-      { qui: "player", texte: "Robin !! Je suis prise !!!" },
-      { qui: "partner", texte: "JE LE SAVAIS ! Je suis tellement fier de toi ❤" },
-      { qui: "partner", texte: "Ce soir on fête ça : [VOTRE FAÇON DE FÊTER]. Tu l'as tellement mérité." },
+    meet_mahrez: [
+      { qui: "mahrez", texte: "Yo ! Mahrez, développeur. [PRIVATE JOKE / TRAIT DE MAHREZ À METTRE ICI]" },
+      { qui: "player", texte: "Enchantée, moi c'est [PRÉNOM], la nouvelle data scientist !" },
+      { qui: "mahrez", texte: "Ah, encore quelqu'un qui va nous demander des accès à la base. Bienvenue !" },
+    ],
+    meet_david: [
+      { qui: "david", texte: "Salut ! David. [PRIVATE JOKE / TRAIT DE DAVID À METTRE ICI]" },
+      { qui: "player", texte: "Enchantée !" },
+      { qui: "david", texte: "Tu verras, on est une super équipe. Il te reste juste Robin à rencontrer… il est juste là." },
+    ],
+    // LA rencontre ❤
+    rencontre_robin: [
+      { qui: "partner", texte: "Salut ! Euh… moi c'est Robin. Développeur. Enfin, dev. Enfin… bienvenue !" },
+      { qui: "player", texte: "(Il est mignon quand il s'emmêle, non ?)" },
+      { qui: "partner", texte: "[SA VRAIE PREMIÈRE PHRASE / VOTRE VRAI PREMIER ÉCHANGE AU TRAVAIL]" },
+      { qui: "player", texte: "[SA RÉPONSE À ELLE]" },
+      { qui: "partner", texte: "Si tu as un souci de VPN, d'accès… ou juste envie d'un café, je suis là ☕" },
+      { qui: "player", texte: "Un café ? Pourquoi pas…" },
     ],
   },
 
@@ -108,19 +140,28 @@ export default {
   // DIALOGUES LIBRES — une réplique au hasard selon le moment de la journée.
   // --------------------------------------------------------------------------
   dialogues: {
+    // Robin AVANT la rencontre officielle (pendant l'histoire à l'hôpital)
+    talk_robin_avant: {
+      any: [
+        "Salut ! Tu dois être la nouvelle. Moi c'est… enfin bref. Le VPN, c'est moi.",
+        "(Il te regarde un peu trop longtemps, puis fixe son écran.)",
+      ],
+    },
+    // Robin une fois en couple, à la maison
     partner_talk: {
       any: [
         "Coucou toi ! [PRIVATE JOKE À METTRE ICI]",
         "Tu te souviens de [UN SOUVENIR À VOUS] ? Moi j'y pense encore.",
         "T'es la plus belle, même en pixels.",
         "[SURNOM QU'IL TE DONNE], je t'aime fort.",
+        "Dire qu'on s'est rencontrés à l'hôpital… merci le service informatique ❤",
       ],
       matin: ["Café d'abord, câlins ensuite ? Ou l'inverse ?", "Bien dormi mon amour ?"],
       soir: ["On se lance un épisode de [VOTRE SÉRIE] ce soir ?", "Ce soir c'est [VOTRE RITUEL DU SOIR] !"],
       nuit: ["Tu devrais aller dormir, il est tard…"],
     },
 
-    // Les collègues, une fois l'histoire terminée
+    // Les collègues data
     talk_sophie: {
       any: [
         "Alors, prête pour de grands projets data ?",
@@ -142,6 +183,21 @@ export default {
         "Ce soir, [CE QU'ARIJ PROPOSE TOUJOURS] ?",
       ],
     },
+    // Les devs
+    talk_mahrez: {
+      any: [
+        "[BLAGUE RÉCURRENTE DE MAHREZ]",
+        "C'est pas un bug, c'est une fonctionnalité.",
+        "Quelqu'un a redémarré le serveur ? Non ? Parfait, c'est donc ça le problème.",
+      ],
+    },
+    talk_david: {
+      any: [
+        "[BLAGUE RÉCURRENTE DE DAVID]",
+        "Ticket n°4512 : « ça marche pas ». Merci pour les détails.",
+        "On déploie vendredi 17h ? Excellente idée. (non)",
+      ],
+    },
 
     // Objets de la maison
     use_fridge: {
@@ -151,7 +207,7 @@ export default {
     use_stove: { any: ["Ça sent bon dans toute la maison…", "Attention, ça chauffe !"] },
     use_bed: {
       any: ["Une petite sieste réparatrice…"],
-      soir: ["Bonne nuit mon amour."],
+      soir: ["Bonne nuit."],
       nuit: ["Enfin au lit…"],
     },
     use_shower: {
@@ -180,15 +236,23 @@ export default {
     use_her_desk: {
       any: ["Mon nouveau bureau ✨ Il ne manque plus qu'une plante et [SON OBJET FÉTICHE]."],
     },
+    use_coffee: {
+      any: [
+        "Le carburant officiel de l'hôpital. ☕ +15 énergie !",
+        "La machine fait un bruit bizarre… mais le café est bon.",
+        "[LA BLAGUE DE LA MACHINE À CAFÉ DU SERVICE ?]",
+      ],
+    },
 
-    // Événements horaires
+    // Événements horaires (à la maison, une fois en couple)
     event_cafe_matin: { any: ["☕ 8h : l'heure sacrée du café ensemble. +15 énergie !"] },
     event_serie_soir: { any: ["📺 21h : c'est l'heure de votre série ! Le canapé rapporte double fun."] },
 
     // Fins de quêtes
     quest_done_arrivee: { any: ["Te voilà à l'hôpital. Respire… tout va bien se passer ❤"] },
-    quest_done_entretien: { any: ["EMBAUCHÉE ! Le champagne attendra ce soir 🍾"] },
-    quest_done_equipe: { any: ["Une nouvelle aventure commence… et elle s'annonce très bien ❤"] },
+    quest_done_entretien: { any: ["EMBAUCHÉE ! Bon. Maintenant, rencontrer les collègues…"] },
+    quest_done_equipe: { any: ["L'équipe data adoptée ✔ Reste à saluer les devs, en bas."] },
+    quest_done_devs: { any: ["(Ce Robin… il a quelque chose, non ?)"] },
     quest_done_q1: { any: ["C'était le plat de [OCCASION SPÉCIALE : premier rdv ? anniversaire ?] ❤"] },
     quest_done_q2: { any: ["LA chaussette perdue ! Elle était dans le jardin depuis [DURÉE ABSURDE]."] },
     quests_all_done: { any: ["Tous les objectifs sont finis… mais la vie continue, tranquillement, ensemble ❤"] },
@@ -200,7 +264,7 @@ export default {
   flavor: {
     fridge: "Le frigo — toujours plein de [SA GOURMANDISE]",
     stove: "La cuisinière",
-    bed: "Notre lit douillet",
+    bed: "Le lit douillet",
     shower: "La douche (salle de concert privée)",
     couch: "Le canapé des soirées série",
     bookshelf: "L'étagère à [LIVRES / MANGAS / JEUX]",
@@ -212,8 +276,11 @@ export default {
     sophie: "Sophie (la cheffe)",
     romain: "Romain",
     arij: "Arij",
+    mahrez: "Mahrez",
+    david: "David",
     sign: "Le panneau de l'hôpital",
     her_desk: "Ton nouveau bureau",
+    coffee: "LA machine à café",
   },
 
   // --------------------------------------------------------------------------
@@ -222,7 +289,10 @@ export default {
   //   { target: "sophie", sequence: "entretien", … }  → joue la séquence scénarisée
   //   { goto: {x0,y0,x1,y1}, label: "…" }             → atteindre une zone
   // Targets : fridge, stove, bed, shower, couch, bookshelf, plant, table,
-  //           photo, partner, lost_item, her_desk, sign, sophie, romain, arij
+  //           photo, partner, lost_item, her_desk, sign, coffee,
+  //           sophie, romain, arij, mahrez, david
+  // La quête "devs" déclenche l'interlude (ellipse) à sa fin, puis Robin
+  // emménage à la maison.
   // --------------------------------------------------------------------------
   quests: [
     {
@@ -230,7 +300,6 @@ export default {
       titre: "Le grand jour",
       description: "L'entretien t'attend à l'hôpital.",
       steps: [
-        { target: "partner", sequence: "depart", label: "Dire au revoir à Robin" },
         { goto: { x0: 30, y0: 9, x1: 34, y1: 12 }, label: "Aller à l'hôpital (suis le chemin vers l'est)" },
       ],
       rewardDialogue: "quest_done_arrivee",
@@ -246,15 +315,26 @@ export default {
     },
     {
       id: "equipe",
-      titre: "Bienvenue dans l'équipe",
+      titre: "L'équipe data",
       description: "Fais connaissance avec tes nouveaux collègues.",
       steps: [
         { target: "romain", sequence: "meet_romain", label: "Faire connaissance avec Romain" },
         { target: "arij", sequence: "meet_arij", label: "Faire connaissance avec Arij" },
         { target: "her_desk", label: "T'installer à ton nouveau bureau" },
-        { target: "partner", sequence: "retour", label: "Rentrer tout raconter à Robin" },
       ],
       rewardDialogue: "quest_done_equipe",
+    },
+    {
+      id: "devs",
+      titre: "L'équipe des devs",
+      description: "Il paraît qu'ils sont sympas. Surtout un.",
+      steps: [
+        { goto: { x0: 40, y0: 20, x1: 45, y1: 23 }, label: "Descendre au bureau des devs (couloir au sud du hall)" },
+        { target: "mahrez", sequence: "meet_mahrez", label: "Se présenter à Mahrez" },
+        { target: "david", sequence: "meet_david", label: "Se présenter à David" },
+        { target: "partner", sequence: "rencontre_robin", label: "Se présenter au dernier dev… Robin" },
+      ],
+      rewardDialogue: "quest_done_devs",
     },
     {
       id: "q1",

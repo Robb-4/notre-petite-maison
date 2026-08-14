@@ -35,16 +35,26 @@ const playerView = createCharacterView(
 );
 const player = new Player(playerView, SPAWNS.player.x, SPAWNS.player.y);
 
-// PNJ : Robin à la maison, les collègues à l'hôpital
+// PNJ : les collègues à l'hôpital — Robin y travaille aussi, la rencontre
+// n'a pas encore eu lieu !
 const npcs = {};
-for (const id of ["partner", "sophie", "romain", "arij"]) {
+for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david"]) {
   const c = DATA.characters[id];
   if (!c) continue;
   const view = createCharacterView(world, c.spriteSet ?? "him", c.palette);
   npcs[id] = new NPC(view, SPAWNS[id].x, SPAWNS[id].y);
 }
 
+// Pendant les quêtes d'histoire, Robin est au bureau des devs et ne connaît
+// pas encore la joueuse.
+const STORY_IDS = new Set(["grand_jour", "entretien", "equipe", "devs"]);
+function inStory() {
+  return STORY_IDS.has(quests?.current?.id);
+}
+
 const interactions = new Interactions(PLACEMENTS, npcs);
+
+let pendingInterlude = false;
 
 const quests = new Quests(DATA.quests, {
   onStepDone: () => hud.toast("✔ Étape accomplie !"),
@@ -52,6 +62,7 @@ const quests = new Quests(DATA.quests, {
     world.spawnHearts(player.x, player.y - 0.8, 7);
     hud.toast(`Objectif terminé : ${q.titre} ❤`);
     if (q.rewardDialogue) dialogue.showKey(q.rewardDialogue, "player", clock.bucket());
+    if (q.id === "devs") pendingInterlude = true; // l'ellipse ❤ après la rencontre
     if (allDone) dialogue.showKey("quests_all_done", "partner", clock.bucket());
   },
 });
@@ -68,11 +79,15 @@ const titleEl = document.getElementById("title-screen");
 const cineEl = document.getElementById("cinematic");
 const cineTextEl = document.getElementById("cine-text");
 
-// --- cinématique d'intro ---
+// --- cinématiques (intro + interlude) ---
 let cineIndex = 0;
-function startCinematic() {
+let cineSlides = [];
+let cineOnEnd = null;
+function startCinematic(slides, onEnd = null) {
   state = "cinematic";
   cineIndex = 0;
+  cineSlides = slides;
+  cineOnEnd = onEnd;
   cineEl.classList.remove("hidden");
   showCineSlide();
 }
@@ -81,16 +96,33 @@ function showCineSlide() {
   card.style.animation = "none";
   void card.offsetWidth; // relance l'animation d'apparition
   card.style.animation = "";
-  cineTextEl.textContent = DATA.intro[cineIndex];
+  cineTextEl.textContent = cineSlides[cineIndex];
 }
 function advanceCinematic() {
   cineIndex += 1;
-  if (cineIndex >= DATA.intro.length) endCinematic();
+  if (cineIndex >= cineSlides.length) endCinematic();
   else showCineSlide();
 }
 function endCinematic() {
   cineEl.classList.add("hidden");
   state = "playing";
+  cineOnEnd?.();
+  cineOnEnd = null;
+}
+
+// Après la rencontre : quelques mois plus tard, la vie à deux commence.
+function moveInTogether() {
+  player.x = SPAWNS.player.x;
+  player.y = SPAWNS.player.y;
+  const partner = npcs.partner;
+  partner.x = SPAWNS.partnerDay.x;
+  partner.y = SPAWNS.partnerDay.y;
+  partner.state = "idle";
+  partner.timer = 2;
+  clock.sleep(); // nouveau matin, nouvelle vie
+  world.updateCamera(player.x, player.y, 0, true);
+  world.spawnHearts(player.x, player.y - 0.8, 9);
+  hud.toast("❤ Quelques mois plus tard… chez vous.");
 }
 cineEl.addEventListener("pointerdown", (e) => {
   e.stopPropagation();
@@ -118,7 +150,9 @@ function completeInteraction(spot, def) {
   if (step?.sequence && step.target === spot.type) {
     playSequence(DATA.sequences[step.sequence] ?? []);
   } else if (def.dlg) {
-    dialogue.showKey(def.dlg, def.speaker, clock.bucket());
+    // pendant l'histoire, Robin ne la connaît pas encore
+    const key = spot.type === "partner" && inStory() ? "talk_robin_avant" : def.dlg;
+    dialogue.showKey(key, def.speaker, clock.bucket());
   }
   interactions.emit(spot.type);
 }
@@ -174,7 +208,7 @@ function loop(now) {
     if (input.readStart()) {
       titleEl.classList.add("hidden-fade");
       input.readInteract();
-      startCinematic();
+      startCinematic(DATA.intro);
     }
     world.updateCamera(player.x, player.y, dt, true);
     world.render();
@@ -201,9 +235,15 @@ function loop(now) {
     pendingSleep = false;
     input.readInteract();
     doSleep();
+  } else if (pendingInterlude) {
+    pendingInterlude = false;
+    input.readInteract();
+    startCinematic(DATA.interlude, moveInTogether);
   } else {
-    // événements horaires (café de 8h, série de 21h…)
+    // événements horaires (café de 8h, série de 21h…) — seulement une fois
+    // la vie à deux commencée
     for (const ev of clock.update(dt)) {
+      if (inStory()) continue;
       dialogue.showKey(ev.key, ev.speaker, clock.bucket());
       if (ev.effects) needs.apply(ev.effects);
     }
@@ -211,10 +251,16 @@ function loop(now) {
 
     const evening = clock.hourFloat >= 20 || clock.hourFloat < 6;
     const anchors = {
-      partner: evening ? SPAWNS.partnerEvening : SPAWNS.partnerDay,
+      partner: inStory()
+        ? SPAWNS.partnerDev
+        : evening
+          ? SPAWNS.partnerEvening
+          : SPAWNS.partnerDay,
       sophie: SPAWNS.sophie,
       romain: SPAWNS.romain,
       arij: SPAWNS.arij,
+      mahrez: SPAWNS.mahrez,
+      david: SPAWNS.david,
     };
     for (const [id, npc] of Object.entries(npcs)) npc.update(dt, isSolid, anchors[id]);
 
