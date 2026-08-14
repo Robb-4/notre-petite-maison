@@ -81,10 +81,11 @@ export default {
   ],
 
   // --------------------------------------------------------------------------
-  // INTERLUDE — joué juste après la rencontre avec Robin (ellipse temporelle).
+  // INTERLUDE — joué après la nuit de l'appel (ellipse temporelle).
   // --------------------------------------------------------------------------
   interlude: [
-    "Un café… puis deux… puis [VOTRE PREMIÈRE VRAIE SORTIE]…",
+    "Samedi. [VOTRE PREMIER DATE : le lieu, le moment, ce qui s'est passé…]",
+    "Un date… puis deux… puis [VOTRE PREMIÈRE VRAIE SORTIE]…",
     "[CE QUI VOUS A FAIT TOMBER AMOUREUX : une blague ? un projet commun ? la machine à café ?]",
     "Et [DURÉE] plus tard… ils emménageaient ensemble dans leur petite maison ❤",
   ],
@@ -133,6 +134,18 @@ export default {
       { qui: "player", texte: "[SA RÉPONSE À ELLE]" },
       { qui: "partner", texte: "Si tu as un souci de VPN, d'accès… ou juste envie d'un café, je suis là ☕" },
       { qui: "player", texte: "Un café ? Pourquoi pas…" },
+    ],
+    // La nuit de l'appel 📱 — joué automatiquement quand elle rentre chez elle
+    appel_nuit: [
+      { qui: "player", texte: "(22h. Tu repenses à ta première journée… et un peu à ce dev, aussi.)" },
+      { qui: "player", texte: "📱 DRRRRR ! …Numéro inconnu ?" },
+      { qui: "player", texte: "Allô ?" },
+      { qui: "partner", texte: "Euh… salut ! C'est Robin. Le dev. De l'hôpital. J'ai eu ton numéro par [QUI A DONNÉ LE NUMÉRO ? Mahrez ? Arij ? les RH ?!]…" },
+      { qui: "player", texte: "(Il a appelé. IL A APPELÉ.)" },
+      { qui: "partner", texte: "Je me demandais… enfin… ça te dirait [VOTRE PREMIER DATE : un resto ? un café ? un ciné ?], un de ces soirs ?" },
+      { qui: "player", texte: "… Oui. Carrément, oui." },
+      { qui: "partner", texte: "C'est vr— super ! Génial ! À samedi alors. Bonne nuit [PRÉNOM] :)" },
+      { qui: "player", texte: "Bonne nuit Robin ❤" },
     ],
   },
 
@@ -252,7 +265,8 @@ export default {
     quest_done_arrivee: { any: ["Te voilà à l'hôpital. Respire… tout va bien se passer ❤"] },
     quest_done_entretien: { any: ["EMBAUCHÉE ! Bon. Maintenant, rencontrer les collègues…"] },
     quest_done_equipe: { any: ["L'équipe data adoptée ✔ Reste à saluer les devs, en bas."] },
-    quest_done_devs: { any: ["(Ce Robin… il a quelque chose, non ?)"] },
+    quest_done_devs: { any: ["(Ce Robin… il a quelque chose, non ?) Allez, la journée est finie : direction la maison."] },
+    quest_done_appel: { any: ["(Comment veux-tu dormir après ÇA ?!)"] },
     quest_done_q1: { any: ["C'était le plat de [OCCASION SPÉCIALE : premier rdv ? anniversaire ?] ❤"] },
     quest_done_q2: { any: ["LA chaussette perdue ! Elle était dans le jardin depuis [DURÉE ABSURDE]."] },
     quests_all_done: { any: ["Tous les objectifs sont finis… mais la vie continue, tranquillement, ensemble ❤"] },
@@ -335,6 +349,22 @@ export default {
         { target: "partner", sequence: "rencontre_robin", label: "Se présenter au dernier dev… Robin" },
       ],
       rewardDialogue: "quest_done_devs",
+    },
+    {
+      id: "nuit_appel",
+      titre: "Cette nuit-là",
+      description: "Rentrer, souffler… et peut-être rêver un peu.",
+      steps: [
+        {
+          goto: { x0: 2, y0: 6, x1: 16, y1: 12.8 },
+          label: "Rentrer chez toi (des étoiles plein la tête)",
+          // effets d'étape : l'horloge saute au soir, puis la séquence se joue
+          clockTo: 22,
+          sequenceAfter: "appel_nuit",
+        },
+        { target: "bed", label: "Aller te coucher (avec le sourire)" },
+      ],
+      rewardDialogue: "quest_done_appel",
     },
     {
       id: "q1",

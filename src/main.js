@@ -47,7 +47,7 @@ for (const id of ["partner", "sophie", "romain", "arij", "mahrez", "david"]) {
 
 // Pendant les quêtes d'histoire, Robin est au bureau des devs et ne connaît
 // pas encore la joueuse.
-const STORY_IDS = new Set(["grand_jour", "entretien", "equipe", "devs"]);
+const STORY_IDS = new Set(["grand_jour", "entretien", "equipe", "devs", "nuit_appel"]);
 function inStory() {
   return STORY_IDS.has(quests?.current?.id);
 }
@@ -58,11 +58,20 @@ let pendingInterlude = false;
 
 const quests = new Quests(DATA.quests, {
   onStepDone: () => hud.toast("✔ Étape accomplie !"),
+  // effets attachés à une étape terminée (saut d'horloge, séquence auto…)
+  onStepComplete: (step) => {
+    if (step?.clockTo !== undefined) {
+      clock.minutes = step.clockTo * 60;
+      clock.prevMinutes = clock.minutes;
+      hud.toast("🌙 Le soir tombe…");
+    }
+    if (step?.sequenceAfter) playSequence(DATA.sequences[step.sequenceAfter] ?? []);
+  },
   onQuestDone: (q, allDone) => {
     world.spawnHearts(player.x, player.y - 0.8, 7);
     hud.toast(`Objectif terminé : ${q.titre} ❤`);
     if (q.rewardDialogue) dialogue.showKey(q.rewardDialogue, "player", clock.bucket());
-    if (q.id === "devs") pendingInterlude = true; // l'ellipse ❤ après la rencontre
+    if (q.id === "nuit_appel") pendingInterlude = true; // l'ellipse ❤ après l'appel
     if (allDone) dialogue.showKey("quests_all_done", "partner", clock.bucket());
   },
 });
@@ -163,6 +172,7 @@ function startInteraction(spot) {
   if (def.special === "sleep") {
     if (def.dlg) dialogue.showKey(def.dlg, def.speaker, clock.bucket());
     pendingSleep = true; // le dodo démarre à la fermeture du dialogue
+    interactions.emit(spot.type); // le lit peut valider une étape de quête
     return;
   }
   if (def.duration > 0) action = { spot, def, t: 0 };

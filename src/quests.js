@@ -23,7 +23,9 @@ export class Quests {
   }
 
   _advance() {
+    const completedStep = this.currentStep;
     this.si += 1;
+    this.cb.onStepComplete?.(completedStep); // effets de l'étape terminée
     if (this.si >= this.current.steps.length) {
       const done = this.current;
       this.qi += 1;
