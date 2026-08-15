@@ -753,6 +753,15 @@ export const HEART = [
   "...RR...",
 ];
 
+// Petites volutes vertes de puanteur (hygiène à zéro…)
+export const STINK = [
+  ".g..G...",
+  "g.G..g..",
+  ".G.g..G.",
+  "G...G...",
+  ".g...g..",
+];
+
 // fw/fh = empreinte au sol en tuiles (collision) ; la taille visuelle vient de
 // la grille (16 px = 1 tuile). solid=false → traversable (juste interactable).
 export const FURNITURE = {
@@ -791,6 +800,8 @@ export const FURNITURE = {
   parasol: { grid: PARASOL, fw: 1, fh: 1, solid: true, scale: 1.4 },
   bunker: { grid: MONITOR, fw: 2, fh: 2, solid: true }, // dôme 3D dédié
   mountain: { grid: MONITOR, fw: 4, fh: 4, solid: true }, // cône 3D dédié
+  // la vraie vie : coin de fleurs à cueillir (les fleurs de la tuile suffisent)
+  flower_spot: { grid: MONITOR, fw: 1, fh: 1, solid: false },
 };
 
 export { CANDLE };

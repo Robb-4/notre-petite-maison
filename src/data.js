@@ -289,6 +289,18 @@ export default {
       { qui: "maman", texte: "[LA PHRASE DE MAMAN SUR ROBIN — sa bénédiction ❤]" },
       { qui: "player", texte: "(Le soleil se couche sur l'Adriatique. Et tu sais, là, que c'est lui.)" },
     ],
+    // ---- LA VRAIE VIE : quand l'amour est à zéro… ----
+    robin_part: [
+      { qui: "partner", texte: "Je… j'ai l'impression qu'on ne se voit plus. Je vais dormir au bureau quelques jours." },
+      { qui: "partner", texte: "[CE QU'IL DIRAIT VRAIMENT S'IL BOUDAIT ? 😄]" },
+      { qui: "player", texte: "(Il est parti à l'hôpital. Il FAUT te faire pardonner. Des fleurs du jardin, peut-être ?)" },
+    ],
+    reconquete: [
+      { qui: "player", texte: "Robin… je suis désolée. Tiens. Je les ai cueillies dans NOTRE jardin." },
+      { qui: "partner", texte: "Des fleurs ?! Pour MOI ?" },
+      { qui: "partner", texte: "…Bon. D'accord. Tu me connais trop bien. On rentre ?" },
+      { qui: "player", texte: "On rentre ❤" },
+    ],
   },
 
   // --------------------------------------------------------------------------
@@ -300,6 +312,35 @@ export default {
       any: [
         "Salut ! Tu dois être la nouvelle. Moi c'est… enfin bref. Le VPN, c'est moi.",
         "(Il te regarde un peu trop longtemps, puis fixe son écran.)",
+      ],
+    },
+    // Robin quand l'amour est bas (vraie vie)
+    partner_talk_triste: {
+      any: [
+        "…Coucou.",
+        "(Il sourit, mais à moitié. Vous devriez passer plus de temps ensemble.)",
+        "Tu m'as manqué. Enfin… bref.",
+      ],
+    },
+    // Robin parti bouder au bureau (amour à zéro)
+    robin_boude: {
+      any: [
+        "J'ai besoin d'un peu de temps…",
+        "(Des fleurs du jardin aideraient, peut-être ?)",
+      ],
+    },
+    // quand elle offre un bouquet
+    offre_fleurs: {
+      any: [
+        "Des fleurs ! Pour moi ?! Tu es la meilleure ❤",
+        "Un bouquet de NOTRE jardin ? Je fonds.",
+      ],
+    },
+    // quand elle sent trop fort (hygiène à zéro)
+    talk_beurk: {
+      any: [
+        "…Tu sens… l'aventure ? La douche est par là 🤢",
+        "(Un pas en arrière, poliment.) On se parle après la douche ?",
       ],
     },
     // Robin une fois en couple, à la maison
@@ -492,6 +533,7 @@ export default {
     palm: "Un palmier",
     mylene: "Mylène (la meilleure)",
     maman: "Maman ❤",
+    flower_spot: "Cueillir un bouquet 🌼",
     bunker: "Un bunker albanais",
     parasol: "Le parasol",
     mountain: "Les montagnes albanaises",

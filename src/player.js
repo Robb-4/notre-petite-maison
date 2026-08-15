@@ -67,13 +67,19 @@ export class Player {
     this.sync();
   }
 
-  update(dt, input, isSolid, slow) {
+  // mode : "normal" | "tired" | "crawl"
+  update(dt, input, isSolid, mode = "normal") {
     let dx = input.dx;
     let dy = input.dy;
     this.moving = dx !== 0 || dy !== 0;
     if (this.moving) {
       const len = Math.hypot(dx, dy);
-      const speed = slow ? CONFIG.playerSpeedTired : CONFIG.playerSpeed;
+      const speed =
+        mode === "crawl"
+          ? CONFIG.playerSpeedCrawl
+          : mode === "tired"
+            ? CONFIG.playerSpeedTired
+            : CONFIG.playerSpeed;
       dx = (dx / len) * speed * dt;
       dy = (dy / len) * speed * dt;
       if (Math.abs(input.dx) >= Math.abs(input.dy)) {

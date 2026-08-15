@@ -245,6 +245,30 @@ body {
 #cine-text { font-size: 12px; line-height: 2.2; color: var(--text); }
 #cine-hint { font-size: 8px; color: #8d7cb5; }
 
+/* écran game over (mort de faim…) */
+#gameover {
+  position: absolute;
+  inset: 0;
+  z-index: 26;
+  background: radial-gradient(circle at 50% 45%, #3a1420 0%, #120a10 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#go-card {
+  max-width: 540px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  animation: cine-in 0.5s ease;
+}
+#go-skull { font-size: 34px; animation: bob 1.4s ease-in-out infinite; }
+#go-text { font-size: 13px; line-height: 2; color: #ffb3c1; }
+#go-sub { font-size: 9px; color: #b58a99; }
+#go-hint { font-size: 9px; color: #cbb8ee; animation: bob 1.2s ease-in-out infinite; }
+
 /* écran titre */
 #title-screen {
   position: absolute;

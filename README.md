@@ -33,6 +33,20 @@ Les réglages de rythme (vitesse, décroissance des jauges, durée de la journé
 sont dans [`src/config.js`](src/config.js). Le pixel art est dans
 [`src/sprites.js`](src/sprites.js) (grilles de texte : 1 caractère = 1 pixel).
 
+## 💞 La vraie vie (après l'histoire)
+
+Une fois l'histoire finie, le jeu devient un vrai Sims :
+
+- Une 6e jauge apparaît : **Amour ❤**. Elle s'entretient en parlant à Robin
+  et en lui offrant des bouquets (à cueillir dans le jardin 🌼). À zéro,
+  **Robin part bouder au bureau** — va le reconquérir avec des fleurs.
+- **Hygiène à zéro : tu pues.** Volutes vertes, et plus personne ne veut te
+  parler avant la douche.
+- **Énergie basse : tu te traînes.** À zéro, tu t'écroules et te réveilles
+  chez toi le lendemain.
+- **Faim à zéro : tu meurs.** 💀 (Mais l'amour est plus fort que la mort —
+  Entrée pour revivre.)
+
 ## 🎮 Contrôles
 
 - **ZQSD / WASD / flèches** : se déplacer

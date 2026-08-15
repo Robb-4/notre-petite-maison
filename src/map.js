@@ -160,6 +160,9 @@ export const MAPS = {
       { type: "bookshelf", col: 15, row: 6 },
       { type: "plant", col: 15, row: 12 },
       { type: "lost_item", col: 23, row: 12 },
+      // coins de fleurs à cueillir (pour les bouquets ❤)
+      { type: "flower_spot", col: 21, row: 2 },
+      { type: "flower_spot", col: 22, row: 11 },
       // panneaux directionnels aux départs de chemin
       { type: "signpost", col: 24, row: 9, label: "→ L'hôpital (à l'est)" },
       { type: "signpost", col: 22, row: 14, flip: true, label: "→ Le Louvre (au sud)" },

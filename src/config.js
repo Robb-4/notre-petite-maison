@@ -20,6 +20,7 @@ export const CONFIG = {
   // Mouvement
   playerSpeed: 3.5,     // tuiles / seconde
   playerSpeedTired: 2.2, // si un besoin < seuil bas
+  playerSpeedCrawl: 1.3, // si l'énergie est presque à zéro
   npcSpeed: 1.6,
   playerBox: { w: 0.6, h: 0.5 }, // AABB aux pieds, en tuiles
 
@@ -27,15 +28,25 @@ export const CONFIG = {
   interactRadius: 1.15, // distance max (en tuiles) pour interagir
 
   // Besoins : décroissance en points / seconde réelle (jauges 0..100)
+  // « amour » n'apparaît (et ne décroît) qu'une fois l'histoire terminée.
   needs: {
     faim:    { decay: 0.20, icon: "🍽️", label: "Faim" },
     energie: { decay: 0.15, icon: "⚡", label: "Énergie" },
     hygiene: { decay: 0.12, icon: "🚿", label: "Hygiène" },
     fun:     { decay: 0.18, icon: "🎮", label: "Fun" },
     social:  { decay: 0.15, icon: "💕", label: "Social" },
+    amour:   { decay: 0.09, icon: "❤", label: "Amour" },
   },
   needStart: 80,
   needLowThreshold: 20,
+
+  // Mode « vraie vie » (après l'histoire) : les conséquences façon Sims
+  vieReelle: {
+    stinkThreshold: 5,   // hygiène sous laquelle ça se sent
+    crawlThreshold: 10,  // énergie sous laquelle on se traîne
+    amourFleurs: 35,     // offrir un bouquet
+    amourRetour: 60,     // amour après la réconciliation
+  },
 
   // Horloge : 1 seconde réelle = 1 minute de jeu (journée = 24 min réelles)
   gameMinutesPerSecond: 1,

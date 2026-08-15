@@ -19,6 +19,7 @@ import {
   SHADOW,
   MONITOR,
   CANDLE,
+  STINK,
 } from "./sprites.js";
 import { makeTexture, makeSpriteMaterial, makeOpaqueMaterial } from "./textures.js";
 import { TILE_DEFS } from "./map.js";
@@ -85,6 +86,7 @@ export function createWorld() {
   const vaseTex = makeTexture(VASE, FURN_PAL, OUTLINE);
   const flowerTex = makeTexture(FLOWER_BILL, TILE_PAL, OUTLINE);
   const heartTex = makeTexture(HEART, FURN_PAL);
+  const stinkTex = makeTexture(STINK, { g: "#7fae4a", G: "#5a8a38" });
   const shadowTex = makeTexture(SHADOW, { K: "#141018" });
   const flowerSize = gridSize(FLOWER_BILL);
   const flowerTrail = trailingEmptyRows(FLOWER_BILL) / 16;
@@ -325,6 +327,9 @@ export function createWorld() {
           meshes.push(body, snow);
           break;
         }
+        case "flower_spot":
+          // rien à dessiner : les fleurs de la tuile font le travail
+          break;
         case "joconde":
         case "painting": {
           if (!billTexCache[p.type]) billTexCache[p.type] = makeTexture(def.grid, FURN_PAL, OUTLINE);
@@ -401,6 +406,22 @@ export function createWorld() {
         vy: 1.1 + Math.random() * 0.8,
       });
     }
+  }
+
+  // petites volutes vertes quand on sent fort
+  function spawnStink(x, yMap) {
+    const mesh = makeBillboard(stinkTex, 0.35, 0.22);
+    mesh.material.depthWrite = false;
+    mesh.renderOrder = 10;
+    mesh.position.set(x + (Math.random() - 0.5) * 0.6, 0.8 + Math.random() * 0.5, yMap);
+    scene.add(mesh);
+    hearts.push({
+      mesh,
+      t: 0,
+      life: 0.9 + Math.random() * 0.4,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: 0.6 + Math.random() * 0.3,
+    });
   }
 
   function update(dt) {
@@ -480,6 +501,7 @@ export function createWorld() {
     setBillboardPos,
     makeShadow,
     spawnHearts,
+    spawnStink,
     update,
     updateCamera,
     project,

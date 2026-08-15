@@ -14,7 +14,8 @@ export const ACTIONS = {
   table: { duration: 1, effects: { fun: 5 }, dlg: "use_table", speaker: "player" },
   photo: { duration: 1, effects: { fun: 8, social: 5 }, dlg: "use_photo", speaker: "player" },
   bed: { special: "sleep", dlg: "use_bed", speaker: "player" },
-  partner: { duration: 0, effects: { social: 35, fun: 10 }, dlg: "partner_talk", speaker: "partner" },
+  partner: { duration: 0, effects: { social: 35, fun: 10, amour: 12 }, dlg: "partner_talk", speaker: "partner" },
+  flower_spot: { duration: 1, effects: { fun: 5 }, dlg: null, speaker: "player" },
   lost_item: { duration: 1.2, effects: {}, dlg: null, speaker: "player" },
   // hôpital
   sophie: { duration: 0, effects: { social: 20, fun: 5 }, dlg: "talk_sophie", speaker: "sophie" },

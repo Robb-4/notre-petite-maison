@@ -10,8 +10,10 @@ export class Needs {
     }
   }
 
-  update(dt) {
+  // skip = clés à ne pas faire décroître (ex : "amour" pendant l'histoire)
+  update(dt, skip = []) {
     for (const [key, def] of Object.entries(CONFIG.needs)) {
+      if (skip.includes(key)) continue;
       this.values[key] = Math.max(0, this.values[key] - def.decay * dt);
     }
   }

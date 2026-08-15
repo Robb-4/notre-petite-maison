@@ -27,6 +27,14 @@ export class HUD {
     }
   }
 
+  // affiche/masque une jauge (ex : Amour, cachée pendant l'histoire)
+  setNeedVisible(key, visible) {
+    const bar = this.bars[key];
+    if (!bar || bar.visible === visible) return;
+    bar.visible = visible;
+    bar.row.style.display = visible ? "" : "none";
+  }
+
   updateNeeds(values) {
     for (const [key, val] of Object.entries(values)) {
       const bar = this.bars[key];
