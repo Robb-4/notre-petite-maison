@@ -30,6 +30,11 @@ export const ACTIONS = {
   parasol: { duration: 0, effects: { fun: 10 }, dlg: "use_parasol", speaker: "player" },
   mountain: { duration: 0, effects: { fun: 5 }, dlg: "use_montagne", speaker: "player" },
   her_desk: { duration: 1.2, effects: { fun: 10 }, dlg: "use_her_desk", speaker: "player" },
+  // le centre commercial + la vie à deux (logique gérée dans main.js)
+  clothes_rack: { duration: 1, effects: {}, dlg: null, speaker: "player" },
+  grocery_shelf: { duration: 1, effects: {}, dlg: null, speaker: "player" },
+  furniture_shop: { duration: 1, effects: {}, dlg: null, speaker: "player" },
+  date_board: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
   signpost: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   coffee: { duration: 1.5, effects: { energie: 15 }, dlg: "use_coffee", speaker: "player" },

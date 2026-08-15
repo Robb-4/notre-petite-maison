@@ -108,6 +108,15 @@ body {
   font-size: 10px;
 }
 
+#money {
+  background: var(--panel);
+  border: 2px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 10px;
+  color: #ffe08a;
+}
+
 #quest {
   background: var(--panel);
   border: 2px solid var(--panel-border);

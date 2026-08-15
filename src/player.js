@@ -21,18 +21,30 @@ export function createCharacterView(world, spriteSet, palette) {
   }
   const mesh = world.makeBillboard(texs.downidle, CHAR_W, CHAR_H);
   const shadow = world.makeShadow(1);
+  let lastKey = "downidle";
 
   function setPose(dir, stepping) {
     const key = dir === "left" || dir === "right" ? "side" : dir;
-    mesh.material.map = texs[key + (stepping ? "step" : "idle")];
+    lastKey = key + (stepping ? "step" : "idle");
+    mesh.material.map = texs[lastKey];
     mesh.scale.x = dir === "left" ? -1 : 1;
+  }
+
+  // change la tenue (nouvelle palette) — régénère toutes les textures
+  function recolor(newPalette) {
+    for (const dir of ["down", "up", "side"]) {
+      for (const frame of ["idle", "step"]) {
+        texs[dir + frame] = makeTexture(set[dir][frame], newPalette, OUTLINE);
+      }
+    }
+    mesh.material.map = texs[lastKey];
   }
   // x,y = position des pieds en coordonnées carte
   function setFeet(x, y, bob = 0) {
     world.setBillboardPos(mesh, x, y, CHAR_H, bob, CHAR_TRAIL);
     shadow.position.set(x, 0.02, y);
   }
-  return { mesh, meshes: [mesh, shadow], setPose, setFeet };
+  return { mesh, meshes: [mesh, shadow], setPose, setFeet, recolor };
 }
 
 // Déplacement AABB contre la grille, axe par axe. Renvoie la position finale.

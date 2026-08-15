@@ -83,6 +83,20 @@ export default {
   },
 
   // --------------------------------------------------------------------------
+  // LA VRAIE VIE — tenues à acheter (10 €) et couleurs de canapé (50 €).
+  // T = couleur de la robe, F = chaussures. Ajoute autant d'entrées que tu veux.
+  // --------------------------------------------------------------------------
+  tenues: [
+    { nom: "Rose", T: "#d95d7f", F: "#7a3b52" },
+    { nom: "Bleu nuit", T: "#35507a", F: "#232f4a" },
+    { nom: "Vert forêt", T: "#3a8a5f", F: "#245239" },
+    { nom: "Soleil", T: "#e8a53d", F: "#8a5a1f" },
+    { nom: "Violette", T: "#8a5fc9", F: "#4a3372" },
+    { nom: "Rouge passion", T: "#c93a4a", F: "#701f2a" },
+  ],
+  couleursCanape: ["#5fa8a0", "#c96f8a", "#8a6fc9", "#c9a95f", "#5f7ac9", "#7a8a5a"],
+
+  // --------------------------------------------------------------------------
   // CINÉMATIQUE D'INTRO — avant le grand jour. Une carte de texte par entrée.
   // --------------------------------------------------------------------------
   intro: [
@@ -300,6 +314,21 @@ export default {
       { qui: "partner", texte: "Des fleurs ?! Pour MOI ?" },
       { qui: "partner", texte: "…Bon. D'accord. Tu me connais trop bien. On rentre ?" },
       { qui: "player", texte: "On rentre ❤" },
+    ],
+    // la soirée en amoureux (via le calendrier près de la porte, 30 €)
+    date_night: [
+      { qui: "partner", texte: "Une soirée rien qu'à nous ? J'attrape ma veste." },
+      { qui: "player", texte: "(Comme au premier jour.)" },
+      { qui: "partner", texte: "[CE QUE VOUS FAITES TOUJOURS EN SORTIE EN AMOUREUX ?]" },
+      { qui: "player", texte: "(Meilleure idée de la semaine ❤)" },
+    ],
+    // 💍 LE chapitre final — se déclenche un soir, quand l'amour est au sommet
+    demande: [
+      { qui: "partner", texte: "…[PRÉNOM]. Viens par là. J'ai quelque chose à te dire." },
+      { qui: "partner", texte: "Depuis le premier café à l'hôpital, je sais." },
+      { qui: "partner", texte: "[LES VRAIS MOTS DE LA DEMANDE — ou ceux que tu lui diras un jour 💍]" },
+      { qui: "player", texte: "…" },
+      { qui: "player", texte: "OUI. Mille fois oui !!! 💍❤" },
     ],
   },
 
@@ -534,6 +563,10 @@ export default {
     mylene: "Mylène (la meilleure)",
     maman: "Maman ❤",
     flower_spot: "Cueillir un bouquet 🌼",
+    date_board: "Proposer une soirée en amoureux (30 €)",
+    clothes_rack: "Nouvelle tenue (10 €)",
+    grocery_shelf: "Faire les courses (15 €)",
+    furniture_shop: "Changer la couleur du canapé (50 €)",
     bunker: "Un bunker albanais",
     parasol: "Le parasol",
     mountain: "Les montagnes albanaises",

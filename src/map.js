@@ -75,7 +75,7 @@ const LOUVRE_GRID = [
 const PARIS_GRID = [
   "g".repeat(15) + "p" + "g".repeat(16),             // 0  → Louvre (nord)
   "g".repeat(15) + "p" + "g".repeat(16),             // 1
-  "gggg" + "p".repeat(27) + "g",                     // 2  la rue
+  "gggg" + "p".repeat(28),                           // 2  la rue → centre commercial (est)
   "ggggg" + "#####.#####" + "ggg" + "######.######", // 3  façades + portes
   "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 4
   "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 5
@@ -123,6 +123,21 @@ for (let r = 0; r < 20; r++) {
 // LES CARTES — placements en coordonnées locales, sorties (zones de tp)
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
+// LE CENTRE COMMERCIAL (26 × 14) — vêtements, courses, meubles.
+// Porte à l'ouest (lignes 5-6) → la rue de Paris.
+// ---------------------------------------------------------------------------
+const CENTRE_GRID = [];
+for (let r = 0; r < 14; r++) {
+  let row = "";
+  for (let c = 0; c < 26; c++) {
+    const border = c === 0 || c === 25 || r === 0 || r === 13;
+    const door = c === 0 && (r === 5 || r === 6);
+    row += border && !door ? "#" : ",";
+  }
+  CENTRE_GRID.push(row);
+}
+
+// ---------------------------------------------------------------------------
 // L'ALBANIE (34 × 18) — la côte adriatique : mer à l'est, plage, village de
 // pierre et montagnes. Comme l'Égypte : accessible uniquement par l'histoire.
 // ---------------------------------------------------------------------------
@@ -163,6 +178,8 @@ export const MAPS = {
       // coins de fleurs à cueillir (pour les bouquets ❤)
       { type: "flower_spot", col: 21, row: 2 },
       { type: "flower_spot", col: 22, row: 11 },
+      // le calendrier des sorties en amoureux
+      { type: "date_board", col: 15, row: 9 },
       // panneaux directionnels aux départs de chemin
       { type: "signpost", col: 24, row: 9, label: "→ L'hôpital (à l'est)" },
       { type: "signpost", col: 22, row: 14, flip: true, label: "→ Le Louvre (au sud)" },
@@ -252,8 +269,40 @@ export const MAPS = {
       { type: "counter", col: 30, row: 7 },
       { type: "plant", col: 20, row: 9 },
       { type: "signpost", col: 16, row: 1, label: "→ Le Louvre (au nord)" },
+      { type: "signpost", col: 29, row: 1, label: "→ Le centre commercial (à l'est)" },
     ],
-    exits: [{ x0: 14.4, y0: 0, x1: 16.6, y1: 0.6, to: "louvre", at: { x: 15.5, y: 12.5 } }],
+    exits: [
+      { x0: 14.4, y0: 0, x1: 16.6, y1: 0.6, to: "louvre", at: { x: 15.5, y: 12.5 } },
+      { x0: 31.4, y0: 1.4, x1: 32, y1: 3.6, to: "centre", at: { x: 1.6, y: 5.8 } },
+    ],
+  },
+
+  centre: {
+    name: "🛍️ Le centre commercial",
+    grid: CENTRE_GRID,
+    horizon: "#8b8f99",
+    skirt: "p",
+    placements: [
+      // boutique de vêtements
+      { type: "clothes_rack", col: 4, row: 2 },
+      { type: "clothes_rack", col: 6, row: 2 },
+      { type: "counter", col: 3, row: 6 },
+      // supérette
+      { type: "grocery_shelf", col: 11, row: 2 },
+      { type: "grocery_shelf", col: 13, row: 2 },
+      { type: "counter", col: 12, row: 6 },
+      // magasin de meubles (le canapé exposé change VRAIMENT de couleur)
+      { type: "couch", col: 18, row: 3 },
+      { type: "furniture_shop", col: 21, row: 6 },
+      // déco
+      { type: "plant", col: 2, row: 11 },
+      { type: "plant", col: 23, row: 2 },
+      { type: "plant", col: 23, row: 11 },
+      { type: "resto_table", col: 8, row: 10 },
+      { type: "resto_table", col: 16, row: 10 },
+      { type: "signpost", col: 2, row: 7, flip: true, label: "→ Paris (la sortie)" },
+    ],
+    exits: [{ x0: 0, y0: 4.6, x1: 0.6, y1: 7, to: "paris", at: { x: 30.4, y: 2.5 } }],
   },
 
   egypte: {

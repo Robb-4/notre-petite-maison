@@ -48,8 +48,14 @@ export class HUD {
     }
   }
 
-  setClock(day, timeStr) {
-    this.clockEl.textContent = `Jour ${day} — ${timeStr}`;
+  setClock(day, timeStr, mood = "") {
+    this.clockEl.textContent = `Jour ${day} — ${timeStr}${mood ? " " + mood : ""}`;
+  }
+
+  setMoney(amount, visible) {
+    const el = document.getElementById("money");
+    el.classList.toggle("hidden", !visible);
+    if (visible) el.textContent = `💶 ${Math.round(amount)} €`;
   }
 
   setQuest(title, stepLabel, done = false) {

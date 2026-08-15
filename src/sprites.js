@@ -802,6 +802,11 @@ export const FURNITURE = {
   mountain: { grid: MONITOR, fw: 4, fh: 4, solid: true }, // cône 3D dédié
   // la vraie vie : coin de fleurs à cueillir (les fleurs de la tuile suffisent)
   flower_spot: { grid: MONITOR, fw: 1, fh: 1, solid: false },
+  // le centre commercial + la vie à deux
+  clothes_rack: { grid: MONITOR, fw: 1, fh: 1, solid: true },
+  grocery_shelf: { grid: MONITOR, fw: 1, fh: 1, solid: true },
+  furniture_shop: { grid: MONITOR, fw: 1, fh: 1, solid: true },
+  date_board: { grid: MONITOR, fw: 1, fh: 1, solid: true },
 };
 
 export { CANDLE };
@@ -993,6 +998,19 @@ export const BOX_TEX_GRIDS = {
     x === 0 || y === 0 || x === 15 || y === 15 ? "m" : "M"
   ),
   deskSide: genGrid(16, 9, (x, y) => (y === 0 || y === 8 || x === 0 ? "m" : "M")),
+  // faces des meubles convertis en boîtes (fini les meubles de travers)
+  tvScreen: genGrid(16, 10, (x, y) =>
+    x === 0 || y === 0 || x === 15 || y === 9 ? "K" : x === y + 4 || x === y + 5 ? "s" : "c"
+  ),
+  darkSide: genGrid(12, 14, () => "K"),
+  darkTop: genGrid(12, 12, (x, y) => (x === 0 || y === 0 || x === 11 || y === 11 ? "D" : "K")),
+  grayTop: genGrid(16, 16, (x, y) => (x === 0 || y === 0 || x === 15 || y === 15 ? "D" : "m")),
+  groceryFront: genGrid(16, 20, (x, y) => {
+    if (y <= 1 || y === 7 || y === 13 || y >= 19 || x === 0 || x === 15) return "W";
+    if (y < 7) return x % 4 === 0 ? "K" : x % 3 === 1 ? "O" : "R"; // fruits
+    if (y < 13) return x % 4 === 2 ? "K" : x % 3 === 0 ? "Y" : "G"; // légumes
+    return x % 5 === 3 ? "K" : x % 2 === 0 ? "N" : "M"; // boîtes
+  }),
   nightFront: genGrid(16, 10, (x, y) => {
     if (x === 0 || y === 0 || x === 15 || y === 9) return "W";
     if (x >= 3 && x <= 12 && y >= 2 && y <= 7 && (x === 3 || x === 12 || y === 2 || y === 7)) return "W";
@@ -1034,3 +1052,42 @@ export const SHADOW = [
   ".KKKKKKKKKK.",
   "...KKKKKK...",
 ];
+
+// Portant de vêtements (centre commercial)
+export const RACK = [
+  "WWWWWWWWWWWWWWWW",
+  "W.RRR.NNN.GGG..W",
+  "W.RRR.NNN.GGG..W",
+  "W.RRR.NNN.GGG..W",
+  "W.RRR.NNN.GGG..W",
+  "W..R...N...G...W",
+  "W..............W",
+  "W..............W",
+  "WW............WW",
+  "................",
+];
+
+// Petit calendrier des sorties en amoureux (posé près de la porte)
+export const CALENDAR = [
+  ".W.W.W.W.W..",
+  "MMMMMMMMMMMM",
+  "MMMMMMMMMMMM",
+  "MMRRMMMRRMMM",
+  "MRRRRRRRRRRM",
+  "MRRRRRRRRRRM",
+  "MMRRRRRRRRMM",
+  "MMMRRRRRRMMM",
+  "MMMMRRRRMMMM",
+  "MMMMMRRMMMMM",
+  "MMMMMMMMMMMM",
+  "....WW......",
+  "....WW......",
+  "............",
+];
+
+// faces découpées pour les boîtes (fini les meubles de travers) : dernière
+// ligne transparente retirée, points remplacés par du noir si besoin
+BOX_TEX_GRIDS.bookshelfFront = BOOKSHELF.slice(0, 23);
+BOX_TEX_GRIDS.showerSide = SHOWER.slice(0, 23);
+BOX_TEX_GRIDS.borneFront = BORNE.slice(0, 15).map((r) => r.replace(/\./g, "K"));
+BOX_TEX_GRIDS.coffeeFront = COFFEE.slice(0, 10).map((r) => r.replace(/\./g, "K"));

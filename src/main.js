@@ -69,13 +69,26 @@ function vieReelle() {
 let robinParti = false; // il est parti bouder au bureau (amour à zéro)
 let hasFlowers = false; // un bouquet cueilli au jardin
 let pendingPartnerMove = null; // téléportation de Robin à appliquer (x, y)
+let money = 50; // 💶 gagné en travaillant à l'hôpital
+let happyDays = 0; // compteur de jours heureux (humeur moyenne ≥ 55 à l'aube)
+let lastDay = 1;
+let outfitIndex = -1; // tenue en cours (data.tenues)
+let couchIndex = 0; // couleur du canapé (data.couleursCanape)
+let dateVenue = null; // carte de la soirée en amoureux en cours
+let lastDateVenue = "louvre";
+let visitor = null; // { id, until, day } — visite surprise de Mylène / Maman
+let demandeFaite = false; // 💍
+let lastHourChecked = -1;
 
 // Sur quelle carte vit chaque PNJ en ce moment ?
 function npcMapOf(id) {
-  if (id === "mylene") return "egypte";
-  if (id === "maman") return "albanie";
+  if (id === "mylene") return visitor?.id === "mylene" ? "home" : "egypte";
+  if (id === "maman") return visitor?.id === "maman" ? "home" : "albanie";
   if (id !== "partner") return "hospital";
-  if (!inStory()) return robinParti ? "hospital" : "home";
+  if (!inStory()) {
+    if (dateVenue) return dateVenue; // en sortie en amoureux
+    return robinParti ? "hospital" : "home";
+  }
   const qid = quests.current?.id;
   if (qid === "premier_date") return "louvre";
   if (qid === "saint_valentin") return "paris";
@@ -109,6 +122,12 @@ function switchMap(to, at) {
   state = "travel";
   fadeEl.style.opacity = "1";
   setTimeout(() => {
+    // fin de la soirée en amoureux : Robin rentre à la maison
+    if (dateVenue && to !== dateVenue) {
+      dateVenue = null;
+      npcs.partner.x = SPAWNS.partnerDay.x;
+      npcs.partner.y = SPAWNS.partnerDay.y;
+    }
     mapId = to;
     player.x = at.x;
     player.y = at.y;
@@ -226,6 +245,20 @@ function robinPart() {
   pendingPartnerMove = { x: SPAWNS.partnerDev.x, y: SPAWNS.partnerDev.y };
 }
 
+// --- vraie vie : soirée en amoureux (KONG et Louvre en alternance) ---
+function startDateNight() {
+  lastDateVenue = lastDateVenue === "paris" ? "louvre" : "paris";
+  dateVenue = lastDateVenue;
+  const anchor = dateVenue === "paris" ? SPAWNS.partnerKong : SPAWNS.partnerLouvre;
+  npcs.partner.x = anchor.x;
+  npcs.partner.y = anchor.y;
+  clock.minutes = 20 * 60;
+  clock.prevMinutes = clock.minutes;
+  needs.apply({ amour: 40, fun: 25, social: 20 });
+  switchMap(dateVenue, dateVenue === "paris" ? { x: 25.5, y: 5 } : { x: 20, y: 9 });
+  playSequence(DATA.sequences.date_night ?? []);
+}
+
 // --- cinématiques (intro, transition, interlude) ---
 let cineIndex = 0;
 let cineSlides = [];
@@ -327,6 +360,49 @@ function completeInteraction(spot, def) {
       hasFlowers = true;
       hud.toast("🌼 Bouquet cueilli ! (Offre-le à Robin)");
     }
+  } else if (spot.type === "her_desk" && vieReelle()) {
+    // travailler pour gagner sa vie
+    money += 40;
+    needs.apply({ energie: -18, fun: -8 });
+    hud.toast("💼 Bien bossé : +40 €");
+  } else if (spot.type === "clothes_rack") {
+    if (money >= 10) {
+      money -= 10;
+      outfitIndex = (outfitIndex + 1) % DATA.tenues.length;
+      const t = DATA.tenues[outfitIndex];
+      playerView.recolor({ ...DATA.characters.player.palette, T: t.T, F: t.F });
+      hud.toast(`👗 Nouvelle tenue : ${t.nom} !`);
+    } else {
+      hud.toast("💶 Pas assez d'argent (10 €)");
+    }
+  } else if (spot.type === "grocery_shelf") {
+    if (money >= 15) {
+      money -= 15;
+      needs.apply({ faim: 50, fun: 5 });
+      hud.toast("🛒 Courses faites ! (+50 faim)");
+    } else {
+      hud.toast("💶 Pas assez d'argent (15 €)");
+    }
+  } else if (spot.type === "furniture_shop") {
+    if (money >= 50) {
+      money -= 50;
+      couchIndex = (couchIndex + 1) % DATA.couleursCanape.length;
+      world.setCouchColor(DATA.couleursCanape[couchIndex]);
+      hud.toast("🛋️ Nouveau canapé ! (regarde le modèle d'expo)");
+    } else {
+      hud.toast("💶 Pas assez d'argent (50 €)");
+    }
+  } else if (spot.type === "date_board") {
+    if (!vieReelle()) {
+      hud.toast("📅 (Plus tard…)");
+    } else if (robinParti) {
+      hud.toast("💔 Robin n'est pas là…");
+    } else if (money >= 30) {
+      money -= 30;
+      startDateNight();
+    } else {
+      hud.toast("💶 Pas assez d'argent (30 €)");
+    }
   } else if (isNpc && stinky) {
     // personne ne veut te parler dans cet état
     effects = {};
@@ -393,8 +469,22 @@ function doSleep() {
 function questHudText() {
   if (robinParti)
     return ["💔 Robin est parti bouder", "Cueille des fleurs au jardin et va le voir à l'hôpital", false];
-  if (quests.allDone) return ["Objectifs ❤", "Tout est accompli — profitez !", true];
+  if (quests.allDone) {
+    if (demandeFaite)
+      return ["💍 Fiancés !", `${happyDays} jour(s) heureux — et toute la vie devant vous ❤`, true];
+    return ["La vie à deux ❤", `${happyDays} jour(s) heureux — entretiens l'amour… qui sait ? 💍`, true];
+  }
   return [quests.current.titre, quests.currentStep.label, false];
+}
+
+// humeur globale (moyenne des jauges) → petit emoji dans l'horloge
+function moodEmoji() {
+  const v = needs.values;
+  const keys = vieReelle()
+    ? ["faim", "energie", "hygiene", "fun", "social", "amour"]
+    : ["faim", "energie", "hygiene", "fun", "social"];
+  const avg = keys.reduce((s, k) => s + v[k], 0) / keys.length;
+  return { avg, emoji: avg >= 70 ? "😄" : avg >= 50 ? "🙂" : avg >= 35 ? "😐" : avg >= 20 ? "😟" : "😭" };
 }
 
 // la chaussette n'existe que lorsque sa quête la cherche
@@ -424,6 +514,18 @@ window.__game = {
   },
   get hasFlowers() {
     return hasFlowers;
+  },
+  get money() {
+    return money;
+  },
+  set money(v) {
+    money = v;
+  },
+  get demandeFaite() {
+    return demandeFaite;
+  },
+  get dateVenue() {
+    return dateVenue;
   },
 };
 
@@ -519,6 +621,51 @@ function loop(now) {
       if (needs.values.hygiene <= CONFIG.vieReelle.stinkThreshold && Math.random() < dt * 0.7) {
         world.spawnStink(player.x, player.y - 0.9);
       }
+
+      // visites surprises de Mylène ou Maman (vérifié à chaque heure pleine)
+      const hourNow = Math.floor(clock.hourFloat);
+      if (hourNow !== lastHourChecked) {
+        lastHourChecked = hourNow;
+        if (!visitor && hourNow >= 10 && hourNow <= 18 && Math.random() < 0.22) {
+          const id = Math.random() < 0.5 ? "mylene" : "maman";
+          visitor = { id, until: clock.minutes + 180, day: clock.day };
+          npcs[id].x = 17.5;
+          npcs[id].y = 10.5;
+          hud.toast(`🔔 ${DATA.characters[id].nom} passe dire coucou !`);
+          if (mapId === "home") refreshMap();
+        }
+      }
+      if (visitor && (clock.minutes > visitor.until || clock.day !== visitor.day)) {
+        hud.toast(`👋 ${DATA.characters[visitor.id].nom} rentre chez elle. À bientôt !`);
+        npcs[visitor.id].x = SPAWNS[visitor.id].x;
+        npcs[visitor.id].y = SPAWNS[visitor.id].y;
+        visitor = null;
+        if (mapId === "home") refreshMap();
+      }
+
+      // 💍 le chapitre final : un soir, quand l'amour est au sommet…
+      const partnerNpc = activeNpcs.partner;
+      if (
+        !demandeFaite &&
+        quests.allDone &&
+        !robinParti &&
+        needs.values.amour >= 95 &&
+        clock.hourFloat >= 20 &&
+        clock.hourFloat < 23 &&
+        partnerNpc &&
+        Math.hypot(partnerNpc.x - player.x, partnerNpc.y - player.y) < 2.2
+      ) {
+        demandeFaite = true;
+        playSequence(DATA.sequences.demande ?? []);
+        world.spawnHearts(player.x, player.y - 0.6, 20);
+        hud.toast("💍 FIANCÉS !!!");
+      }
+    }
+
+    // compteur de jours heureux (évalué au changement de jour)
+    if (clock.day !== lastDay) {
+      if (moodEmoji().avg >= 55) happyDays += 1;
+      lastDay = clock.day;
     }
 
     const evening = clock.hourFloat >= 20 || clock.hourFloat < 6;
@@ -536,6 +683,9 @@ function loop(now) {
     } else {
       partnerAnchor = SPAWNS.partnerDev;
     }
+    if (!inStory() && dateVenue) {
+      partnerAnchor = dateVenue === "paris" ? SPAWNS.partnerKong : SPAWNS.partnerLouvre;
+    }
     const anchors = {
       partner: partnerAnchor,
       sophie: SPAWNS.sophie,
@@ -543,8 +693,8 @@ function loop(now) {
       arij: SPAWNS.arij,
       mahrez: SPAWNS.mahrez,
       david: SPAWNS.david,
-      mylene: SPAWNS.mylene,
-      maman: SPAWNS.maman,
+      mylene: visitor?.id === "mylene" ? { x: 11, y: 10.5 } : SPAWNS.mylene,
+      maman: visitor?.id === "maman" ? { x: 11, y: 10.5 } : SPAWNS.maman,
     };
     for (const [id, npc] of Object.entries(activeNpcs)) {
       // le PNJ attendu par l'étape de quête en cours s'arrête et attend
@@ -607,7 +757,8 @@ function loop(now) {
 
   hud.setNeedVisible("amour", vieReelle());
   hud.updateNeeds(needs.values);
-  hud.setClock(clock.day, clock.timeString());
+  hud.setClock(clock.day, clock.timeString(), vieReelle() ? moodEmoji().emoji : "");
+  hud.setMoney(money, vieReelle());
   const [qTitle, qStep, qDone] = questHudText();
   hud.setQuest(qTitle, qStep, qDone);
   tintEl.style.backgroundColor = clock.tintColor();

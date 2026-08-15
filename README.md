@@ -46,6 +46,16 @@ Une fois l'histoire finie, le jeu devient un vrai Sims :
   chez toi le lendemain.
 - **Faim à zéro : tu meurs.** 💀 (Mais l'amour est plus fort que la mort —
   Entrée pour revivre.)
+- **Argent 💶** : travaille à ton bureau à l'hôpital (+40 €) pour financer le
+  reste.
+- **Le centre commercial 🛍️** (à l'est de la rue de Paris) : nouvelles tenues
+  (10 €), courses (15 €), couleur du canapé (50 €).
+- **Soirées en amoureux 📅** : le calendrier près de la porte (30 €) vous
+  emmène au KONG ou au Louvre, en alternance.
+- **Visites surprises** : Mylène ou Maman passent parfois dire coucou.
+- **Humeur & jours heureux** : un emoji d'humeur dans l'horloge, et un
+  compteur de jours heureux… qui mène peut-être à une demande 💍 (amour au
+  sommet, un soir, près de Robin).
 
 ## 🎮 Contrôles
 

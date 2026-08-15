@@ -20,6 +20,8 @@ import {
   MONITOR,
   CANDLE,
   STINK,
+  RACK,
+  CALENDAR,
 } from "./sprites.js";
 import { makeTexture, makeSpriteMaterial, makeOpaqueMaterial } from "./textures.js";
 import { TILE_DEFS } from "./map.js";
@@ -258,6 +260,61 @@ export function createWorld() {
           meshes.push(m, v);
           break;
         }
+        case "bookshelf": {
+          const m = makeBox(0.9, 1.45, 0.55, boxTex.tableTop, boxTex.bookshelfFront, boxTex.tableSide);
+          m.position.set(cx, 0.725, cz);
+          meshes.push(m);
+          break;
+        }
+        case "tv": {
+          // meuble TV bas + écran posé dessus
+          const cab = makeBox(1.9, 0.4, 0.6, boxTex.tableTop, boxTex.tableSide, boxTex.tableSide);
+          cab.position.set(cx, 0.2, cz);
+          const scr = makeBox(1.0, 0.6, 0.14, boxTex.darkTop, boxTex.tvScreen, boxTex.darkSide);
+          scr.position.set(cx, 0.7, cz - 0.08);
+          meshes.push(cab, scr);
+          break;
+        }
+        case "shower": {
+          const m = makeBox(0.85, 1.55, 0.85, boxTex.grayTop, boxTex.showerSide, boxTex.showerSide);
+          m.position.set(cx, 0.775, cz);
+          meshes.push(m);
+          break;
+        }
+        case "borne": {
+          const m = makeBox(0.8, 1.1, 0.68, boxTex.darkTop, boxTex.borneFront, boxTex.darkSide);
+          m.position.set(cx, 0.55, cz);
+          meshes.push(m);
+          break;
+        }
+        case "coffee": {
+          const m = makeBox(0.7, 0.8, 0.6, boxTex.darkTop, boxTex.coffeeFront, boxTex.darkSide);
+          m.position.set(cx, 0.4, cz);
+          meshes.push(m);
+          break;
+        }
+        case "grocery_shelf": {
+          const m = makeBox(0.95, 1.3, 0.6, boxTex.tableTop, boxTex.groceryFront, boxTex.tableSide);
+          m.position.set(cx, 0.65, cz);
+          meshes.push(m);
+          break;
+        }
+        case "clothes_rack": {
+          if (!billTexCache.rack) billTexCache.rack = makeTexture(RACK, FURN_PAL, OUTLINE);
+          const size = gridSize(RACK);
+          const b = makeBillboard(billTexCache.rack, size.w * 1.15, size.h * 1.15);
+          setBillboardPos(b, cx, p.row + def.fh - 0.15, size.h * 1.15, 0, (trailingEmptyRows(RACK) / 16) * 1.15);
+          meshes.push(b);
+          break;
+        }
+        case "date_board": {
+          if (!billTexCache.calendar) billTexCache.calendar = makeTexture(CALENDAR, FURN_PAL, OUTLINE);
+          const size = gridSize(CALENDAR);
+          const b = makeBillboard(billTexCache.calendar, size.w, size.h);
+          setBillboardPos(b, cx, p.row + def.fh - 0.15, size.h, 0, trailingEmptyRows(CALENDAR) / 16);
+          meshes.push(b);
+          break;
+        }
         case "resto_table": {
           const m = makeBox(0.84, 0.55, 0.8, boxTex.deskTop, boxTex.deskSide, boxTex.deskSide);
           m.position.set(cx, 0.275, cz);
@@ -350,6 +407,7 @@ export function createWorld() {
           meshes.push(m, b);
           break;
         }
+        case "furniture_shop":
         case "counter": {
           const m = makeBox(0.96, 0.85, 0.8, boxTex.tableTop, boxTex.tableSide, boxTex.tableSide);
           m.position.set(cx, 0.425, cz);
@@ -488,6 +546,30 @@ export function createWorld() {
     for (const o of objs) scene.add(o);
   }
 
+  // recolore le canapé (achat au centre commercial) — les matériaux étant
+  // partagés et en cache, la couleur survit aux changements de carte
+  function shade(hex, f) {
+    const n = parseInt(hex.slice(1), 16);
+    const c = (v) => Math.max(0, Math.min(255, Math.round(v * f)));
+    const r = c((n >> 16) & 255);
+    const g = c((n >> 8) & 255);
+    const b = c(n & 255);
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+  }
+  function setCouchColor(hex) {
+    const pal = {
+      ...FURN_PAL,
+      U: hex,
+      u: shade(hex, 0.72),
+      E: shade(hex, 1.45),
+      e: shade(hex, 1.12),
+    };
+    for (const name of ["couchSeatTop", "couchSeatFront", "couchBackTop", "couchBackFront", "couchSide"]) {
+      boxTex[name].map = makeTexture(BOX_TEX_GRIDS[name], pal);
+      boxTex[name].needsUpdate = true;
+    }
+  }
+
   function render() {
     renderer.render(scene, camera);
   }
@@ -507,5 +589,6 @@ export function createWorld() {
     project,
     render,
     setFurnitureVisible,
+    setCouchColor,
   };
 }
