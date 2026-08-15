@@ -6,7 +6,7 @@ import { FURNITURE } from "./sprites.js";
 // effects = points de besoins, dlg = clé de dialogue, speaker = qui parle.
 export const ACTIONS = {
   fridge: { duration: 2, effects: { faim: 45 }, dlg: "use_fridge", speaker: "player" },
-  stove: { duration: 2.5, effects: { faim: 30 }, dlg: "use_stove", speaker: "player" },
+  stove: { duration: 0, effects: { faim: 30 }, dlg: "use_stove", speaker: "player" },
   shower: { duration: 3, effects: { hygiene: 60 }, dlg: "use_shower", speaker: "player" },
   couch: { duration: 2, effects: { fun: 40 }, dlg: "use_couch", speaker: "player" },
   bookshelf: { duration: 1.5, effects: { fun: 15 }, dlg: "use_bookshelf", speaker: "player" },
@@ -35,6 +35,9 @@ export const ACTIONS = {
   grocery_shelf: { duration: 1, effects: {}, dlg: null, speaker: "player" },
   furniture_shop: { duration: 1, effects: {}, dlg: null, speaker: "player" },
   date_board: { duration: 0, effects: {}, dlg: null, speaker: "player" },
+  // le potager et le ménage
+  garden_plot: { duration: 1, effects: {}, dlg: null, speaker: "player" },
+  dirt: { duration: 1.2, effects: { fun: 3 }, dlg: null, speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
   signpost: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   coffee: { duration: 1.5, effects: { energie: 15 }, dlg: "use_coffee", speaker: "player" },

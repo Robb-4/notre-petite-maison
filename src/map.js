@@ -180,6 +180,10 @@ export const MAPS = {
       { type: "flower_spot", col: 22, row: 11 },
       // le calendrier des sorties en amoureux
       { type: "date_board", col: 15, row: 9 },
+      // le potager (3 parcelles au sud du jardin)
+      { type: "garden_plot", col: 18, row: 14 },
+      { type: "garden_plot", col: 19, row: 14 },
+      { type: "garden_plot", col: 20, row: 14 },
       // panneaux directionnels aux départs de chemin
       { type: "signpost", col: 24, row: 9, label: "→ L'hôpital (à l'est)" },
       { type: "signpost", col: 22, row: 14, flip: true, label: "→ Le Louvre (au sud)" },

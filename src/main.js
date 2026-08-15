@@ -80,6 +80,27 @@ let visitor = null; // { id, until, day } — visite surprise de Mylène / Maman
 let demandeFaite = false; // 💍
 let lastHourChecked = -1;
 
+// la cuisine 🍳
+let pantry = 3; // portions d'ingrédients 🧺
+let seeds = 0; // graines 🌱
+let carrying = null; // null | "ingredients" | { recette, qualite }
+let cookT = 0; // temps du mini-jeu de cuisson
+
+// le potager 🌱 (3 parcelles, mêmes indices que les placements garden_plot)
+const plots = [
+  { state: "vide", growth: 0, watered: false },
+  { state: "vide", growth: 0, watered: false },
+  { state: "vide", growth: 0, watered: false },
+];
+const PLOT_COLS = [18, 19, 20];
+
+// le ménage 🧹
+const DIRT_SPOTS = [
+  [3, 8], [6, 10], [8, 7], [10, 11], [12, 7],
+  [13, 11], [7, 12], [4, 11], [11, 6], [14, 8],
+];
+let dirt = []; // [{ col, row }]
+
 // Sur quelle carte vit chaque PNJ en ce moment ?
 function npcMapOf(id) {
   if (id === "mylene") return visitor?.id === "mylene" ? "home" : "egypte";
@@ -101,7 +122,9 @@ let isSolid = buildCollision(MAPS.home);
 let activeNpcs = {};
 
 function refreshMap() {
-  world.loadMap(MAPS[mapId]);
+  // les taches de ménage sont des placements dynamiques de la maison
+  const extras = mapId === "home" ? dirt.map((d) => ({ type: "dirt", col: d.col, row: d.row })) : [];
+  world.loadMap(MAPS[mapId], extras);
   isSolid = buildCollision(MAPS[mapId]);
   activeNpcs = {};
   for (const [id, npc] of Object.entries(npcs)) {
@@ -112,8 +135,17 @@ function refreshMap() {
     }
   }
   world.addObj(...playerView.meshes);
-  interactions.setMap(MAPS[mapId].placements, activeNpcs);
+  interactions.setMap([...MAPS[mapId].placements, ...extras], activeNpcs);
   world.updateCamera(player.x, player.y, 0, true);
+  syncPlots();
+}
+
+// applique les stades visuels du potager (après chaque reconstruction de carte)
+function syncPlots() {
+  if (mapId !== "home") return;
+  plots.forEach((pl, i) => {
+    world.setPlotStage(i, pl.state === "vide" ? 0 : pl.state === "plantee" ? 1 : 2);
+  });
 }
 
 // téléportation vers une autre carte, avec fondu
@@ -245,6 +277,62 @@ function robinPart() {
   pendingPartnerMove = { x: SPAWNS.partnerDev.x, y: SPAWNS.partnerDev.y };
 }
 
+// --- la cuisine 🍳 : mini-jeu de cuisson ---
+function startCooking() {
+  state = "cooking";
+  cookT = 0;
+  hud.showCookbar(0);
+}
+function resolveCooking(dist) {
+  hud.hideCookbar();
+  state = "playing";
+  needs.apply({ energie: -5 });
+  const C = CONFIG.cuisine;
+  if (dist > C.correct) {
+    // brûlé !
+    carrying = null;
+    needs.apply({ fun: -10, faim: 5 });
+    for (let i = 0; i < 6; i++) world.spawnSmoke(player.x, player.y - 0.6);
+    hud.toast("💨 BRÛLÉ ! (les voisins s'inquiètent)");
+  } else {
+    const recette = DATA.recettes[Math.floor(Math.random() * DATA.recettes.length)];
+    const qualite = dist <= C.perfect ? "parfait" : "correct";
+    carrying = { recette, qualite };
+    if (qualite === "parfait") needs.apply({ fun: 10 });
+    hud.toast(`🍲 ${recette.nom} — ${qualite === "parfait" ? "PARFAIT ✨" : "réussi !"}`);
+    interactions.emit("stove"); // la quête q1 valide « cuisiner » sur un plat réussi
+  }
+}
+function cancelCooking() {
+  hud.hideCookbar();
+  state = "playing";
+  hud.toast("🍳 Cuisson annulée (ingrédients gardés)");
+}
+
+// --- la cuisine 🍳 : le dîner à deux ---
+function serveDinner() {
+  const plat = carrying;
+  carrying = null;
+  const C = CONFIG.cuisine;
+  const faim = Math.round(plat.recette.faim * (plat.qualite === "parfait" ? C.parfaitMult : 1));
+  if (activeNpcs.partner && !robinParti) {
+    // Robin vient s'asseoir à table
+    npcs.partner.x = 6.5;
+    npcs.partner.y = 7.5;
+    npcs.partner.startTalk(5.5, 7.5);
+    npcs.partner.talkTimer = 8;
+    const isPref = !!plat.recette.prefere;
+    let amour = isPref ? C.amourDinerPrefere : C.amourDiner;
+    if (plat.qualite === "parfait") amour += 5;
+    needs.apply({ faim, amour, fun: 10, social: 15 });
+    playSequence(DATA.sequences[isPref ? "diner_prefere" : "diner"] ?? []);
+    world.spawnHearts(6, 7, isPref ? 10 : 6);
+  } else {
+    needs.apply({ faim, fun: 5 });
+    hud.toast("🍽️ (C'était bon. Mais c'est meilleur à deux.)");
+  }
+}
+
 // --- vraie vie : soirée en amoureux (KONG et Louvre en alternance) ---
 function startDateNight() {
   lastDateVenue = lastDateVenue === "paris" ? "louvre" : "paris";
@@ -360,6 +448,65 @@ function completeInteraction(spot, def) {
       hasFlowers = true;
       hud.toast("🌼 Bouquet cueilli ! (Offre-le à Robin)");
     }
+  } else if (spot.type === "fridge" && vieReelle()) {
+    // prendre des ingrédients (ou fond de frigo si vide)
+    effects = {};
+    if (carrying) {
+      hud.toast(carrying === "ingredients" ? "🧺 Tu as déjà les ingrédients !" : "🍲 Tu as déjà un plat en main !");
+    } else if (pantry > 0 || quests.isCurrentTarget("fridge")) {
+      if (pantry > 0) pantry -= 1;
+      carrying = "ingredients";
+      hud.toast("🧺 Ingrédients en main — direction la cuisinière !");
+    } else {
+      needs.apply({ faim: 10 });
+      dialogue.showKey("frigo_vide", "player", clock.bucket());
+    }
+  } else if (spot.type === "stove" && vieReelle()) {
+    // lancer la cuisson (mini-jeu) — « stove » n'est émis qu'en cas de réussite
+    effects = {};
+    if (carrying === "ingredients") {
+      carrying = null;
+      startCooking();
+      return;
+    }
+    hud.toast("🧺 Il faut d'abord des ingrédients (frigo) !");
+  } else if (spot.type === "table" && vieReelle() && carrying && carrying !== "ingredients") {
+    // servir le dîner à table ❤
+    serveDinner();
+  } else if (spot.type === "garden_plot") {
+    // le potager : planter / arroser / récolter
+    const i = PLOT_COLS.indexOf(spot.rect.x0);
+    const pl = plots[i];
+    if (pl.state === "vide") {
+      if (seeds > 0) {
+        seeds -= 1;
+        pl.state = "plantee";
+        pl.growth = 0;
+        pl.watered = true;
+        hud.toast("🌱 Planté ! (arrose chaque jour)");
+        syncPlots();
+      } else {
+        hud.toast("🌱 Il te faut des graines (courses au centre commercial)");
+      }
+    } else if (pl.state === "plantee") {
+      if (!pl.watered) {
+        pl.watered = true;
+        hud.toast("💧 Arrosé !");
+      } else {
+        hud.toast("💧 Déjà arrosé aujourd'hui");
+      }
+    } else {
+      pl.state = "vide";
+      pl.growth = 0;
+      pantry += CONFIG.potager.recolte;
+      hud.toast(`🥕 Récolte : +${CONFIG.potager.recolte} 🧺 !`);
+      syncPlots();
+    }
+  } else if (spot.type === "dirt") {
+    // nettoyer une tache
+    dirt = dirt.filter((d) => !(d.col === spot.rect.x0 && d.row === spot.rect.y0));
+    hud.toast("🧹 Et voilà, propre !");
+    refreshMap();
   } else if (spot.type === "her_desk" && vieReelle()) {
     // travailler pour gagner sa vie
     money += 40;
@@ -378,8 +525,10 @@ function completeInteraction(spot, def) {
   } else if (spot.type === "grocery_shelf") {
     if (money >= 15) {
       money -= 15;
-      needs.apply({ faim: 50, fun: 5 });
-      hud.toast("🛒 Courses faites ! (+50 faim)");
+      pantry += 3;
+      seeds += 1;
+      needs.apply({ fun: 5 });
+      hud.toast("🛒 Courses : +3 🧺 ingrédients, +1 🌱 graine !");
     } else {
       hud.toast("💶 Pas assez d'argent (15 €)");
     }
@@ -419,6 +568,14 @@ function completeInteraction(spot, def) {
     } else {
       dialogue.showKey("robin_boude", "partner", clock.bucket());
     }
+  } else if (spot.type === "partner" && vieReelle() && carrying && carrying !== "ingredients") {
+    // lui donner le plat en main propre (valide aussi la quête q1)
+    const plat = carrying;
+    carrying = null;
+    const isPref = !!plat.recette.prefere;
+    needs.apply({ amour: isPref ? CONFIG.cuisine.amourDinerPrefere : CONFIG.cuisine.amourDiner, social: 15 });
+    dialogue.showKey("sert_plat", "partner", clock.bucket());
+    world.spawnHearts(player.x, player.y - 0.8, isPref ? 10 : 6);
   } else if (spot.type === "partner" && vieReelle() && hasFlowers) {
     // offrir le bouquet ❤
     hasFlowers = false;
@@ -458,11 +615,22 @@ function doSleep() {
   setTimeout(() => {
     clock.sleep();
     needs.apply({ energie: 100 });
-    hud.toast(`☀ Jour ${clock.day} — ${String(CONFIG.wakeUpHour).padStart(2, "0")}h00, bien dormi !`);
+    const wakeToast = `☀ Jour ${clock.day} — ${String(CONFIG.wakeUpHour).padStart(2, "0")}h00, bien dormi !`;
     fadeEl.style.opacity = "0";
-    setTimeout(() => {
-      state = "playing";
-    }, 700);
+    // parfois, un rêve 💭
+    const dream =
+      vieReelle() && DATA.reves?.length && Math.random() < 0.5
+        ? DATA.reves[Math.floor(Math.random() * DATA.reves.length)]
+        : null;
+    if (dream) {
+      if (dream.amour) needs.apply({ amour: 8 });
+      startCinematic([`💭 ${dream.texte}`], () => hud.toast(wakeToast));
+    } else {
+      hud.toast(wakeToast);
+      setTimeout(() => {
+        state = "playing";
+      }, 700);
+    }
   }, 800);
 }
 
@@ -527,6 +695,30 @@ window.__game = {
   get dateVenue() {
     return dateVenue;
   },
+  get pantry() {
+    return pantry;
+  },
+  set pantry(v) {
+    pantry = v;
+  },
+  get seeds() {
+    return seeds;
+  },
+  set seeds(v) {
+    seeds = v;
+  },
+  get carrying() {
+    return carrying;
+  },
+  get plots() {
+    return plots;
+  },
+  get dirt() {
+    return dirt;
+  },
+  get cookPos() {
+    return state === "cooking" ? Math.sin(cookT * CONFIG.cuisine.cursorSpeed) : null;
+  },
 };
 
 // --- boucle de jeu ---
@@ -563,12 +755,25 @@ function loop(now) {
   }
 
   dialogue.update(dt);
-  input.readSkip();
+  if (state !== "cooking") input.readSkip();
 
   if (dialogue.isOpen) {
     if (input.readInteract()) dialogue.advance();
   } else if (state === "sleeping" || state === "travel") {
     input.readInteract();
+  } else if (state === "cooking") {
+    // mini-jeu de cuisson : E au bon moment, Échap pour renoncer
+    cookT += dt;
+    const pos = Math.sin(cookT * CONFIG.cuisine.cursorSpeed);
+    hud.showCookbar(pos);
+    if (input.readSkip()) {
+      carrying = "ingredients"; // on garde les ingrédients
+      cancelCooking();
+    } else if (input.readInteract()) {
+      resolveCooking(Math.abs(pos));
+    } else if (cookT >= CONFIG.cuisine.timeout) {
+      resolveCooking(1); // laissé sur le feu…
+    }
   } else if (pendingSleep) {
     pendingSleep = false;
     input.readInteract();
@@ -662,10 +867,44 @@ function loop(now) {
       }
     }
 
-    // compteur de jours heureux (évalué au changement de jour)
+    // saleté : au-delà du seuil, le moral s'use plus vite (et Robin remarque)
+    if (vieReelle() && dirt.length >= CONFIG.menage.seuilMalus) {
+      needs.values.fun = Math.max(0, needs.values.fun - 0.09 * dt);
+      if (Math.random() < dt * 0.008 && activeNpcs.partner) {
+        hud.toast("🧹 Robin : « …on nettoie un peu ? »");
+      }
+    }
+
+    // tick journalier : jours heureux, potager, nouvelles taches
     if (clock.day !== lastDay) {
       if (moodEmoji().avg >= 55) happyDays += 1;
       lastDay = clock.day;
+      if (vieReelle()) {
+        let changed = false;
+        for (const pl of plots) {
+          if (pl.state === "plantee") {
+            if (pl.watered) {
+              pl.growth += 1;
+              if (pl.growth >= CONFIG.potager.joursCroissance) {
+                pl.state = "mure";
+                hud.toast("🥕 Le potager est mûr !");
+              }
+              changed = true;
+            }
+            pl.watered = false;
+          }
+        }
+        const n = 1 + Math.floor(Math.random() * 2);
+        for (let k = 0; k < n && dirt.length < CONFIG.menage.maxTaches; k++) {
+          const free = DIRT_SPOTS.filter(([c, r]) => !dirt.some((d) => d.col === c && d.row === r));
+          if (free.length) {
+            const [c, r] = free[Math.floor(Math.random() * free.length)];
+            dirt.push({ col: c, row: r });
+            changed = true;
+          }
+        }
+        if (changed && mapId === "home") refreshMap();
+      }
     }
 
     const evening = clock.hourFloat >= 20 || clock.hourFloat < 6;
@@ -759,14 +998,35 @@ function loop(now) {
   hud.updateNeeds(needs.values);
   hud.setClock(clock.day, clock.timeString(), vieReelle() ? moodEmoji().emoji : "");
   hud.setMoney(money, vieReelle());
+  let invText = `🧺 ${pantry} · 🌱 ${seeds}`;
+  if (hasFlowers) invText += " · 🌼 bouquet";
+  if (carrying === "ingredients") invText += " · 🧺 en main";
+  else if (carrying) invText += ` · 🍲 ${carrying.recette.nom}`;
+  hud.setInv(invText, vieReelle());
   const [qTitle, qStep, qDone] = questHudText();
   hud.setQuest(qTitle, qStep, qDone);
   tintEl.style.backgroundColor = clock.tintColor();
 
+  // texte de prompt contextuel (potager, frigo, table…)
+  function promptText(spot) {
+    if (spot.type === "garden_plot") {
+      const pl = plots[PLOT_COLS.indexOf(spot.rect.x0)];
+      if (pl.state === "vide") return `Planter 🌱 (graines : ${seeds})`;
+      if (pl.state === "plantee") return pl.watered ? "💧 Arrosé — ça pousse…" : "Arroser 💧";
+      return "Récolter 🥕";
+    }
+    if (vieReelle()) {
+      if (spot.type === "fridge") return `Le frigo (🧺 ×${pantry})`;
+      if (spot.type === "stove") return carrying === "ingredients" ? "Cuisiner 🍳 !" : DATA.flavor.stove;
+      if (spot.type === "table" && carrying && carrying !== "ingredients") return "Servir le dîner ❤";
+    }
+    return spot.label ?? DATA.flavor[spot.type] ?? spot.type;
+  }
+
   const spot = !dialogue.isOpen && !action && state === "playing" ? interactions.current : null;
   if (spot) {
     const p = world.project(spot.cx, spot.cy, 1.7);
-    hud.showPrompt(spot.label ?? DATA.flavor[spot.type] ?? spot.type, p.sx, p.sy);
+    hud.showPrompt(promptText(spot), p.sx, p.sy);
   } else {
     hud.hidePrompt();
   }

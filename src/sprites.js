@@ -753,6 +753,42 @@ export const HEART = [
   "...RR...",
 ];
 
+// Le potager : 3 stades (terre / pousse / plant mûr)
+export const SPROUT0 = [
+  "..........",
+  "..........",
+  "..........",
+  "..........",
+  "...pppp...",
+  ".ppPPPPpp.",
+];
+export const SPROUT1 = [
+  "..........",
+  "....G.....",
+  "...GgG....",
+  "....g.....",
+  "...pppp...",
+  ".ppPPPPpp.",
+];
+export const SPROUT2 = [
+  "..GgG.gG..",
+  ".GgRGGgOG.",
+  "..GGgGG...",
+  "...GgG....",
+  "...pppp...",
+  ".ppPPPPpp.",
+];
+
+// Une tache au sol (le ménage attend)
+export const DIRT = [
+  "..WW..W...",
+  ".WKKWWKW..",
+  "WKKKKKKKW.",
+  ".WKKKKKW..",
+  "..WKKW.W..",
+  "...WW.....",
+];
+
 // Petites volutes vertes de puanteur (hygiène à zéro…)
 export const STINK = [
   ".g..G...",
@@ -807,6 +843,9 @@ export const FURNITURE = {
   grocery_shelf: { grid: MONITOR, fw: 1, fh: 1, solid: true },
   furniture_shop: { grid: MONITOR, fw: 1, fh: 1, solid: true },
   date_board: { grid: MONITOR, fw: 1, fh: 1, solid: true },
+  // le potager et le ménage
+  garden_plot: { grid: MONITOR, fw: 1, fh: 1, solid: false },
+  dirt: { grid: MONITOR, fw: 1, fh: 1, solid: false },
 };
 
 export { CANDLE };

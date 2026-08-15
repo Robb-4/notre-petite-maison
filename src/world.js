@@ -22,6 +22,10 @@ import {
   STINK,
   RACK,
   CALENDAR,
+  SPROUT0,
+  SPROUT1,
+  SPROUT2,
+  DIRT,
 } from "./sprites.js";
 import { makeTexture, makeSpriteMaterial, makeOpaqueMaterial } from "./textures.js";
 import { TILE_DEFS } from "./map.js";
@@ -142,7 +146,8 @@ export function createWorld() {
   }
 
   // --- construction d'une carte ---
-  function loadMap(mapDef) {
+  // extras : placements dynamiques (ex : les taches de ménage du jour)
+  function loadMap(mapDef, extras = []) {
     scene = new THREE.Scene();
     scene.add(new THREE.AmbientLight(0xffffff, 0.85));
     const sun = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -218,7 +223,7 @@ export function createWorld() {
     }
 
     // meubles
-    for (const p of mapDef.placements) {
+    for (const p of [...mapDef.placements, ...extras]) {
       const def = FURNITURE[p.type];
       const cx = p.col + def.fw / 2;
       const cz = p.row + def.fh / 2;
@@ -387,6 +392,34 @@ export function createWorld() {
         case "flower_spot":
           // rien à dessiner : les fleurs de la tuile font le travail
           break;
+        case "garden_plot": {
+          // parcelle de potager : la texture change avec le stade de pousse
+          if (!billTexCache.sprout) {
+            billTexCache.sprout = [SPROUT0, SPROUT1, SPROUT2].map((g) =>
+              makeTexture(g, FURN_PAL, OUTLINE)
+            );
+          }
+          const b = makeBillboard(billTexCache.sprout[0], 1, 0.6);
+          setBillboardPos(b, cx, p.row + def.fh - 0.15, 0.6, 0, 0);
+          meshes.push(b);
+          break;
+        }
+        case "dirt": {
+          // tache à plat sur le sol
+          if (!billTexCache.dirt) billTexCache.dirt = makeTexture(DIRT, FURN_PAL);
+          const mat = new THREE.MeshBasicMaterial({
+            map: billTexCache.dirt,
+            transparent: true,
+            opacity: 0.85,
+            depthWrite: false,
+          });
+          const m = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.55), mat);
+          m.rotation.x = -Math.PI / 2;
+          m.renderOrder = 1;
+          m.position.set(cx, 0.012, cz);
+          meshes.push(m);
+          break;
+        }
         case "joconde":
         case "painting": {
           if (!billTexCache[p.type]) billTexCache[p.type] = makeTexture(def.grid, FURN_PAL, OUTLINE);
@@ -464,6 +497,32 @@ export function createWorld() {
         vy: 1.1 + Math.random() * 0.8,
       });
     }
+  }
+
+  // change le stade visuel de la n-ième parcelle de potager (0..2)
+  function setPlotStage(index, stage) {
+    const plots = furniture.filter((f) => f.type === "garden_plot");
+    const plot = plots[index];
+    if (plot && billTexCache.sprout) {
+      plot.meshes[0].material.map = billTexCache.sprout[stage];
+    }
+  }
+
+  // fumée noire (plat brûlé…)
+  const smokeTex = makeTexture(STINK, { g: "#5a5a60", G: "#3a3a40" });
+  function spawnSmoke(x, yMap) {
+    const mesh = makeBillboard(smokeTex, 0.4, 0.26);
+    mesh.material.depthWrite = false;
+    mesh.renderOrder = 10;
+    mesh.position.set(x + (Math.random() - 0.5) * 0.5, 0.9 + Math.random() * 0.5, yMap);
+    scene.add(mesh);
+    hearts.push({
+      mesh,
+      t: 0,
+      life: 1.1 + Math.random() * 0.5,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: 0.8 + Math.random() * 0.4,
+    });
   }
 
   // petites volutes vertes quand on sent fort
@@ -584,6 +643,8 @@ export function createWorld() {
     makeShadow,
     spawnHearts,
     spawnStink,
+    spawnSmoke,
+    setPlotStage,
     update,
     updateCamera,
     project,

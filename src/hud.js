@@ -58,6 +58,22 @@ export class HUD {
     if (visible) el.textContent = `💶 ${Math.round(amount)} €`;
   }
 
+  // inventaire : 🧺 ingrédients, 🌱 graines, plat/bouquet en main
+  setInv(text, visible) {
+    const el = document.getElementById("inv");
+    el.classList.toggle("hidden", !visible);
+    if (visible && el.textContent !== text) el.textContent = text;
+  }
+
+  showCookbar(pos) {
+    const bar = document.getElementById("cookbar");
+    bar.classList.remove("hidden");
+    document.getElementById("cook-cursor").style.left = `${((pos + 1) / 2) * 100}%`;
+  }
+  hideCookbar() {
+    document.getElementById("cookbar").classList.add("hidden");
+  }
+
   setQuest(title, stepLabel, done = false) {
     this.questTitleEl.textContent = title;
     this.questStepEl.textContent = stepLabel;

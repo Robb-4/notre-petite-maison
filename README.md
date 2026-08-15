@@ -56,6 +56,17 @@ Une fois l'histoire finie, le jeu devient un vrai Sims :
 - **Humeur & jours heureux** : un emoji d'humeur dans l'horloge, et un
   compteur de jours heureux… qui mène peut-être à une demande 💍 (amour au
   sommet, un soir, près de Robin).
+- **La vraie cuisine 🍳** : les courses donnent des ingrédients 🧺, le frigo
+  les met en main, la cuisinière lance un **mini-jeu de timing** (E dans la
+  zone verte : parfait / correct / brûlé avec fumée noire). Le plat se mange
+  à table — et si Robin est là, c'est un **dîner à deux** (+amour, gros bonus
+  si c'est SON plat préféré). Les recettes s'éditent dans `data.recettes`.
+- **Le potager 🌱** : 3 parcelles au sud du jardin. Planter (graine des
+  courses), arroser chaque jour, récolter (+2 🧺) au bout de 2 jours.
+- **Le ménage 🧹** : des taches apparaissent chaque jour ; à 4 taches, le
+  moral s'use plus vite (et Robin fait des remarques).
+- **Les rêves 💭** : en dormant, parfois un rêve — souvenir de votre histoire
+  (+amour) ou rêve absurde (`data.reves`).
 
 ## 🎮 Contrôles
 

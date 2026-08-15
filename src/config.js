@@ -48,6 +48,29 @@ export const CONFIG = {
     amourRetour: 60,     // amour après la réconciliation
   },
 
+  // La cuisine (mini-jeu de cuisson)
+  cuisine: {
+    cursorSpeed: 4.2,    // vitesse d'oscillation du curseur
+    perfect: 0.12,       // |écart| pour un plat parfait
+    correct: 0.32,       // |écart| pour un plat correct (au-delà : brûlé)
+    timeout: 5,          // secondes sans appuyer → brûlé
+    parfaitMult: 1.3,    // multiplicateur de faim si parfait
+    amourDiner: 20,      // dîner à deux
+    amourDinerPrefere: 35, // avec SON plat préféré
+  },
+
+  // Le potager
+  potager: {
+    joursCroissance: 2,  // jours arrosés avant récolte
+    recolte: 2,          // 🧺 par récolte
+  },
+
+  // Le ménage
+  menage: {
+    maxTaches: 8,
+    seuilMalus: 4,       // taches à partir desquelles le fun s'use plus vite
+  },
+
   // Horloge : 1 seconde réelle = 1 minute de jeu (journée = 24 min réelles)
   gameMinutesPerSecond: 1,
   startHour: 8,

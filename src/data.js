@@ -97,6 +97,29 @@ export default {
   couleursCanape: ["#5fa8a0", "#c96f8a", "#8a6fc9", "#c9a95f", "#5f7ac9", "#7a8a5a"],
 
   // --------------------------------------------------------------------------
+  // LA CUISINE — les recettes (tirées au hasard à la cuisson). `prefere: true`
+  // = LE plat préféré de Robin (gros bonus d'amour au dîner). `faim` = points.
+  // --------------------------------------------------------------------------
+  recettes: [
+    { nom: "[LE PLAT PRÉFÉRÉ DE ROBIN]", faim: 55, prefere: true },
+    { nom: "[UN PLAT QU'ELLE CUISINE SOUVENT]", faim: 50 },
+    { nom: "[VOTRE PLAT DU DIMANCHE]", faim: 50 },
+    { nom: "Pâtes du soir (le classique)", faim: 40 },
+  ],
+
+  // --------------------------------------------------------------------------
+  // LES RÊVES — parfois en dormant. `amour: true` = rêve de vous deux (+8 ❤).
+  // --------------------------------------------------------------------------
+  reves: [
+    { texte: "Tu as rêvé du baiser sous la pyramide… « c'est Disneyland ! »", amour: true },
+    { texte: "Tu as rêvé de votre premier date au Louvre ❤", amour: true },
+    { texte: "Tu as rêvé de [UN SOUVENIR QUI REVIENT SOUVENT] ❤", amour: true },
+    { texte: "Tu as rêvé que la machine à café de l'hôpital te parlait. Bizarre.", amour: false },
+    { texte: "Tu as rêvé de [UN RÊVE ABSURDE À VOUS 😄]", amour: false },
+    { texte: "Tu as rêvé du chameau. Il te jugeait encore.", amour: false },
+  ],
+
+  // --------------------------------------------------------------------------
   // CINÉMATIQUE D'INTRO — avant le grand jour. Une carte de texte par entrée.
   // --------------------------------------------------------------------------
   intro: [
@@ -315,6 +338,19 @@ export default {
       { qui: "partner", texte: "…Bon. D'accord. Tu me connais trop bien. On rentre ?" },
       { qui: "player", texte: "On rentre ❤" },
     ],
+    // le dîner à deux, quand elle a cuisiné ❤
+    diner: [
+      { qui: "partner", texte: "Ça sent incroyablement bon… c'est pour nous ?" },
+      { qui: "player", texte: "Assieds-toi. Chef [PRÉNOM] a cuisiné." },
+      { qui: "partner", texte: "[CE QU'IL DIT TOUJOURS QUAND ELLE CUISINE ?]" },
+      { qui: "player", texte: "(Dîner improvisé aux chandelles. Parfait.)" },
+    ],
+    // …et quand c'est SON plat préféré
+    diner_prefere: [
+      { qui: "partner", texte: "Attends. ATTENDS. C'est… [SON PLAT PRÉFÉRÉ] ?!" },
+      { qui: "partner", texte: "[SA VRAIE RÉACTION QUAND ELLE LE CUISINE 😍]" },
+      { qui: "player", texte: "(Heureux comme un gosse. Mission accomplie.)" },
+    ],
     // la soirée en amoureux (via le calendrier près de la porte, 30 €)
     date_night: [
       { qui: "partner", texte: "Une soirée rien qu'à nous ? J'attrape ma veste." },
@@ -363,6 +399,20 @@ export default {
       any: [
         "Des fleurs ! Pour moi ?! Tu es la meilleure ❤",
         "Un bouquet de NOTRE jardin ? Je fonds.",
+      ],
+    },
+    // le frigo est vide…
+    frigo_vide: {
+      any: [
+        "Le frigo est vide… il reste un vieux [TRUC DOUTEUX DU FRIGO] au fond. (+10 faim, courage)",
+        "Le frigo sonne creux. Courses obligatoires.",
+      ],
+    },
+    // quand elle lui donne un plat en main propre
+    sert_plat: {
+      any: [
+        "Tu m'as fait à manger ?! Je t'aime.",
+        "Un plat fait maison ? T'es la meilleure.",
       ],
     },
     // quand elle sent trop fort (hygiène à zéro)
@@ -564,6 +614,8 @@ export default {
     maman: "Maman ❤",
     flower_spot: "Cueillir un bouquet 🌼",
     date_board: "Proposer une soirée en amoureux (30 €)",
+    garden_plot: "Le potager",
+    dirt: "Nettoyer la tache 🧹",
     clothes_rack: "Nouvelle tenue (10 €)",
     grocery_shelf: "Faire les courses (15 €)",
     furniture_shop: "Changer la couleur du canapé (50 €)",
