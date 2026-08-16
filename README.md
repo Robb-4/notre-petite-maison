@@ -46,8 +46,9 @@ Une fois l'histoire finie, le jeu devient un vrai Sims :
   chez toi le lendemain.
 - **Faim à zéro : tu meurs.** 💀 (Mais l'amour est plus fort que la mort —
   Entrée pour revivre.)
-- **Argent 💶** : travaille à ton bureau à l'hôpital (+40 €) pour financer le
-  reste.
+- **Argent 💶** : travaille à ton bureau à l'hôpital via le mini-jeu
+  **Rush de données** (reproduis les requêtes aux flèches, 22 s chrono —
+  salaire selon la prod, prime de Sophie à 5 requêtes).
 - **Le centre commercial 🛍️** (à l'est de la rue de Paris) : nouvelles tenues
   (10 €), courses (15 €), couleur du canapé (50 €).
 - **Soirées en amoureux 📅** : le calendrier près de la porte (30 €) vous

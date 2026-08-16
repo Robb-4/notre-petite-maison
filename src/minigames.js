@@ -228,15 +228,113 @@ export function createMinigames() {
     return null;
   }
 
+  // -------------------------------------------------- LE TRAVAIL (données) --
+  function newQuery(level) {
+    const dirs = [
+      { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 },
+    ];
+    const len = Math.min(3 + level, 7);
+    return Array.from({ length: len }, () => dirs[Math.floor(Math.random() * 4)]);
+  }
+  function workStart() {
+    return {
+      name: "work",
+      seq: newQuery(0),
+      idx: 0,
+      queries: 0,
+      time: 22,
+      flash: 0,
+      prev: { x: 0, y: 0 },
+    };
+  }
+  function drawArrow(x, y, s, dir, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    const c = s / 2;
+    if (dir.x === 1) {
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + s, y + c);
+      ctx.lineTo(x, y + s);
+    } else if (dir.x === -1) {
+      ctx.moveTo(x + s, y);
+      ctx.lineTo(x, y + c);
+      ctx.lineTo(x + s, y + s);
+    } else if (dir.y === 1) {
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + s, y);
+      ctx.lineTo(x + c, y + s);
+    } else {
+      ctx.moveTo(x + c, y);
+      ctx.lineTo(x + s, y + s);
+      ctx.lineTo(x, y + s);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+  function workUpdate(g, dt, input) {
+    g.time -= dt;
+    if (g.flash > 0) g.flash -= dt;
+    if (g.time <= 0) return { name: "work", queries: g.queries };
+    // détection d'appuis directionnels (fronts montants)
+    const cur = { x: Math.sign(input.dx), y: Math.sign(input.dy) };
+    let pressed = null;
+    if (cur.x !== 0 && g.prev.x === 0) pressed = { x: cur.x, y: 0 };
+    else if (cur.y !== 0 && g.prev.y === 0) pressed = { x: 0, y: cur.y };
+    g.prev = cur;
+    if (pressed) {
+      const want = g.seq[g.idx];
+      if (pressed.x === want.x && pressed.y === want.y) {
+        g.idx += 1;
+        if (g.idx >= g.seq.length) {
+          g.queries += 1;
+          g.seq = newQuery(g.queries);
+          g.idx = 0;
+        }
+      } else {
+        g.idx = 0;
+        g.flash = 0.25; // erreur : la requête repart de zéro
+      }
+    }
+    // rendu
+    clear();
+    if (g.flash > 0) {
+      ctx.fillStyle = "#4a1a22";
+      ctx.fillRect(0, 0, W, H);
+    }
+    ctx.fillStyle = COL.fg;
+    ctx.font = "11px monospace";
+    ctx.fillText(`REQUÊTES : ${g.queries}`, 12, 20);
+    // chrono
+    ctx.fillStyle = COL.dim;
+    ctx.fillRect(12, 30, W - 24, 6);
+    ctx.fillStyle = g.time < 5 ? COL.red : COL.teal;
+    ctx.fillRect(12, 30, (W - 24) * (g.time / 22), 6);
+    // la séquence
+    const s = 24;
+    const total = g.seq.length * (s + 8) - 8;
+    const ox = (W - total) / 2;
+    g.seq.forEach((d, i) => {
+      const color = i < g.idx ? COL.teal : i === g.idx ? COL.pink : COL.dim;
+      drawArrow(ox + i * (s + 8), H / 2 - s / 2, s, d, color);
+    });
+    ctx.fillStyle = COL.dim;
+    ctx.font = "9px monospace";
+    ctx.fillText("Reproduis la requête avec les flèches !", 12, H - 12);
+    return null;
+  }
+
   // ------------------------------------------------------------------ API --
   const TITLES = {
     snake: "🐍 SNAKE — mange les cœurs !",
     breakout: "🧱 CASSE-BRIQUES",
     pong: "🏓 PONG — toi contre Robin !",
+    work: "📊 RUSH DE DONNÉES — au boulot !",
   };
+  const STARTERS = { snake: snakeStart, breakout: breakoutStart, pong: pongStart, work: workStart };
+  const UPDATERS = { snake: snakeUpdate, breakout: breakoutUpdate, pong: pongUpdate, work: workUpdate };
 
   function start(name) {
-    game = name === "snake" ? snakeStart() : name === "breakout" ? breakoutStart() : pongStart();
+    game = STARTERS[name]();
     titleEl.textContent = TITLES[name];
     panel.classList.remove("hidden");
     clear();
@@ -244,12 +342,7 @@ export function createMinigames() {
 
   function update(dt, input) {
     if (!game) return null;
-    const res =
-      game.name === "snake"
-        ? snakeUpdate(game, dt, input)
-        : game.name === "breakout"
-          ? breakoutUpdate(game, dt, input)
-          : pongUpdate(game, dt, input);
+    const res = UPDATERS[game.name](game, dt, input);
     if (res) {
       game = null;
       panel.classList.add("hidden");
@@ -262,5 +355,10 @@ export function createMinigames() {
     panel.classList.add("hidden");
   }
 
-  return { start, update, abort };
+  // pour les tests (accès direct à l'état du jeu en cours)
+  function peek() {
+    return game;
+  }
+
+  return { start, update, abort, peek };
 }

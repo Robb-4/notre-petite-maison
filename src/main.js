@@ -333,6 +333,16 @@ function rewardMinigame(res) {
     const fun = Math.round(res.broken / 2) + (res.win ? 30 : 0);
     needs.apply({ fun });
     hud.toast(res.win ? `🧱 TOUT CASSÉ ! (+${fun} fun)` : `🧱 ${res.broken}/${res.total} briques (+${fun} fun)`);
+  } else if (res.name === "work") {
+    const salaire = 15 + 8 * res.queries;
+    money += salaire;
+    needs.apply({ energie: -18, fun: -5 });
+    if (res.queries >= 5) {
+      hud.toast(`💼 +${salaire} € — Sophie : « Excellente prod ! » (prime incluse)`);
+      money += 10;
+    } else {
+      hud.toast(`💼 ${res.queries} requête(s) traitée(s) : +${salaire} €`);
+    }
   } else if (res.name === "pong") {
     if (res.win) {
       needs.apply({ fun: 20, amour: 15 });
@@ -544,10 +554,10 @@ function completeInteraction(spot, def) {
     hud.toast("🧹 Et voilà, propre !");
     refreshMap();
   } else if (spot.type === "her_desk" && vieReelle()) {
-    // travailler pour gagner sa vie
-    money += 40;
-    needs.apply({ energie: -18, fun: -8 });
-    hud.toast("💼 Bien bossé : +40 €");
+    // travailler = le mini-jeu du rush de données
+    effects = {};
+    startMinigame("work");
+    return;
   } else if (spot.type === "clothes_rack") {
     if (money >= 10) {
       money -= 10;
@@ -788,6 +798,7 @@ window.__game = {
   get state() {
     return state;
   },
+  miniPeek: () => minigames.peek(),
 };
 
 // --- boucle de jeu ---
@@ -1103,6 +1114,7 @@ function loop(now) {
       if (spot.type === "stove") return carrying === "ingredients" ? "Cuisiner 🍳 !" : DATA.flavor.stove;
       if (spot.type === "table" && carrying && carrying !== "ingredients") return "Servir le dîner ❤";
       if (spot.type === "tv" && activeNpcs.partner && !robinParti) return "Jouer à la console avec Robin 🎮";
+      if (spot.type === "her_desk") return "Travailler 📊 (rush de données)";
     }
     return spot.label ?? DATA.flavor[spot.type] ?? spot.type;
   }
