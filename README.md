@@ -74,6 +74,16 @@ Une fois l'histoire finie, le jeu devient un vrai Sims :
   d'arcade (2 € la partie, high-score), et **Pong contre Robin** sur la TV
   du salon quand il est là (+fun et +amour, gagné ou perdu).
 
+## 💾 Sauvegarde, 📱 mobile et 🔊 son
+
+- **Sauvegarde automatique** dans le navigateur : la progression (histoire,
+  jauges, argent, potager…) est conservée. À l'écran titre : **Entrée** pour
+  continuer, **N** pour recommencer de zéro.
+- **Jouable sur téléphone** : joystick virtuel + boutons E / ✕ apparaissent
+  automatiquement sur écran tactile.
+- **Sons et musique chiptune** générés en WebAudio (zéro fichier). **M** pour
+  couper/remettre le son.
+
 ## 🎮 Contrôles
 
 - **ZQSD / WASD / flèches** : se déplacer

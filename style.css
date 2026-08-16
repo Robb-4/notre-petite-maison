@@ -29,6 +29,68 @@ body {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   background: #1d2b1a;
+  touch-action: none;
+}
+
+/* contrôles tactiles (visibles seulement sur écran tactile) */
+#touch-controls {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+body.touch #touch-controls { display: block; }
+#stick {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 236, 255, 0.5);
+  background: rgba(20, 14, 34, 0.4);
+  pointer-events: auto;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#stick-knob {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 143, 177, 0.75);
+  border: 2px solid rgba(244, 236, 255, 0.8);
+}
+#btn-a,
+#btn-b {
+  position: absolute;
+  right: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 236, 255, 0.6);
+  background: rgba(20, 14, 34, 0.55);
+  color: var(--accent);
+  font-family: var(--font);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+#btn-a {
+  bottom: 26px;
+  width: 68px;
+  height: 68px;
+  font-size: 20px;
+}
+#btn-b {
+  bottom: 112px;
+  right: 34px;
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
 }
 
 /* ---- teinte jour/nuit ---- */

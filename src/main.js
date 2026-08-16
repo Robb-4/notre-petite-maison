@@ -15,6 +15,7 @@ import { Clock } from "./clock.js";
 import { Quests } from "./quests.js";
 import { HUD } from "./hud.js";
 import { createMinigames } from "./minigames.js";
+import { createAudio } from "./audio.js";
 
 // --- écran titre personnalisé ---
 document.title = DATA.meta.titre;
@@ -99,6 +100,9 @@ const PLOT_COLS = [18, 19, 20];
 const minigames = createMinigames();
 let snakeHigh = 0;
 
+// le son 🔊
+const audio = createAudio();
+
 // le ménage 🧹
 const DIRT_SPOTS = [
   [3, 8], [6, 10], [8, 7], [10, 11], [12, 7],
@@ -171,6 +175,8 @@ function switchMap(to, at) {
     player.sync();
     refreshMap();
     hud.toast(MAPS[to].name);
+    audio.play("sweep");
+    saveGame(true);
     fadeEl.style.opacity = "0";
     setTimeout(() => {
       state = previous === "travel" ? "playing" : previous;
@@ -187,7 +193,11 @@ let pendingEgypte = false; // vers le voyage en Égypte
 let pendingAlbanie = false; // vers le voyage en Albanie
 
 const quests = new Quests(DATA.quests, {
-  onStepDone: () => hud.toast("✔ Étape accomplie !"),
+  onStepDone: () => {
+    hud.toast("✔ Étape accomplie !");
+    audio.play("success");
+    saveGame(true);
+  },
   // effets attachés à une étape terminée (saut d'horloge, séquence auto…)
   onStepComplete: (step) => {
     if (step?.clockTo !== undefined) {
@@ -205,6 +215,8 @@ const quests = new Quests(DATA.quests, {
   onQuestDone: (q, allDone) => {
     world.spawnHearts(player.x, player.y - 0.8, 7);
     hud.toast(`Objectif terminé : ${q.titre} ❤`);
+    audio.play("jingle");
+    saveGame(true);
     if (q.rewardDialogue) dialogue.showKey(q.rewardDialogue, "player", clock.bucket());
     if (q.id === "nuit_appel") {
       // pendant qu'elle dort, Robin file au Louvre pour le lendemain
@@ -237,6 +249,7 @@ document.getElementById("go-text").textContent =
 // --- vraie vie : mort de faim et résurrection ---
 function die() {
   state = "dead";
+  audio.play("fail");
   gameoverEl.classList.remove("hidden");
 }
 function revive() {
@@ -299,12 +312,14 @@ function resolveCooking(dist) {
     needs.apply({ fun: -10, faim: 5 });
     for (let i = 0; i < 6; i++) world.spawnSmoke(player.x, player.y - 0.6);
     hud.toast("💨 BRÛLÉ ! (les voisins s'inquiètent)");
+    audio.play("fail");
   } else {
     const recette = DATA.recettes[Math.floor(Math.random() * DATA.recettes.length)];
     const qualite = dist <= C.perfect ? "parfait" : "correct";
     carrying = { recette, qualite };
     if (qualite === "parfait") needs.apply({ fun: 10 });
     hud.toast(`🍲 ${recette.nom} — ${qualite === "parfait" ? "PARFAIT ✨" : "réussi !"}`);
+    audio.play("success");
     interactions.emit("stove"); // la quête q1 valide « cuisiner » sur un plat réussi
   }
 }
@@ -320,6 +335,8 @@ function startMinigame(name) {
   minigames.start(name);
 }
 function rewardMinigame(res) {
+  audio.play(res.win === false ? "fail" : "coin");
+  saveGame(true);
   if (res.name === "snake") {
     const fun = Math.min(8 + 2 * res.score, 35);
     needs.apply({ fun });
@@ -373,6 +390,7 @@ function serveDinner() {
     needs.apply({ faim, amour, fun: 10, social: 15 });
     playSequence(DATA.sequences[isPref ? "diner_prefere" : "diner"] ?? []);
     world.spawnHearts(6, 7, isPref ? 10 : 6);
+    audio.play("heart");
   } else {
     needs.apply({ faim, fun: 5 });
     hud.toast("🍽️ (C'était bon. Mais c'est meilleur à deux.)");
@@ -675,6 +693,7 @@ function completeInteraction(spot, def) {
 function startInteraction(spot) {
   const def = ACTIONS[spot.type];
   if (!def) return;
+  audio.play("blip");
   if (def.special === "sleep") {
     if (def.dlg) dialogue.showKey(def.dlg, def.speaker, clock.bucket());
     pendingSleep = true;
@@ -687,6 +706,7 @@ function startInteraction(spot) {
 
 function doSleep() {
   state = "sleeping";
+  audio.play("sleep");
   fadeEl.style.opacity = "1";
   setTimeout(() => {
     clock.sleep();
@@ -735,6 +755,98 @@ function moodEmoji() {
 function spotVisible(type) {
   if (type === "lost_item") return quests.isCurrentTarget("lost_item");
   return true;
+}
+
+// --- sauvegarde automatique (localStorage) ---
+const SAVE_KEY = "npm-save-v1";
+let saveT = 0;
+
+function saveGame(force = false) {
+  if (!force && (state !== "playing" || dialogue.isOpen)) return;
+  const d = {
+    v: 1,
+    qi: quests.qi,
+    si: quests.si,
+    allDone: quests.allDone,
+    needs: needs.values,
+    day: clock.day,
+    minutes: clock.minutes,
+    mapId,
+    px: player.x,
+    py: player.y,
+    rx: npcs.partner.x,
+    ry: npcs.partner.y,
+    money,
+    happyDays,
+    lastDay,
+    pantry,
+    seeds,
+    carrying,
+    hasFlowers,
+    robinParti,
+    demandeFaite,
+    outfitIndex,
+    couchIndex,
+    snakeHigh,
+    plots,
+    dirt,
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+  } catch {
+    /* stockage indisponible : tant pis */
+  }
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (d.v !== 1) return false;
+    quests.qi = d.qi;
+    quests.si = d.si;
+    quests.allDone = d.allDone;
+    Object.assign(needs.values, d.needs);
+    clock.day = d.day;
+    clock.minutes = d.minutes;
+    clock.prevMinutes = d.minutes;
+    money = d.money;
+    happyDays = d.happyDays ?? 0;
+    lastDay = d.lastDay ?? d.day;
+    pantry = d.pantry ?? 3;
+    seeds = d.seeds ?? 0;
+    carrying = d.carrying ?? null;
+    hasFlowers = !!d.hasFlowers;
+    robinParti = !!d.robinParti;
+    demandeFaite = !!d.demandeFaite;
+    outfitIndex = d.outfitIndex ?? -1;
+    couchIndex = d.couchIndex ?? 0;
+    snakeHigh = d.snakeHigh ?? 0;
+    if (Array.isArray(d.plots)) d.plots.forEach((p, i) => plots[i] && Object.assign(plots[i], p));
+    dirt = Array.isArray(d.dirt) ? d.dirt : [];
+    mapId = MAPS[d.mapId] ? d.mapId : "home";
+    player.x = d.px;
+    player.y = d.py;
+    player.sync();
+    npcs.partner.x = d.rx;
+    npcs.partner.y = d.ry;
+    if (outfitIndex >= 0 && DATA.tenues[outfitIndex]) {
+      const t = DATA.tenues[outfitIndex];
+      playerView.recolor({ ...DATA.characters.player.palette, T: t.T, F: t.F });
+    }
+    if (couchIndex > 0) world.setCouchColor(DATA.couleursCanape[couchIndex]);
+    refreshMap();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const hasSave = !!localStorage.getItem(SAVE_KEY);
+if (hasSave) {
+  document.getElementById("title-hint").innerHTML =
+    'Appuie sur <span class="key">Entrée</span> pour continuer &nbsp;·&nbsp; <span class="key">N</span> : nouvelle partie';
 }
 
 // carte de départ
@@ -799,6 +911,11 @@ window.__game = {
     return state;
   },
   miniPeek: () => minigames.peek(),
+  save: () => saveGame(true),
+  wipe: () => localStorage.removeItem(SAVE_KEY),
+  get audioState() {
+    return audio.state;
+  },
 };
 
 // --- boucle de jeu ---
@@ -809,10 +926,26 @@ function loop(now) {
   last = now;
 
   if (state === "title") {
-    if (input.readStart()) {
+    if (input.readNew()) {
+      // nouvelle partie : on efface la sauvegarde
+      try {
+        localStorage.removeItem(SAVE_KEY);
+      } catch {}
+      audio.resume();
       titleEl.classList.add("hidden-fade");
       input.readInteract();
+      input.readStart();
       startCinematic(DATA.intro);
+    } else if (input.readStart()) {
+      audio.resume();
+      titleEl.classList.add("hidden-fade");
+      input.readInteract();
+      if (hasSave && loadGame()) {
+        state = "playing";
+        hud.toast("💾 Partie chargée — bon retour !");
+      } else {
+        startCinematic(DATA.intro);
+      }
     }
     world.updateCamera(player.x, player.y, dt, true);
     world.render();
@@ -836,9 +969,22 @@ function loop(now) {
 
   dialogue.update(dt);
   if (state !== "cooking" && state !== "minigame") input.readSkip();
+  if (input.readMute()) {
+    hud.toast(audio.toggle() ? "🔊 Son activé" : "🔇 Son coupé");
+  }
+
+  // sauvegarde automatique périodique
+  saveT += dt;
+  if (saveT >= 8) {
+    saveT = 0;
+    saveGame();
+  }
 
   if (dialogue.isOpen) {
-    if (input.readInteract()) dialogue.advance();
+    if (input.readInteract()) {
+      dialogue.advance();
+      audio.play("blip");
+    }
   } else if (state === "sleeping" || state === "travel") {
     input.readInteract();
   } else if (state === "cooking") {
@@ -958,6 +1104,7 @@ function loop(now) {
         playSequence(DATA.sequences.demande ?? []);
         world.spawnHearts(player.x, player.y - 0.6, 20);
         hud.toast("💍 FIANCÉS !!!");
+        audio.play("jingle");
       }
     }
 
@@ -973,6 +1120,7 @@ function loop(now) {
     if (clock.day !== lastDay) {
       if (moodEmoji().avg >= 55) happyDays += 1;
       lastDay = clock.day;
+      saveGame(true);
       if (vieReelle()) {
         let changed = false;
         for (const pl of plots) {
