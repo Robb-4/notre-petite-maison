@@ -399,8 +399,8 @@ export function createWorld() {
               makeTexture(g, FURN_PAL, OUTLINE)
             );
           }
-          const b = makeBillboard(billTexCache.sprout[0], 1, 0.6);
-          setBillboardPos(b, cx, p.row + def.fh - 0.15, 0.6, 0, 0);
+          const b = makeBillboard(billTexCache.sprout[0], 1.25, 0.75);
+          setBillboardPos(b, cx, p.row + def.fh - 0.15, 0.75, 0, 0);
           meshes.push(b);
           break;
         }

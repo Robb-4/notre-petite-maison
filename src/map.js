@@ -23,7 +23,7 @@ const HOME_GRID = [
   "g#.......rrrr...#ggggpfggg",
   "g#..............#ggfgpgggg",
   "g################ggggpfggg",
-  "gggggfgggggggggggggggpgggg",
+  "gggggfggggggggggggtttpgggg", // le potager (terre labourée)
   "ggggggggggfgggggggggfpgggg", // → le Louvre, au sud
 ];
 
@@ -72,21 +72,22 @@ const LOUVRE_GRID = [
 // PARIS, LE QUARTIER DE LA SAINT-VALENTIN (32 × 14) — chemin nord → Louvre
 // salle d'arcade + restaurant KONG
 // ---------------------------------------------------------------------------
+// à l'est de la rue : le hall d'entrée du centre commercial (bâtiment visible)
 const PARIS_GRID = [
-  "g".repeat(15) + "p" + "g".repeat(16),             // 0  → Louvre (nord)
-  "g".repeat(15) + "p" + "g".repeat(16),             // 1
-  "gggg" + "p".repeat(28),                           // 2  la rue → centre commercial (est)
-  "ggggg" + "#####.#####" + "ggg" + "######.######", // 3  façades + portes
-  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 4
-  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 5
-  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 6
-  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 7
-  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 8
-  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 9
-  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#", // 10
-  "ggggg" + "###########" + "ggg" + "#############", // 11
-  "g".repeat(32),                                    // 12
-  "g".repeat(32),                                    // 13
+  "g".repeat(15) + "p" + "g".repeat(16) + "gg######",             // 0  → Louvre (nord)
+  "g".repeat(15) + "p" + "g".repeat(16) + "gg#,,,,#",             // 1
+  "gggg" + "p".repeat(28) + "pp,,,,,#",                           // 2  la rue → hall du centre
+  "ggggg" + "#####.#####" + "ggg" + "######.######" + "gg#,,,,#", // 3  façades + portes
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#" + "gg######", // 4
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#" + "gggggggg", // 5
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#" + "gggggggg", // 6
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#" + "gggggggg", // 7
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#" + "gggggggg", // 8
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#" + "gggggggg", // 9
+  "ggggg" + "#kkkkkkkkk#" + "ggg" + "#...........#" + "gggggggg", // 10
+  "ggggg" + "###########" + "ggg" + "#############" + "gggggggg", // 11
+  "g".repeat(40),                                                 // 12
+  "g".repeat(40),                                                 // 13
 ];
 
 export const TILE_DEFS = {
@@ -100,6 +101,7 @@ export const TILE_DEFS = {
   k: { tile: "arcadeFloor" },
   s: { tile: "sand" },
   o: { tile: "water", solid: true },
+  t: { tile: "soil" },
 };
 
 // ---------------------------------------------------------------------------
@@ -180,10 +182,14 @@ export const MAPS = {
       { type: "flower_spot", col: 22, row: 11 },
       // le calendrier des sorties en amoureux
       { type: "date_board", col: 15, row: 9 },
-      // le potager (3 parcelles au sud du jardin)
+      // le potager (3 parcelles de terre labourée, clôturées)
       { type: "garden_plot", col: 18, row: 14 },
       { type: "garden_plot", col: 19, row: 14 },
       { type: "garden_plot", col: 20, row: 14 },
+      { type: "fence", col: 18, row: 13 },
+      { type: "fence", col: 19, row: 13 },
+      { type: "fence", col: 20, row: 13 },
+      { type: "signpost", col: 17, row: 14, flip: true, label: "🌱 Le potager (plante, arrose, récolte !)" },
       // la bouche de métro
       { type: "metro", col: 24, row: 13, label: "🚇 Métro → Paris (arcade, KONG, centre commercial)" },
       // panneaux directionnels aux départs de chemin
@@ -277,11 +283,14 @@ export const MAPS = {
       { type: "counter", col: 30, row: 7 },
       { type: "plant", col: 20, row: 9 },
       { type: "signpost", col: 16, row: 1, label: "→ Le Louvre (au nord)" },
-      { type: "signpost", col: 29, row: 1, label: "→ Le centre commercial (à l'est)" },
+      { type: "signpost", col: 29, row: 1, label: "→ Le centre commercial (au bout de la rue)" },
+      // la grande enseigne devant l'entrée du centre
+      { type: "mall_sign", col: 33, row: 3, label: "🛍️ LE CENTRE COMMERCIAL — entre !" },
     ],
     exits: [
       { x0: 14.4, y0: 0, x1: 16.6, y1: 0.6, to: "louvre", at: { x: 15.5, y: 12.5 } },
-      { x0: 31.4, y0: 1.4, x1: 32, y1: 3.6, to: "centre", at: { x: 1.6, y: 5.8 } },
+      // le hall d'entrée du bâtiment mène aux boutiques
+      { x0: 36, y0: 1, x1: 39, y1: 4, to: "centre", at: { x: 1.6, y: 5.8 } },
     ],
   },
 
@@ -310,7 +319,7 @@ export const MAPS = {
       { type: "resto_table", col: 16, row: 10 },
       { type: "signpost", col: 2, row: 7, flip: true, label: "→ Paris (la sortie)" },
     ],
-    exits: [{ x0: 0, y0: 4.6, x1: 0.6, y1: 7, to: "paris", at: { x: 30.4, y: 2.5 } }],
+    exits: [{ x0: 0, y0: 4.6, x1: 0.6, y1: 7, to: "paris", at: { x: 34.2, y: 2.5 } }],
   },
 
   egypte: {

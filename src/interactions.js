@@ -41,6 +41,7 @@ export const ACTIONS = {
   // le métro et la télé (logique dans main.js)
   metro: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   tv: { duration: 0, effects: {}, dlg: null, speaker: "player" },
+  mall_sign: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
   signpost: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   coffee: { duration: 1.5, effects: { energie: 15 }, dlg: "use_coffee", speaker: "player" },

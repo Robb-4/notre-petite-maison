@@ -622,6 +622,8 @@ export default {
     dirt: "Nettoyer la tache 🧹",
     metro: "Le métro 🚇",
     tv: "La télé",
+    mall_sign: "Le centre commercial 🛍️",
+    fence: "La clôture du potager",
     clothes_rack: "Nouvelle tenue (10 €)",
     grocery_shelf: "Faire les courses (15 €)",
     furniture_shop: "Changer la couleur du canapé (50 €)",

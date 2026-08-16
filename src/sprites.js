@@ -779,6 +779,38 @@ export const SPROUT2 = [
   ".ppPPPPpp.",
 ];
 
+// L'enseigne du centre commercial (sac de courses rose sur grand panneau)
+export const MALL_SIGN = [
+  "KKKKKKKKKKKKKKKKKK",
+  "KMMMMMMMMMMMMMMMMK",
+  "KMMMMMB..BMMMMMMMK",
+  "KMMMMB.MM.BMMMMMMK",
+  "KMMMBBBBBBBBMMMMMK",
+  "KMMMBBBBBBBBMMMMMK",
+  "KMMMBbBBBBbBMMMMMK",
+  "KMMMBBBBBBBBMMMMMK",
+  "KMMMBBBBBBBBMMMMMK",
+  "KMMMMMMMMMMMMMMMMK",
+  "KKKKKKKKKKKKKKKKKK",
+  "........DD........",
+  "........DD........",
+  "........DD........",
+  "........DD........",
+  "......DDDDDD......",
+  "..................",
+];
+
+// Clôture en bois du potager
+export const FENCE = [
+  ".W..W..W..W.",
+  "WWWWWWWWWWWW",
+  ".W..W..W..W.",
+  "WWWWWWWWWWWW",
+  ".W..W..W..W.",
+  ".W..W..W..W.",
+  "............",
+];
+
 // La bouche de métro (panneau M jaune)
 export const METRO = [
   "..YYYYYY....",
@@ -868,6 +900,9 @@ export const FURNITURE = {
   dirt: { grid: MONITOR, fw: 1, fh: 1, solid: false },
   // le métro
   metro: { grid: METRO, fw: 1, fh: 1, solid: true, scale: 1.2 },
+  // l'enseigne du centre commercial et la clôture du potager
+  mall_sign: { grid: MALL_SIGN, fw: 1, fh: 1, solid: true, scale: 1.6 },
+  fence: { grid: FENCE, fw: 1, fh: 1, solid: false },
 };
 
 export { CANDLE };
@@ -907,6 +942,8 @@ export const TILE_PAL = {
   c: "#d9c185", // sable ombre
   o: "#7fc7d9", // eau d'oasis
   O: "#5aa8bd", // vague
+  i: "#6a4a2e", // terre labourée
+  I: "#523823", // sillon
 };
 
 function genTile(fn) {
@@ -960,6 +997,7 @@ export const TILES = {
     x === 0 || y === 0 || (x * 7 + y * 13) % 19 === 0 ? "c" : "b"
   ),
   water: genTile((x, y) => ((x + y * 3) % 11 === 0 ? "O" : "o")),
+  soil: genTile((x, y) => (x === 0 || y === 0 || y % 4 === 2 ? "I" : "i")),
   wall: genTile((x, y) => {
     if (y === 0) return "h";
     if (y % 5 === 4) return "a";
