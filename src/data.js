@@ -19,7 +19,7 @@
 export default {
   meta: {
     titre: "Notre Petite Maison",
-    dedicace: "Pour toi, [PRÉNOM DE TA FEMME] ❤",
+    dedicace: "Pour toi, Karima ❤",
     jourDepart: "Samedi",
   },
 
@@ -31,7 +31,7 @@ export default {
   characters: {
     // Le personnage jouable : ta femme.
     player: {
-      nom: "[PRÉNOM DE TA FEMME]",
+      nom: "Karima",
       spriteSet: "her",
       palette: { H: "#6b3f23", S: "#f2c9a0", T: "#d95d7f", P: "#f2c9a0", F: "#7a3b52", K: "#3b2b40" },
     },
@@ -101,9 +101,9 @@ export default {
   // = LE plat préféré de Robin (gros bonus d'amour au dîner). `faim` = points.
   // --------------------------------------------------------------------------
   recettes: [
-    { nom: "[LE PLAT PRÉFÉRÉ DE ROBIN]", faim: 55, prefere: true },
-    { nom: "[UN PLAT QU'ELLE CUISINE SOUVENT]", faim: 50 },
-    { nom: "[VOTRE PLAT DU DIMANCHE]", faim: 50 },
+    { nom: "Tacos", faim: 55, prefere: true },
+    { nom: "Tomate Burrata", faim: 50 },
+    { nom: "Pizza", faim: 50 },
     { nom: "Pâtes du soir (le classique)", faim: 40 },
   ],
 
@@ -113,9 +113,9 @@ export default {
   reves: [
     { texte: "Tu as rêvé du baiser sous la pyramide… « c'est Disneyland ! »", amour: true },
     { texte: "Tu as rêvé de votre premier date au Louvre ❤", amour: true },
-    { texte: "Tu as rêvé de [UN SOUVENIR QUI REVIENT SOUVENT] ❤", amour: true },
+    { texte: "Tu as rêvé de Robin ❤", amour: true },
     { texte: "Tu as rêvé que la machine à café de l'hôpital te parlait. Bizarre.", amour: false },
-    { texte: "Tu as rêvé de [UN RÊVE ABSURDE À VOUS 😄]", amour: false },
+    { texte: "Tu as rêvé d'un voyage en montgolfière.", amour: false },
     { texte: "Tu as rêvé du chameau. Il te jugeait encore.", amour: false },
   ],
 
@@ -124,17 +124,17 @@ export default {
   // --------------------------------------------------------------------------
   intro: [
     "Voici l'histoire d'une brillante data scientist… et d'un grand jour.",
-    "Aujourd'hui : entretien d'embauche à l'hôpital [NOM DE L'HÔPITAL], pour LE poste de ses rêves.",
+    "Aujourd'hui : entretien d'embauche à l'hôpital GHU, pour LE poste de ses rêves.",
     "Elle ne le sait pas encore… mais cette journée va changer sa vie. Deux fois.",
-    "Bonne chance [PRÉNOM DE TA FEMME] ❤",
+    "Bonne chance Karima",
   ],
 
   // --------------------------------------------------------------------------
   // TRANSITION — jouée entre le Louvre et la Saint-Valentin.
   // --------------------------------------------------------------------------
   transition_valentin: [
-    "Officiellement ensemble ❤",
-    "Les semaines passent, entre [VOS HABITUDES DE DÉBUT DE COUPLE]…",
+    "Officiellement ensemble",
+    "Les semaines passent… et l'amour grandit.",
     "Et arrive le 14 février. La Saint-Valentin. Robin a préparé LA journée parfaite.",
   ],
 
@@ -143,7 +143,7 @@ export default {
   // --------------------------------------------------------------------------
   transition_egypte: [
     "Quelques semaines après la Saint-Valentin…",
-    "[POURQUOI CE VOYAGE EN ÉGYPTE ? rêve de toujours ? occasion en or ?]",
+    "Besoin de changer d'air. Besoin de soleil. Besoin de voyage.",
     "Elle s'envole pour l'Égypte avec Mylène, sa meilleure amie ✈",
     "(Premier éloignement depuis la rencontre avec Robin. Il tiendra. Probablement.)",
   ],
@@ -152,8 +152,8 @@ export default {
   // TRANSITION — le retour d'Égypte, les retrouvailles… et déjà l'Albanie.
   // --------------------------------------------------------------------------
   transition_albanie: [
-    "De retour à Paris : Robin l'attendait à l'aéroport, [DÉTAIL DU RETOUR : une pancarte ? des fleurs ?]",
-    "Et le fameux « truc à te dire » ? [C'ÉTAIT QUOI, EN VRAI ? 😄]",
+    "De retour à Paris : Robin l'attendait à l'aéroport",
+    "Et le fameux « truc à te dire » ? Il l'a dit. En vrai. Et c'était parfait.",
     "Mais le passeport n'a pas eu le temps de refroidir…",
     "Direction l'Albanie 🇦🇱 — avec Maman, cette fois.",
   ],
@@ -163,8 +163,8 @@ export default {
   // --------------------------------------------------------------------------
   interlude: [
     "De retour pour de bon, cette fois.",
-    "[CE QUI VOUS A FAIT TOMBER AMOUREUX POUR DE BON ?]",
-    "Et [DURÉE] plus tard… ils emménageaient ensemble dans leur petite maison ❤",
+    "Et la vie reprend son cours. Le travail, les voyages, les sorties… et l'amour.",
+    "Et 6 mois plus tard… ils emménageaient ensemble dans leur petite maison.",
   ],
 
   // --------------------------------------------------------------------------
@@ -173,33 +173,33 @@ export default {
   // --------------------------------------------------------------------------
   sequences: {
     entretien: [
-      { qui: "sophie", texte: "Bonjour [PRÉNOM] ! Je suis Sophie, la cheffe d'équipe. Asseyez-vous." },
+      { qui: "sophie", texte: "Bonjour Karima ! Je suis Sophie, la cheffe d'équipe. Asseyez-vous." },
       { qui: "sophie", texte: "Alors… data scientist, hein ? Parlez-moi de vous." },
-      { qui: "player", texte: "J'adore [SA SPÉCIALITÉ : les stats ? Python ? R ? le machine learning ?] !" },
+      { qui: "player", texte: "J'adore les stats et le machine learning !" },
       { qui: "sophie", texte: "Question technique : c'est quoi, une p-value ?" },
-      { qui: "player", texte: "[SA RÉPONSE BRILLANTE — OU UNE BLAGUE DE STATS]" },
+      { qui: "player", texte: "C'est la probabilité de rejeter l'hypothèse nulle alors qu'elle est vraie." },
       { qui: "sophie", texte: "… Impressionnant. Dernière question : vous savez faire marcher la machine à café ?" },
       { qui: "player", texte: "C'est ma plus grande compétence." },
       { qui: "sophie", texte: "Parfait. Vous êtes EMBAUCHÉE ! Bienvenue à l'hôpital ❤" },
       { qui: "sophie", texte: "Allez vous présenter à l'équipe dans l'open space, juste à côté. Et la machine à café est au bout du couloir sud !" },
     ],
     meet_romain: [
-      { qui: "romain", texte: "Salut, moi c'est Romain ! [PRIVATE JOKE / TRAIT DE ROMAIN À METTRE ICI]" },
+      { qui: "romain", texte: "Salut, moi c'est Romain ! Je suis un coureur hors pair." },
       { qui: "player", texte: "Enchantée !" },
-      { qui: "romain", texte: "Si tu as besoin d'aide avec [SUJET], c'est moi. Et va te présenter aux devs, en bas — ils sont sympas. Enfin, surtout un." },
+      { qui: "romain", texte: "Si tu as besoin d'aide avec le code, c'est moi. Et va te présenter aux devs, en bas — ils sont sympas. Enfin, surtout un." },
     ],
     meet_arij: [
-      { qui: "arij", texte: "Bienvenue dans l'équipe ! Moi c'est Arij. [PRIVATE JOKE / TRAIT D'ARIJ À METTRE ICI]" },
+      { qui: "arij", texte: "Bienvenue dans l'équipe ! Moi c'est Arij." },
       { qui: "player", texte: "Merci, je suis ravie d'être là !" },
-      { qui: "arij", texte: "Entre nous : méfie-toi des réunions du lundi matin. [DÉTAIL DRÔLE]" },
+      { qui: "arij", texte: "Entre nous : méfie-toi des réunions du lundi matin." },
     ],
     meet_mahrez: [
-      { qui: "mahrez", texte: "Yo ! Mahrez, développeur. [PRIVATE JOKE / TRAIT DE MAHREZ À METTRE ICI]" },
-      { qui: "player", texte: "Enchantée, moi c'est [PRÉNOM], la nouvelle data scientist !" },
+      { qui: "mahrez", texte: "Yo ! Mahrez, chef des développeurs." },
+      { qui: "player", texte: "Enchantée, moi c'est Karima, la nouvelle data scientist !" },
       { qui: "mahrez", texte: "Ah, encore quelqu'un qui va nous demander des accès à la base. Bienvenue !" },
     ],
     meet_david: [
-      { qui: "david", texte: "Salut ! David. [PRIVATE JOKE / TRAIT DE DAVID À METTRE ICI]" },
+      { qui: "david", texte: "Salut ! David. Amateur de café et de blagues nulles." },
       { qui: "player", texte: "Enchantée !" },
       { qui: "david", texte: "Tu verras, on est une super équipe. Il te reste juste Robin à rencontrer… il est juste là." },
     ],
@@ -207,8 +207,8 @@ export default {
     rencontre_robin: [
       { qui: "partner", texte: "Salut ! Euh… moi c'est Robin. Développeur. Enfin, dev. Enfin… bienvenue !" },
       { qui: "player", texte: "(Il est mignon quand il s'emmêle, non ?)" },
-      { qui: "partner", texte: "[SA VRAIE PREMIÈRE PHRASE / VOTRE VRAI PREMIER ÉCHANGE AU TRAVAIL]" },
-      { qui: "player", texte: "[SA RÉPONSE À ELLE]" },
+      { qui: "partner", texte: "T'aime les mangas ?" },
+      { qui: "player", texte: "Oui, j'adore ça !" },
       { qui: "partner", texte: "Si tu as un souci de VPN, d'accès… ou juste envie d'un café, je suis là ☕" },
       { qui: "player", texte: "Un café ? Pourquoi pas…" },
     ],
@@ -217,18 +217,18 @@ export default {
       { qui: "player", texte: "(22h. Tu repenses à ta première journée… et un peu à ce dev, aussi.)" },
       { qui: "player", texte: "📱 DRRRRR ! …Numéro inconnu ?" },
       { qui: "player", texte: "Allô ?" },
-      { qui: "partner", texte: "Euh… salut ! C'est Robin. Le dev. De l'hôpital. J'ai eu ton numéro par [QUI A DONNÉ LE NUMÉRO ? Mahrez ? Arij ? les RH ?!]…" },
+      { qui: "partner", texte: "Euh… salut ! C'est Robin. Le dev. De l'hôpital. J'ai eu ton numéro par Mahrez…" },
       { qui: "player", texte: "(Il a appelé. IL A APPELÉ.)" },
-      { qui: "partner", texte: "Je me demandais… enfin… ça te dirait [VOTRE PREMIER DATE : un resto ? un café ? un ciné ?], un de ces soirs ?" },
+      { qui: "partner", texte: "Je me demandais… enfin… ça te dirait de te promener, un de ces soirs ?" },
       { qui: "player", texte: "… Oui. Carrément, oui." },
-      { qui: "partner", texte: "C'est vr— super ! Génial ! Samedi, au Louvre alors. Bonne nuit [PRÉNOM] :)" },
+      { qui: "partner", texte: "C'est vr— super ! Génial ! Samedi, au Louvre alors. Bonne nuit Karima :)" },
       { qui: "player", texte: "Bonne nuit Robin ❤" },
     ],
     // ---- LE PREMIER DATE, AU LOUVRE ----
     date_retrouvailles: [
       { qui: "partner", texte: "Tu es venue ! J'avais peur que tu changes d'avis…" },
       { qui: "player", texte: "Évidemment que je suis venue. Alors, le Louvre ?" },
-      { qui: "partner", texte: "J'ai révisé toute la nuit. Je connais au moins 3 anecdotes sur [ŒUVRE / PÉRIODE QU'IL A POTASSÉE]." },
+      { qui: "partner", texte: "J'ai révisé toute la nuit. Je connais au moins 3 anecdotes sur Paris." },
       { qui: "player", texte: "Vendu. Mais d'abord : la Joconde. Évidemment." },
     ],
     date_joconde: [
@@ -248,25 +248,24 @@ export default {
       { qui: "player", texte: "💋" },
       { qui: "partner", texte: "…C'est Disneyland !" },
       { qui: "player", texte: "Disneyland ?! On est au Louvre !" },
-      { qui: "partner", texte: "[L'HISTOIRE DE CETTE PHRASE MYTHIQUE — à vous de la raconter 😄]" },
       { qui: "player", texte: "Alors… on est ensemble ? Officiellement ?" },
-      { qui: "partner", texte: "Officiellement ❤" },
+      { qui: "partner", texte: "Officiellement" },
     ],
     // ---- LA SAINT-VALENTIN : arcade puis KONG ----
     valentin_arcade: [
       { qui: "partner", texte: "Saint-Valentin, niveau 1 : la salle d'arcade. Prête à perdre ?" },
       { qui: "player", texte: "Tu vas manger tes mots. On joue à quoi ?" },
-      { qui: "partner", texte: "[VOTRE JEU D'ARCADE CE JOUR-LÀ ?]" },
+      { qui: "partner", texte: "On fait tous les jeux !" },
       { qui: "player", texte: "(Ça s'enchaîne, ça rigole, ça triche un peu.)" },
-      { qui: "player", texte: "[QUI A GAGNÉ ?] gagne. Évidemment." },
-      { qui: "partner", texte: "Deux sur trois ! …Bon, d'accord. Je file réserver la table — rejoins-moi au [NOM DU RESTO : le KONG !] juste à côté ❤" },
+      { qui: "player", texte: "Je gagne. Évidemment." },
+      { qui: "partner", texte: "Deux sur trois ! …Bon, d'accord. Je file réserver la table — rejoins-moi au KONG ! juste à côté " },
     ],
     valentin_kong: [
-      { qui: "partner", texte: "Madame… votre table. La meilleure du [NOM DU RESTO], j'ai insisté." },
+      { qui: "partner", texte: "Madame… votre table. La meilleure du Kong, j'ai insisté." },
       { qui: "player", texte: "Rien que ça ?!" },
       { qui: "partner", texte: "Que veux-tu. C'est la Saint-Valentin, et c'est toi." },
-      { qui: "player", texte: "(Vous commandez [VOS PLATS DE CE SOIR-LÀ].)" },
-      { qui: "partner", texte: "[CE QU'IL A DIT DE MIGNON / DRÔLE PENDANT LE DÎNER ?]" },
+      { qui: "player", texte: "(Vous commandez les plats.)" },
+      { qui: "partner", texte: "Tu es magnifique ce soir." },
       { qui: "player", texte: "(Meilleure Saint-Valentin. Meilleure équipe.)" },
       { qui: "partner", texte: "À nous ❤" },
     ],
@@ -274,30 +273,30 @@ export default {
     egypte_mylene: [
       { qui: "mylene", texte: "ON. Y. EST. L'Égypte, ma belle !!" },
       { qui: "player", texte: "J'arrive toujours pas à y croire. Regarde ces pyramides !" },
-      { qui: "mylene", texte: "[UNE PHRASE TYPIQUE DE MYLÈNE / VOTRE DÉLIRE DE VOYAGE ?]" },
+      { qui: "mylene", texte: "C'est ouf !" },
       { qui: "player", texte: "Allez viens, on va tout voir. TOUT." },
     ],
     egypte_pyramides: [
       { qui: "player", texte: "Wow. WOW. Elles sont immenses en vrai." },
       { qui: "mylene", texte: "Allez, pose devant ! Photo. Photo. PHOTO." },
-      { qui: "player", texte: "[SON VRAI MOMENT PRÉFÉRÉ DU VOYAGE EN ÉGYPTE ?]" },
+      { qui: "player", texte: "Ma tenue spécial pyramides !" },
       { qui: "mylene", texte: "(Elle en prend quarante. Robin ne va pas y croire.)" },
     ],
     egypte_sphinx: [
       { qui: "player", texte: "Le Sphinx… 4500 ans, et pas une ride." },
-      { qui: "mylene", texte: "[LA BLAGUE OU L'ANECDOTE DU SPHINX — VERSION MYLÈNE ?]" },
+      { qui: "mylene", texte: "Tu sais que le Sphinx n'a pas de nez ?" },
       { qui: "player", texte: "(Fou rire. Le Sphinx, lui, reste de marbre. Enfin, de calcaire.)" },
     ],
     egypte_chameau: [
-      { qui: "player", texte: "Bonjour toi. Tu t'appelles comment ? [NOM DU CHAMEAU ?]" },
-      { qui: "mylene", texte: "[QUI EST MONTÉE DESSUS ? TOI OU MYLÈNE ? RACONTEZ !]" },
+      { qui: "player", texte: "Bonjour toi. Tu t'appelles comment ? Robin" },
+      { qui: "mylene", texte: "Allez monte lui dessus" },
       { qui: "player", texte: "(Le chameau vous juge un peu. Mais avec bienveillance.)" },
     ],
     // le soir, au campement : l'appel à Paris 📱
     egypte_appel: [
       { qui: "player", texte: "(Le soir tombe sur le désert. Ton téléphone capte à peine… mais il capte.)" },
       { qui: "partner", texte: "Allô ?! Tu me vois ? Raconte ! Les pyramides ? Le sphinx ?!" },
-      { qui: "player", texte: "C'était incroyable. Mais tu sais quoi ? [CE QU'ELLE LUI A DIT / CE QUI LUI MANQUAIT]" },
+      { qui: "player", texte: "C'était incroyable. Mais tu sais quoi ? Tu me manques." },
       { qui: "partner", texte: "Toi aussi tu me manques. La maison est trop calme sans toi." },
       { qui: "mylene", texte: "(De loin) C'est Robiiiin ?? Dis-lui bonjouuuur !!" },
       { qui: "partner", texte: "Salut Mylène ! …Bref. Dépêche-toi de rentrer, j'ai un truc à te dire. En vrai, pas au téléphone." },
@@ -305,64 +304,64 @@ export default {
     ],
     // ---- LE VOYAGE EN ALBANIE, AVEC MAMAN ----
     albanie_maman: [
-      { qui: "maman", texte: "Ma chérie ! Viens là que je te regarde. [CE QUE TA MAMAN DIT TOUJOURS EN TE VOYANT ?]" },
+      { qui: "maman", texte: "Ma chérie ! Viens là que je te regarde." },
       { qui: "player", texte: "Maman ! Prête pour l'aventure albanaise ?" },
-      { qui: "maman", texte: "J'ai [CE QU'ELLE A TOUJOURS DANS SON SAC ?] dans mon sac. On ne sait jamais." },
+      { qui: "maman", texte: "J'ai mon rouge à lèvres dans mon sac. On ne sait jamais." },
       { qui: "player", texte: "(Évidemment qu'elle l'a. Elle l'a toujours.)" },
     ],
     albanie_bunker: [
       { qui: "player", texte: "Maman, regarde : un vrai bunker ! Il y en a 170 000 dans le pays." },
-      { qui: "maman", texte: "[SA RÉACTION DEVANT LE BUNKER ?]" },
+      { qui: "maman", texte: "WOW !" },
       { qui: "player", texte: "(Photo de maman devant le bunker. Iconique.)" },
     ],
     albanie_plage: [
-      { qui: "maman", texte: "L'Adriatique… [CE QU'ELLE A DIT DEVANT LA MER ?]" },
-      { qui: "player", texte: "(L'eau est [TURQUOISE ? GLACÉE ? PARFAITE ?]. Le moment aussi.)" },
+      { qui: "maman", texte: "L'Adriatique… C'est magnifique !" },
+      { qui: "player", texte: "(L'eau est turquoise. Le moment aussi.)" },
     ],
     // le soir, au coucher du soleil : la conversation mère-fille ❤
     albanie_soir: [
       { qui: "maman", texte: "Alors… ce Robin. Parle-moi de lui." },
-      { qui: "player", texte: "Il est… il est génial, maman. [CE QU'ELLE A DIT DE ROBIN À SA MAMAN ?]" },
-      { qui: "maman", texte: "[LA PHRASE DE MAMAN SUR ROBIN — sa bénédiction ❤]" },
+      { qui: "player", texte: "Il est… il est génial, maman." },
+      { qui: "maman", texte: "Je l'aime bien, ce Robin." },
       { qui: "player", texte: "(Le soleil se couche sur l'Adriatique. Et tu sais, là, que c'est lui.)" },
     ],
     // ---- LA VRAIE VIE : quand l'amour est à zéro… ----
     robin_part: [
       { qui: "partner", texte: "Je… j'ai l'impression qu'on ne se voit plus. Je vais dormir au bureau quelques jours." },
-      { qui: "partner", texte: "[CE QU'IL DIRAIT VRAIMENT S'IL BOUDAIT ? 😄]" },
+      { qui: "partner", texte: "Je boude." },
       { qui: "player", texte: "(Il est parti à l'hôpital. Il FAUT te faire pardonner. Des fleurs du jardin, peut-être ?)" },
     ],
     reconquete: [
       { qui: "player", texte: "Robin… je suis désolée. Tiens. Je les ai cueillies dans NOTRE jardin." },
       { qui: "partner", texte: "Des fleurs ?! Pour MOI ?" },
       { qui: "partner", texte: "…Bon. D'accord. Tu me connais trop bien. On rentre ?" },
-      { qui: "player", texte: "On rentre ❤" },
+      { qui: "player", texte: "On rentre" },
     ],
     // le dîner à deux, quand elle a cuisiné ❤
     diner: [
       { qui: "partner", texte: "Ça sent incroyablement bon… c'est pour nous ?" },
-      { qui: "player", texte: "Assieds-toi. Chef [PRÉNOM] a cuisiné." },
-      { qui: "partner", texte: "[CE QU'IL DIT TOUJOURS QUAND ELLE CUISINE ?]" },
+      { qui: "player", texte: "Assieds-toi. Chef Karima a cuisiné." },
+      { qui: "partner", texte: "T'es trop forte mon pips" },
       { qui: "player", texte: "(Dîner improvisé aux chandelles. Parfait.)" },
     ],
     // …et quand c'est SON plat préféré
     diner_prefere: [
-      { qui: "partner", texte: "Attends. ATTENDS. C'est… [SON PLAT PRÉFÉRÉ] ?!" },
-      { qui: "partner", texte: "[SA VRAIE RÉACTION QUAND ELLE LE CUISINE 😍]" },
+      { qui: "partner", texte: "Attends. ATTENDS. C'est… mon plat préféré ?!" },
+      { qui: "partner", texte: "J'aime trop !" },
       { qui: "player", texte: "(Heureux comme un gosse. Mission accomplie.)" },
     ],
     // la soirée en amoureux (via le calendrier près de la porte, 30 €)
     date_night: [
       { qui: "partner", texte: "Une soirée rien qu'à nous ? J'attrape ma veste." },
       { qui: "player", texte: "(Comme au premier jour.)" },
-      { qui: "partner", texte: "[CE QUE VOUS FAITES TOUJOURS EN SORTIE EN AMOUREUX ?]" },
+      { qui: "partner", texte: "On va au cinéma, comme toujours." },
       { qui: "player", texte: "(Meilleure idée de la semaine ❤)" },
     ],
     // 💍 LE chapitre final — se déclenche un soir, quand l'amour est au sommet
     demande: [
-      { qui: "partner", texte: "…[PRÉNOM]. Viens par là. J'ai quelque chose à te dire." },
+      { qui: "partner", texte: "…Karima. Viens par là. J'ai quelque chose à te dire." },
       { qui: "partner", texte: "Depuis le premier café à l'hôpital, je sais." },
-      { qui: "partner", texte: "[LES VRAIS MOTS DE LA DEMANDE — ou ceux que tu lui diras un jour 💍]" },
+      { qui: "partner", texte: "Je veux t'épouser." },
       { qui: "player", texte: "…" },
       { qui: "player", texte: "OUI. Mille fois oui !!! 💍❤" },
     ],
@@ -404,7 +403,7 @@ export default {
     // le frigo est vide…
     frigo_vide: {
       any: [
-        "Le frigo est vide… il reste un vieux [TRUC DOUTEUX DU FRIGO] au fond. (+10 faim, courage)",
+        "Le frigo est vide… il reste un vieux truc au fond. (+10 faim, courage)",
         "Le frigo sonne creux. Courses obligatoires.",
       ],
     },
@@ -425,14 +424,14 @@ export default {
     // Robin une fois en couple, à la maison
     partner_talk: {
       any: [
-        "Coucou toi ! [PRIVATE JOKE À METTRE ICI]",
-        "Tu te souviens de [UN SOUVENIR À VOUS] ? Moi j'y pense encore.",
+        "Coucou toi ! ",
+        "Tu te souviens de Montmartre ? Moi j'y pense encore.",
         "T'es la plus belle, même en pixels.",
-        "[SURNOM QU'IL TE DONNE], je t'aime fort.",
-        "Dire qu'on s'est rencontrés à l'hôpital… merci le service informatique ❤",
+        "Pips, je t'aime trop.",
+        "Dire qu'on s'est rencontrés à l'hôpital… merci le service informatique",
       ],
       matin: ["Café d'abord, câlins ensuite ? Ou l'inverse ?", "Bien dormi mon amour ?"],
-      soir: ["On se lance un épisode de [VOTRE SÉRIE] ce soir ?", "Ce soir c'est [VOTRE RITUEL DU SOIR] !"],
+      soir: ["On se lance un épisode ce soir ?", "Ce soir c'est série !"],
       nuit: ["Tu devrais aller dormir, il est tard…"],
     },
 
@@ -441,41 +440,37 @@ export default {
       any: [
         "Alors, prête pour de grands projets data ?",
         "Réunion lundi 9h. Le café est obligatoire, la bonne humeur aussi.",
-        "[PHRASE TYPIQUE DE SOPHIE]",
+        "Tu as vu le dernier notebook de Romain ? Il est… surprenant.",
       ],
     },
     talk_romain: {
       any: [
-        "[BLAGUE RÉCURRENTE DE ROMAIN]",
+        "T'aimes les stats ? Moi j'adore les stats !",
         "Tu as vu le dashboard ? Il est ENCORE cassé.",
         "Pause café ? Pause café.",
       ],
     },
     talk_arij: {
       any: [
-        "[BLAGUE RÉCURRENTE D'ARIJ]",
         "J'ai un notebook qui tourne depuis ce matin… croisons les doigts.",
-        "Ce soir, [CE QU'ARIJ PROPOSE TOUJOURS] ?",
+        "Ce soir, c'est pilate ?",
       ],
     },
     // Les devs
     talk_mahrez: {
       any: [
-        "[BLAGUE RÉCURRENTE DE MAHREZ]",
         "C'est pas un bug, c'est une fonctionnalité.",
         "Quelqu'un a redémarré le serveur ? Non ? Parfait, c'est donc ça le problème.",
       ],
     },
     talk_david: {
       any: [
-        "[BLAGUE RÉCURRENTE DE DAVID]",
         "Ticket n°4512 : « ça marche pas ». Merci pour les détails.",
         "On déploie vendredi 17h ? Excellente idée. (non)",
       ],
     },
     talk_mylene: {
       any: [
-        "[BLAGUE RÉCURRENTE DE MYLÈNE]",
         "Meilleure amie, meilleur voyage. C'est mathématique.",
         "On refait nos valises quand tu veux, tu sais.",
       ],
@@ -483,14 +478,13 @@ export default {
     talk_maman: {
       any: [
         "Ma chérie ❤",
-        "[PHRASE TYPIQUE DE TA MAMAN]",
         "Tu as mangé ? Tu es sûre ? Tiens, mange.",
       ],
     },
 
     // Objets de la maison
     use_fridge: {
-      any: ["Miam… il reste du [SON PLAT PRÉFÉRÉ] !", "Quelqu'un a ENCORE fini les [SA GOURMANDISE]…"],
+      any: ["Miam… il reste des trucs douteux !", "Quelqu'un a ENCORE fini les BAIOCCHI…"],
       matin: ["Petit-déj ! La chose la plus importante de la journée."],
     },
     use_stove: { any: ["Ça sent bon dans toute la maison…", "Attention, ça chauffe !"] },
@@ -500,32 +494,32 @@ export default {
       nuit: ["Enfin au lit…"],
     },
     use_shower: {
-      any: ["🎵 [LA CHANSON QU'ELLE CHANTE SOUS LA DOUCHE] 🎵", "L'eau chaude, meilleure invention de l'humanité."],
+      any: ["🎵 I'M A SINGLE LADY 🎵", "L'eau chaude, meilleure invention de l'humanité."],
     },
     use_couch: {
       any: ["Pause canapé bien méritée.", "Juste un épisode. Promis. (non)"],
       soir: ["La soirée parfaite commence ici."],
     },
     use_bookshelf: {
-      any: ["Tiens, [UN LIVRE/MANGA QU'ELLE ADORE] ! Un classique.", "Il faudrait vraiment ranger cette étagère un jour."],
+      any: ["Tiens ! Un classique.", "Il faudrait vraiment ranger cette étagère un jour."],
     },
     use_plant: {
-      any: ["La plante que personne n'oublie JAMAIS d'arroser. (si, [QUI OUBLIE ?])", "Pousse, petite plante, pousse."],
+      any: ["La plante que personne n'oublie JAMAIS d'arroser.", "Pousse, petite plante, pousse."],
     },
-    use_table: { any: ["Les fleurs de [OCCASION OÙ IL T'A OFFERT DES FLEURS]."] },
+    use_table: { any: ["Les fleurs qu'il m'a offertes."] },
     use_tv: {
-      any: ["Un petit épisode de [VOTRE SÉRIE]…", "Zapping du soir, espoir."],
+      any: ["Un petit épisode…", "Zapping du soir, espoir."],
       soir: ["LE créneau série. Sacré."],
     },
     use_photo: {
       any: [
-        "Notre photo de [VOTRE VOYAGE / MOMENT PRÉFÉRÉ]…",
-        "On avait l'air si jeunes sur cette photo. C'était il y a [DURÉE] !",
+        "Notre photo…",
+        "On avait l'air si jeunes sur cette photo. C'était il y a 2 jours !",
       ],
     },
 
     // Objets de l'hôpital
-    use_sign: { any: ["« Hôpital [NOM DE L'HÔPITAL] » — c'est ici !"] },
+    use_sign: { any: ["« Hôpital GHU » — c'est ici !"] },
     use_joconde: {
       any: [
         "Elle sourit. Elle sait, pour vous deux.",
@@ -534,7 +528,7 @@ export default {
     },
     use_pyramide: {
       any: [
-        "La pyramide du Louvre. [VOTRE SOUVENIR DE CET ENDROIT ❤]",
+        "La pyramide du Louvre. C'était magique ici ❤",
         "C'est ici que tout est devenu officiel.",
       ],
     },
@@ -543,13 +537,12 @@ export default {
       any: ["(Vous êtes bien, là, tous les deux.)", "On la refait, cette journée ? N'importe quand."],
     },
     use_her_desk: {
-      any: ["Mon nouveau bureau ✨ Il ne manque plus qu'une plante et [SON OBJET FÉTICHE]."],
+      any: ["Mon nouveau bureau ✨ Il ne manque plus qu'une plante et ma tasse à café."],
     },
     use_coffee: {
       any: [
         "Le carburant officiel de l'hôpital. ☕ +15 énergie !",
         "La machine fait un bruit bizarre… mais le café est bon.",
-        "[LA BLAGUE DE LA MACHINE À CAFÉ DU SERVICE ?]",
       ],
     },
 
@@ -564,20 +557,20 @@ export default {
     quest_done_devs: { any: ["(Ce Robin… il a quelque chose, non ?) Allez, la journée est finie : direction la maison."] },
     quest_done_appel: { any: ["(Comment veux-tu dormir après ÇA ?!)"] },
     quest_done_date: { any: ["Officiellement ensemble ❤ (Et oui : « c'est Disneyland ». Personne ne comprendra jamais, et c'est très bien.)"] },
-    quest_done_valentin: { any: ["Jeux d'arcade + [NOM DU RESTO] + lui. La formule parfaite ❤"] },
+    quest_done_valentin: { any: ["Jeux d'arcade + KONG + lui. La formule parfaite ❤"] },
     quest_done_egypte: { any: ["L'Égypte dans les yeux… et Paris dans le cœur. Il est temps de rentrer ✈"] },
     quest_done_albanie: { any: ["Deux voyages, deux personnes en or… et une certitude en rentrant ❤"] },
     use_bunker: { any: ["Un bunker de poche. Collector.", "(Solide. Rond. Inutile. Parfait.)"] },
     use_parasol: { any: ["À l'ombre, face à l'Adriatique. Le luxe.", "[VOTRE MOMENT PLAGE EN ALBANIE ?]"] },
-    use_montagne: { any: ["Les montagnes albanaises. [VOUS LES AVEZ GRIMPÉES ? ADMIRÉES DE LOIN ?]"] },
-    use_pyr_egypte: { any: ["4500 ans d'avance sur nos plus beaux projets.", "[VOTRE SOUVENIR DES PYRAMIDES ?]"] },
+    use_montagne: { any: ["Les montagnes albanaises."] },
+    use_pyr_egypte: { any: ["4500 ans d'avance sur nos plus beaux projets."] },
     use_sphinx: { any: ["Il garde le plateau depuis 4500 ans. Sans pause café.", "(Il sait des choses, c'est sûr.)"] },
-    use_camel: { any: ["[NOM DU CHAMEAU ?] approuve ta présence.", "(Il mâche. Toujours. Quoi ? Mystère.)"] },
-    use_borne: { any: ["Encore une partie de [VOTRE JEU] ?", "INSÉREZ UNE PIÈCE. (Toujours aussi tentant.)"] },
-    use_resto_table: { any: ["Une table aux chandelles… classe.", "(L'odeur de [PLAT DU KONG] flotte encore.)"] },
-    use_kong_statue: { any: ["Le gorille du [NOM DU RESTO]. Il en impose.", "(Il vous juge un peu, mais avec bienveillance.)"] },
-    quest_done_q1: { any: ["C'était le plat de [OCCASION SPÉCIALE : premier rdv ? anniversaire ?] ❤"] },
-    quest_done_q2: { any: ["LA chaussette perdue ! Elle était dans le jardin depuis [DURÉE ABSURDE]."] },
+    use_camel: { any: ["Robin le chameau approuve ta présence.", "(Il mâche. Toujours. Quoi ? Mystère.)"] },
+    use_borne: { any: ["Encore une partie d'arcade ?", "INSÉREZ UNE PIÈCE. (Toujours aussi tentant.)"] },
+    use_resto_table: { any: ["Une table aux chandelles… classe.", "(L'odeur du plat flotte encore.)"] },
+    use_kong_statue: { any: ["Le gorille du KONG. Il en impose.", "(Il vous juge un peu, mais avec bienveillance.)"] },
+    quest_done_q1: { any: ["C'était le plat de saint valentin"] },
+    quest_done_q2: { any: ["LA chaussette perdue ! Elle était dans le jardin depuis 3 ANS."] },
     quests_all_done: { any: ["Tous les objectifs sont finis… mais la vie continue, tranquillement, ensemble ❤"] },
   },
 
@@ -585,7 +578,7 @@ export default {
   // FLAVOR — le petit texte affiché quand on s'approche ([E] …)
   // --------------------------------------------------------------------------
   flavor: {
-    fridge: "Le frigo — toujours plein de [SA GOURMANDISE]",
+    fridge: "Le frigo — toujours plein de surprises",
     stove: "La cuisinière",
     bed: "Le lit douillet",
     shower: "La douche (salle de concert privée)",
@@ -609,7 +602,7 @@ export default {
     pyramid: "La pyramide du Louvre",
     borne: "Une borne d'arcade",
     resto_table: "Une table aux chandelles",
-    kong_statue: "Le gorille du [NOM DU RESTO]",
+    kong_statue: "Le gorille du KONG",
     pyramide_egypte: "La Grande Pyramide",
     sphinx: "Le Sphinx",
     camel: "Un chameau",
