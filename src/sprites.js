@@ -779,6 +779,26 @@ export const SPROUT2 = [
   ".ppPPPPpp.",
 ];
 
+// La bouche de métro (panneau M jaune)
+export const METRO = [
+  "..YYYYYY....",
+  ".YYYYYYYY...",
+  ".YKYYYYKY...",
+  ".YKKYYKKY...",
+  ".YKYKKYKY...",
+  ".YKYYYYKY...",
+  ".YYYYYYYY...",
+  "..YYYYYY....",
+  "....DD......",
+  "....DD......",
+  "....DD......",
+  "....DD......",
+  "....DD......",
+  "....DD......",
+  "...DDDD.....",
+  "............",
+];
+
 // Une tache au sol (le ménage attend)
 export const DIRT = [
   "..WW..W...",
@@ -846,6 +866,8 @@ export const FURNITURE = {
   // le potager et le ménage
   garden_plot: { grid: MONITOR, fw: 1, fh: 1, solid: false },
   dirt: { grid: MONITOR, fw: 1, fh: 1, solid: false },
+  // le métro
+  metro: { grid: METRO, fw: 1, fh: 1, solid: true, scale: 1.2 },
 };
 
 export { CANDLE };

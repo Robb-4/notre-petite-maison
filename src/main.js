@@ -14,6 +14,7 @@ import { Dialogue } from "./dialogue.js";
 import { Clock } from "./clock.js";
 import { Quests } from "./quests.js";
 import { HUD } from "./hud.js";
+import { createMinigames } from "./minigames.js";
 
 // --- écran titre personnalisé ---
 document.title = DATA.meta.titre;
@@ -93,6 +94,10 @@ const plots = [
   { state: "vide", growth: 0, watered: false },
 ];
 const PLOT_COLS = [18, 19, 20];
+
+// les mini-jeux 🎮
+const minigames = createMinigames();
+let snakeHigh = 0;
 
 // le ménage 🧹
 const DIRT_SPOTS = [
@@ -307,6 +312,37 @@ function cancelCooking() {
   hud.hideCookbar();
   state = "playing";
   hud.toast("🍳 Cuisson annulée (ingrédients gardés)");
+}
+
+// --- les mini-jeux 🎮 ---
+function startMinigame(name) {
+  state = "minigame";
+  minigames.start(name);
+}
+function rewardMinigame(res) {
+  if (res.name === "snake") {
+    const fun = Math.min(8 + 2 * res.score, 35);
+    needs.apply({ fun });
+    if (res.score > snakeHigh) {
+      snakeHigh = res.score;
+      hud.toast(`🏆 Nouveau record : ${res.score} ! (+${fun} fun)`);
+    } else {
+      hud.toast(`🐍 Score : ${res.score} (+${fun} fun)`);
+    }
+  } else if (res.name === "breakout") {
+    const fun = Math.round(res.broken / 2) + (res.win ? 30 : 0);
+    needs.apply({ fun });
+    hud.toast(res.win ? `🧱 TOUT CASSÉ ! (+${fun} fun)` : `🧱 ${res.broken}/${res.total} briques (+${fun} fun)`);
+  } else if (res.name === "pong") {
+    if (res.win) {
+      needs.apply({ fun: 20, amour: 15 });
+      hud.toast(`🏓 ${res.s1}-${res.s2} ! Robin : « Revanche. RE-VANCHE. »`);
+    } else {
+      needs.apply({ fun: 10, amour: 10 });
+      hud.toast(`🏓 ${res.s1}-${res.s2}… Robin jubile. (Mais c'était bien.)`);
+    }
+    world.spawnHearts(player.x, player.y - 0.8, 4);
+  }
 }
 
 // --- la cuisine 🍳 : le dîner à deux ---
@@ -541,6 +577,36 @@ function completeInteraction(spot, def) {
     } else {
       hud.toast("💶 Pas assez d'argent (50 €)");
     }
+  } else if (spot.type === "borne" && vieReelle()) {
+    // les bornes d'arcade : Snake (cols 6/12) ou Casse-briques (cols 8/14)
+    effects = {};
+    if (money >= 2) {
+      money -= 2;
+      startMinigame(spot.rect.x0 === 6 || spot.rect.x0 === 12 ? "snake" : "breakout");
+      return;
+    }
+    hud.toast("💶 Il faut 2 € pour jouer");
+  } else if (spot.type === "tv") {
+    // la télé : Pong avec Robin s'il est là, sinon un petit épisode
+    effects = {};
+    if (vieReelle() && activeNpcs.partner && !robinParti) {
+      startMinigame("pong");
+      return;
+    }
+    needs.apply({ fun: 15 });
+    dialogue.showKey("use_tv", "player", clock.bucket());
+  } else if (spot.type === "metro") {
+    // le métro : maison ↔ Paris (fermé pendant l'histoire)
+    effects = {};
+    if (!vieReelle()) {
+      hud.toast("🚇 Fermé pour travaux. (Plus tard…)");
+    } else if (mapId === "home") {
+      switchMap("paris", { x: 3.5, y: 2.4 });
+      return;
+    } else {
+      switchMap("home", { x: 23.5, y: 12.5 });
+      return;
+    }
   } else if (spot.type === "date_board") {
     if (!vieReelle()) {
       hud.toast("📅 (Plus tard…)");
@@ -719,6 +785,9 @@ window.__game = {
   get cookPos() {
     return state === "cooking" ? Math.sin(cookT * CONFIG.cuisine.cursorSpeed) : null;
   },
+  get state() {
+    return state;
+  },
 };
 
 // --- boucle de jeu ---
@@ -755,7 +824,7 @@ function loop(now) {
   }
 
   dialogue.update(dt);
-  if (state !== "cooking") input.readSkip();
+  if (state !== "cooking" && state !== "minigame") input.readSkip();
 
   if (dialogue.isOpen) {
     if (input.readInteract()) dialogue.advance();
@@ -773,6 +842,20 @@ function loop(now) {
       resolveCooking(Math.abs(pos));
     } else if (cookT >= CONFIG.cuisine.timeout) {
       resolveCooking(1); // laissé sur le feu…
+    }
+  } else if (state === "minigame") {
+    if (input.readSkip()) {
+      minigames.abort();
+      state = "playing";
+      hud.toast("🎮 Partie quittée");
+      input.readInteract();
+    } else {
+      const res = minigames.update(dt, input);
+      input.readInteract();
+      if (res) {
+        state = "playing";
+        rewardMinigame(res);
+      }
     }
   } else if (pendingSleep) {
     pendingSleep = false;
@@ -1019,6 +1102,7 @@ function loop(now) {
       if (spot.type === "fridge") return `Le frigo (🧺 ×${pantry})`;
       if (spot.type === "stove") return carrying === "ingredients" ? "Cuisiner 🍳 !" : DATA.flavor.stove;
       if (spot.type === "table" && carrying && carrying !== "ingredients") return "Servir le dîner ❤";
+      if (spot.type === "tv" && activeNpcs.partner && !robinParti) return "Jouer à la console avec Robin 🎮";
     }
     return spot.label ?? DATA.flavor[spot.type] ?? spot.type;
   }

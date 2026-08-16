@@ -67,6 +67,11 @@ Une fois l'histoire finie, le jeu devient un vrai Sims :
   moral s'use plus vite (et Robin fait des remarques).
 - **Les rêves 💭** : en dormant, parfois un rêve — souvenir de votre histoire
   (+amour) ou rêve absurde (`data.reves`).
+- **Le métro 🚇** : la bouche de métro du jardin relie directement la maison
+  à la rue de Paris (arcade, KONG, centre commercial). Et retour.
+- **Les mini-jeux 🎮** : **Snake** et **Casse-briques** sur les bornes
+  d'arcade (2 € la partie, high-score), et **Pong contre Robin** sur la TV
+  du salon quand il est là (+fun et +amour, gagné ou perdu).
 
 ## 🎮 Contrôles
 

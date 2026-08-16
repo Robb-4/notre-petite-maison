@@ -513,6 +513,10 @@ export default {
       any: ["La plante que personne n'oublie JAMAIS d'arroser. (si, [QUI OUBLIE ?])", "Pousse, petite plante, pousse."],
     },
     use_table: { any: ["Les fleurs de [OCCASION OÙ IL T'A OFFERT DES FLEURS]."] },
+    use_tv: {
+      any: ["Un petit épisode de [VOTRE SÉRIE]…", "Zapping du soir, espoir."],
+      soir: ["LE créneau série. Sacré."],
+    },
     use_photo: {
       any: [
         "Notre photo de [VOTRE VOYAGE / MOMENT PRÉFÉRÉ]…",
@@ -616,6 +620,8 @@ export default {
     date_board: "Proposer une soirée en amoureux (30 €)",
     garden_plot: "Le potager",
     dirt: "Nettoyer la tache 🧹",
+    metro: "Le métro 🚇",
+    tv: "La télé",
     clothes_rack: "Nouvelle tenue (10 €)",
     grocery_shelf: "Faire les courses (15 €)",
     furniture_shop: "Changer la couleur du canapé (50 €)",

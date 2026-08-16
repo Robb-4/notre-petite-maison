@@ -126,6 +126,33 @@ body {
   max-width: 230px;
 }
 
+/* mini-jeux (arcade + pong) */
+#minigame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--panel);
+  border: 3px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  z-index: 14;
+}
+#mini-title { font-size: 11px; color: var(--accent); }
+#mini-canvas {
+  width: 390px;
+  height: 300px;
+  image-rendering: pixelated;
+  border: 2px solid var(--panel-border);
+  border-radius: 4px;
+  background: #14101f;
+}
+#mini-hint { font-size: 8px; color: #8d7cb5; }
+
 /* mini-jeu de cuisson */
 #cookbar {
   position: absolute;

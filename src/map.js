@@ -184,6 +184,8 @@ export const MAPS = {
       { type: "garden_plot", col: 18, row: 14 },
       { type: "garden_plot", col: 19, row: 14 },
       { type: "garden_plot", col: 20, row: 14 },
+      // la bouche de métro
+      { type: "metro", col: 24, row: 13, label: "🚇 Métro → Paris (arcade, KONG, centre commercial)" },
       // panneaux directionnels aux départs de chemin
       { type: "signpost", col: 24, row: 9, label: "→ L'hôpital (à l'est)" },
       { type: "signpost", col: 22, row: 14, flip: true, label: "→ Le Louvre (au sud)" },
@@ -255,11 +257,13 @@ export const MAPS = {
     name: "🕹️ Paris — arcade & KONG",
     grid: PARIS_GRID,
     placements: [
-      // la salle d'arcade
-      { type: "borne", col: 6, row: 4 },
-      { type: "borne", col: 8, row: 4 },
-      { type: "borne", col: 12, row: 4 },
-      { type: "borne", col: 14, row: 6 },
+      // la salle d'arcade (colonnes 6/12 = Snake, 8/14 = Casse-briques)
+      { type: "borne", col: 6, row: 4, label: "🐍 Snake (2 €)" },
+      { type: "borne", col: 8, row: 4, label: "🧱 Casse-briques (2 €)" },
+      { type: "borne", col: 12, row: 4, label: "🐍 Snake (2 €)" },
+      { type: "borne", col: 14, row: 6, label: "🧱 Casse-briques (2 €)" },
+      // la bouche de métro
+      { type: "metro", col: 2, row: 1, label: "🚇 Métro → La maison" },
       { type: "table", col: 9, row: 7 },
       { type: "plant", col: 6, row: 9 },
       // le restaurant KONG

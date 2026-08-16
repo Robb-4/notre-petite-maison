@@ -38,6 +38,9 @@ export const ACTIONS = {
   // le potager et le ménage
   garden_plot: { duration: 1, effects: {}, dlg: null, speaker: "player" },
   dirt: { duration: 1.2, effects: { fun: 3 }, dlg: null, speaker: "player" },
+  // le métro et la télé (logique dans main.js)
+  metro: { duration: 0, effects: {}, dlg: null, speaker: "player" },
+  tv: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   sign: { duration: 0, effects: {}, dlg: "use_sign", speaker: "player" },
   signpost: { duration: 0, effects: {}, dlg: null, speaker: "player" },
   coffee: { duration: 1.5, effects: { energie: 15 }, dlg: "use_coffee", speaker: "player" },
